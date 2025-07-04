@@ -44,17 +44,7 @@ export interface SymbolInformation {
   containerName?: string;
 }
 
-/**
- * Represents programming constructs like variables, classes, interfaces etc. that appear in a document.
- */
-export interface DocumentSymbol {
-  name: string;
-  detail?: string;
-  kind: number;
-  range: Range;
-  selectionRange: Range;
-  children?: DocumentSymbol[];
-}
+
 
 /**
  * The result of a hover request.
@@ -209,14 +199,7 @@ export interface EventMap {
     };
   };
 
-  getDocumentSymbols: {
-    params: {
-      uri: string;
-    };
-    result: {
-      symbols: DocumentSymbol[];
-    };
-  };
+
 
   getWorkspaceSymbols: {
     params: {

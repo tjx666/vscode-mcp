@@ -5,7 +5,6 @@ import {
     getCurrentWorkspacePath,
     getDefinition,
     getDiagnostics,
-    getDocumentSymbols,
     getHover,
     getReferences,
     getSignatureHelp,
@@ -41,7 +40,6 @@ export async function activate(context: vscode.ExtensionContext) {
         socketServer.register('getReferences', getReferences);
         socketServer.register('getHover', getHover);
         socketServer.register('getSignatureHelp', getSignatureHelp);
-        socketServer.register('getDocumentSymbols', getDocumentSymbols);
         
         // Start socket server
         await socketServer.start();

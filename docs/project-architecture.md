@@ -158,12 +158,14 @@ All events are defined in `packages/vscode-mcp-ipc/src/events.ts`:
 **Health Check**:
 
 ```typescript
-health: {
-  params: Record<string, never>;
-  result: {
-    status: 'ok' | 'error';
-    version: string;
-    workspace?: string;
+interface EventMap {
+  health: {
+    params: Record<string, never>;
+    result: {
+      status: 'ok' | 'error';
+      version: string;
+      workspace?: string;
+    };
   };
 }
 ```
@@ -175,7 +177,6 @@ health: {
 - `getReferences`: Get symbol reference locations
 - `getHover`: Get symbol hover information
 - `getSignatureHelp`: Get function signature help
-- `getDocumentSymbols`: Get document symbols (functions, classes, variables)
 
 **Future Versions** will include:
 
@@ -194,7 +195,6 @@ Through the MCP Server, clients can use these tools (all require `workspace_path
 - `get_references`: Get symbol reference locations
 - `get_hover`: Get symbol hover information
 - `get_signature_help`: Get function signature help
-- `get_document_symbols`: Get document symbols (functions, classes, variables)
 
 ### Future Versions
 
@@ -224,9 +224,9 @@ await mcp.call('get_definition', {
 The MVP version focuses on **Language Service capabilities** only, providing AI assistants with:
 
 1. **Real-time Code Analysis**: Access to live diagnostic information (errors, warnings, hints)
-2. **Symbol Navigation**: Definition lookup, reference finding, symbol hierarchies
+2. **Symbol Navigation**: Definition lookup, reference finding
 3. **Type Information**: Hover information, signature help
-4. **Code Intelligence**: Document symbol search
+4. **Code Intelligence**: Basic code analysis and navigation
 
 This core set of capabilities enables MCP clients to:
 

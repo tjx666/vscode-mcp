@@ -57,7 +57,6 @@ if (isConnected) {
 - `getHover` - 获取悬停信息
 - `getCompletions` - 获取补全
 - `getSignatureHelp` - 获取签名帮助
-- `getDocumentSymbols` - 获取文档符号
 - `getWorkspaceSymbols` - 获取工作区符号
 - `getWorkspaceInfo` - 获取工作区信息
 
