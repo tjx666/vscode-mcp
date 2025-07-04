@@ -1,0 +1,26 @@
+{
+    "name": "@vscode-mcp/vscode-mcp-ipc",
+    "version": "1.0.0",
+    "description": "IPC communication layer between MCP Server and VSCode extension",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "build:watch": "tsc --watch",
+        "clean": "rimraf dist"
+    },
+    "keywords": [
+        "mcp",
+        "vscode",
+        "ipc",
+        "unix-socket"
+    ],
+    "author": {
+        "name": "YuTengjing",
+        "email": "ytj2713151713@gmail.com"
+    },
+    "license": "MIT",
+    "files": [
+        "dist"
+    ]
+}
