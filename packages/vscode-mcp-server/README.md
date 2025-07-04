@@ -138,6 +138,48 @@ Search for symbols in the workspace.
 - `workspace_path` (string): VSCode workspace path
 - `query` (string): Search query for symbols
 
+### `execute_command`
+
+Execute a VSCode command.
+
+**Parameters:**
+
+- `workspace_path` (string): VSCode workspace path
+- `command` (string): VSCode command to execute (e.g., 'vscode.open', 'editor.action.formatDocument')
+- `args` (array, optional): Arguments to pass to the command
+
+**Examples:**
+
+```json
+{
+  "name": "execute_command",
+  "arguments": {
+    "workspace_path": "/path/to/your/project",
+    "command": "editor.action.formatDocument"
+  }
+}
+```
+
+```json
+{
+  "name": "execute_command",
+  "arguments": {
+    "workspace_path": "/path/to/your/project",
+    "command": "vscode.open",
+    "args": ["file:///path/to/file.ts"]
+  }
+}
+```
+
+**Common VSCode Commands:**
+
+- `editor.action.formatDocument` - Format the current document
+- `editor.action.organizeImports` - Organize imports
+- `vscode.open` - Open a file (requires file URI argument)
+- `workbench.action.files.save` - Save current file
+- `workbench.action.reloadWindow` - Reload VSCode window
+- `workbench.action.closeActiveEditor` - Close active editor
+
 ## Prerequisites
 
 This MCP server requires the VSCode MCP Bridge extension to be installed and running in the target workspace.

@@ -73,29 +73,20 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1
 
-  packages/vscode-mcp-ipc: {}
+  packages/vscode-mcp-ipc:
+    devDependencies:
+      type-fest:
+        specifier: ^4.41.0
+        version: 4.41.0
 
   packages/vscode-mcp-server:
     dependencies:
       '@modelcontextprotocol/sdk':
-        specifier: ^1.0.0
+        specifier: ^1.14.0
         version: 1.15.0
       '@vscode-mcp/vscode-mcp-ipc':
         specifier: workspace:*
         version: link:../vscode-mcp-ipc
-    devDependencies:
-      '@types/node':
-        specifier: ~22.16.0
-        version: 22.16.0
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
-      tsx:
-        specifier: ^4.19.0
-        version: 4.20.3
-      typescript:
-        specifier: ~5.8.3
-        version: 5.8.3
 
 packages:
 
@@ -3877,7 +3868,7 @@ snapshots:
   '@eslint/config-array@0.21.0':
     dependencies:
       '@eslint/object-schema': 2.1.6
-      debug: 4.4.1(supports-color@8.1.1)
+      debug: 4.4.1
       minimatch: 3.1.2
     transitivePeerDependencies:
       - supports-color
@@ -3899,7 +3890,7 @@ snapshots:
   '@eslint/eslintrc@3.3.1':
     dependencies:
       ajv: 6.12.6
-      debug: 4.4.1(supports-color@8.1.1)
+      debug: 4.4.1
       espree: 10.4.0
       globals: 14.0.0
       ignore: 5.3.2
@@ -4270,7 +4261,7 @@ snapshots:
       '@typescript-eslint/types': 8.35.1
       '@typescript-eslint/typescript-estree': 8.35.1(typescript@5.8.3)
       '@typescript-eslint/visitor-keys': 8.35.1
-      debug: 4.4.1(supports-color@8.1.1)
+      debug: 4.4.1
       eslint: 9.30.1(jiti@2.4.2)
       typescript: 5.8.3
     transitivePeerDependencies:
@@ -4280,7 +4271,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/tsconfig-utils': 8.35.1(typescript@5.8.3)
       '@typescript-eslint/types': 8.35.1
-      debug: 4.4.1(supports-color@8.1.1)
+      debug: 4.4.1
       typescript: 5.8.3
     transitivePeerDependencies:
       - supports-color
@@ -4298,7 +4289,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/typescript-estree': 8.35.1(typescript@5.8.3)
       '@typescript-eslint/utils': 8.35.1(eslint@9.30.1(jiti@2.4.2))(typescript@5.8.3)
-      debug: 4.4.1(supports-color@8.1.1)
+      debug: 4.4.1
       eslint: 9.30.1(jiti@2.4.2)
       ts-api-utils: 2.1.0(typescript@5.8.3)
       typescript: 5.8.3
@@ -4313,7 +4304,7 @@ snapshots:
       '@typescript-eslint/tsconfig-utils': 8.35.1(typescript@5.8.3)
       '@typescript-eslint/types': 8.35.1
       '@typescript-eslint/visitor-keys': 8.35.1
-      debug: 4.4.1(supports-color@8.1.1)
+      debug: 4.4.1
       fast-glob: 3.3.3
       is-glob: 4.0.3
       minimatch: 9.0.5
@@ -5014,6 +5005,10 @@ snapshots:
 
   css-what@6.2.2: {}
 
+  debug@4.4.1:
+    dependencies:
+      ms: 2.1.3
+
   debug@4.4.1(supports-color@8.1.1):
     dependencies:
       ms: 2.1.3
@@ -5243,7 +5238,7 @@ snapshots:
 
   eslint-import-resolver-typescript@4.4.4(eslint-plugin-import-x@4.16.1(@typescript-eslint/utils@8.35.1(eslint@9.30.1(jiti@2.4.2))(typescript@5.8.3))(eslint@9.30.1(jiti@2.4.2)))(eslint@9.30.1(jiti@2.4.2)):
     dependencies:
-      debug: 4.4.1(supports-color@8.1.1)
+      debug: 4.4.1
       eslint: 9.30.1(jiti@2.4.2)
       eslint-import-context: 0.1.9(unrs-resolver@1.10.1)
       get-tsconfig: 4.10.1
@@ -5277,7 +5272,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 8.35.1
       comment-parser: 1.4.1
-      debug: 4.4.1(supports-color@8.1.1)
+      debug: 4.4.1
       eslint: 9.30.1(jiti@2.4.2)
       eslint-import-context: 0.1.9(unrs-resolver@1.10.1)
       is-glob: 4.0.3
@@ -5295,7 +5290,7 @@ snapshots:
       '@es-joy/jsdoccomment': 0.50.2
       are-docs-informative: 0.0.2
       comment-parser: 1.4.1
-      debug: 4.4.1(supports-color@8.1.1)
+      debug: 4.4.1
       escape-string-regexp: 4.0.0
       eslint: 9.30.1(jiti@2.4.2)
       espree: 10.4.0
@@ -5396,7 +5391,7 @@ snapshots:
 
   eslint-plugin-yml@1.18.0(eslint@9.30.1(jiti@2.4.2)):
     dependencies:
-      debug: 4.4.1(supports-color@8.1.1)
+      debug: 4.4.1
       escape-string-regexp: 4.0.0
       eslint: 9.30.1(jiti@2.4.2)
       eslint-compat-utils: 0.6.5(eslint@9.30.1(jiti@2.4.2))
@@ -5432,7 +5427,7 @@ snapshots:
       ajv: 6.12.6
       chalk: 4.1.2
       cross-spawn: 7.0.6
-      debug: 4.4.1(supports-color@8.1.1)
+      debug: 4.4.1
       escape-string-regexp: 4.0.0
       eslint-scope: 8.4.0
       eslint-visitor-keys: 4.2.1
@@ -6482,7 +6477,7 @@ snapshots:
   micromark@4.0.2:
     dependencies:
       '@types/debug': 4.1.12
-      debug: 4.4.1(supports-color@8.1.1)
+      debug: 4.4.1
       decode-named-character-reference: 1.2.0
       devlop: 1.1.0
       micromark-core-commonmark: 2.0.3

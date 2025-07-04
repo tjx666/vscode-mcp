@@ -1,8 +1,7 @@
 import * as vscode from 'vscode';
 
 import { logger } from './logger';
-import {
-    getCurrentWorkspacePath,
+import {        executeCommand,getCurrentWorkspacePath,
     getDefinition,
     getDiagnostics,
     getHover,
@@ -40,6 +39,7 @@ export async function activate(context: vscode.ExtensionContext) {
         socketServer.register('getReferences', getReferences);
         socketServer.register('getHover', getHover);
         socketServer.register('getSignatureHelp', getSignatureHelp);
+        socketServer.register('executeCommand', executeCommand);
         
         // Start socket server
         await socketServer.start();

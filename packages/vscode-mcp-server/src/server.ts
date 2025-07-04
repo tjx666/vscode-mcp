@@ -195,6 +195,31 @@ export class VSCodeMCPServer {
           },
           required: ["workspace_path", "query"]
         }
+      },
+      {
+        name: "execute_command",
+        description: "Execute a VSCode command",
+        inputSchema: {
+          type: "object",
+          properties: {
+            workspace_path: {
+              type: "string",
+              description: "VSCode workspace path to target"
+            },
+            command: {
+              type: "string",
+              description: "VSCode command to execute (e.g., 'vscode.open', 'editor.action.formatDocument')"
+            },
+            args: {
+              type: "array",
+              description: "Optional arguments to pass to the command",
+              items: {
+                description: "JSON-serializable value"
+              }
+            }
+          },
+          required: ["workspace_path", "command"]
+        }
       }
     ];
   }
@@ -274,6 +299,15 @@ export class VSCodeMCPServer {
           }
           return await dispatcher.dispatch("getWorkspaceSymbols", {
             query: params.query
+          });
+
+        case "execute_command":
+          if (!params.command) {
+            throw new Error("command is required for execute_command");
+          }
+          return await dispatcher.dispatch("executeCommand", {
+            command: params.command,
+            args: params.args
           });
 
         default:

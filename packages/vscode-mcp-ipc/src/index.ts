@@ -2,4 +2,7 @@
 export * from './events.js';
 
 // Export dispatcher functionality
-export * from './dispatch.js'; 
+export * from './dispatch.js';
+
+// Re-export useful types from type-fest
+export type { Jsonifiable } from 'type-fest'; 

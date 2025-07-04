@@ -178,6 +178,10 @@ interface EventMap {
 - `getHover`: Get symbol hover information
 - `getSignatureHelp`: Get function signature help
 
+**Command Execution**:
+
+- `executeCommand`: Execute VSCode commands with optional arguments
+
 **Future Versions** will include:
 
 - `getCompletions`: Auto-completion suggestions
@@ -195,6 +199,10 @@ Through the MCP Server, clients can use these tools (all require `workspace_path
 - `get_references`: Get symbol reference locations
 - `get_hover`: Get symbol hover information
 - `get_signature_help`: Get function signature help
+
+### Command Execution Tools
+
+- `execute_command`: Execute VSCode commands with optional arguments
 
 ### Future Versions
 
@@ -216,6 +224,18 @@ await mcp.call('get_definition', {
   uri: 'file:///Users/user/backend-project/src/main.ts',
   line: 10,
   character: 5,
+});
+
+// Execute VSCode commands
+await mcp.call('execute_command', {
+  workspace_path: '/Users/user/frontend-project',
+  command: 'editor.action.formatDocument',
+});
+
+await mcp.call('execute_command', {
+  workspace_path: '/Users/user/frontend-project',
+  command: 'vscode.open',
+  args: ['file:///Users/user/frontend-project/src/App.tsx'],
 });
 ```
 

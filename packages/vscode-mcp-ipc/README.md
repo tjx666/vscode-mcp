@@ -35,6 +35,17 @@ const definitions = await dispatcher.dispatch('getDefinition', {
 
 // 健康检查
 const health = await dispatcher.dispatch('health', {});
+
+// 执行 VSCode 命令
+const result = await dispatcher.dispatch('executeCommand', {
+  command: 'editor.action.formatDocument',
+});
+
+// 执行带参数的 VSCode 命令
+const openResult = await dispatcher.dispatch('executeCommand', {
+  command: 'vscode.open',
+  args: ['file:///path/to/file.ts'],
+});
 ```
 
 ### 测试连接
@@ -59,6 +70,7 @@ if (isConnected) {
 - `getSignatureHelp` - 获取签名帮助
 - `getWorkspaceSymbols` - 获取工作区符号
 - `getWorkspaceInfo` - 获取工作区信息
+- `executeCommand` - 执行 VSCode 命令
 
 ## Socket 路径生成
 

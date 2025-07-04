@@ -1,3 +1,6 @@
+
+import type { Jsonifiable } from 'type-fest';
+
 /**
  * Position in a text document expressed as zero-based line and zero-based character offset.
  */
@@ -214,6 +217,17 @@ export interface EventMap {
     params: Record<string, never>;
     result: {
       workspace: WorkspaceInfo;
+    };
+  };
+
+  /** Execute VSCode command */
+  executeCommand: {
+    params: {
+      command: string;
+      args?: Jsonifiable[];
+    };
+    result: {
+      result: Jsonifiable;
     };
   };
 }

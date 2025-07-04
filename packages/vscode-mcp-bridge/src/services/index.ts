@@ -1,4 +1,5 @@
-// Export core services (MVP version)
+// Export service functions
+export { executeCommand } from './executeCommand';
 export { getDefinition } from './getDefinition';
 export { getDiagnostics } from './getDiagnostics';
 export { getHover } from './getHover';
