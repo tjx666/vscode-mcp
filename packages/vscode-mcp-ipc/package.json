@@ -1,13 +1,14 @@
 {
     "name": "@vscode-mcp/vscode-mcp-ipc",
     "version": "1.0.0",
+    "type": "module",
     "description": "IPC communication layer between MCP Server and VSCode extension",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
         "build": "tsc",
         "build:watch": "tsc --watch",
-        "clean": "rimraf dist"
+        "clean": "rm -rf dist"
     },
     "keywords": [
         "mcp",

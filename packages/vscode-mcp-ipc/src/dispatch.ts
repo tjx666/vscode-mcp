@@ -1,5 +1,7 @@
 import { createHash } from 'node:crypto';
 import { Socket } from 'node:net';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 import type { BaseRequest, BaseResponse,EventName, EventParams, EventResult } from './events.js';
 
@@ -11,7 +13,7 @@ export function getSocketPath(workspacePath: string): string {
 
   return process.platform === 'win32'
     ? `\\\\.\\pipe\\vscode-mcp-${hash}`
-    : `/tmp/vscode-mcp-${hash}.sock`;
+    : join(tmpdir(), `vscode-mcp-${hash}.sock`);
 }
 
 /**

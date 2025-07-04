@@ -1,0 +1,36 @@
+{
+    "name": "@vscode-mcp/vscode-mcp-server",
+    "version": "1.0.0",
+    "type": "module",
+    "description": "MCP Server that connects to VSCode Extension via Unix Socket",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "bin": {
+        "vscode-mcp-server": "dist/index.js"
+    },
+    "scripts": {
+        "build": "tsc",
+        "build:watch": "tsc --watch",
+        "clean": "rm -rf dist",
+        "dev": "tsx src/index.ts",
+        "start": "node dist/index.js"
+    },
+    "keywords": [
+        "mcp",
+        "vscode",
+        "server",
+        "model-context-protocol"
+    ],
+    "author": {
+        "name": "YuTengjing",
+        "email": "ytj2713151713@gmail.com"
+    },
+    "license": "MIT",
+    "files": [
+        "dist"
+    ],
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.14.0",
+        "@vscode-mcp/vscode-mcp-ipc": "workspace:*"
+    }
+}

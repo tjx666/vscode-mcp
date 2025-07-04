@@ -46,7 +46,19 @@
     "activationEvents": [
         "onStartupFinished"
     ],
-    "contributes": {},
+    "contributes": {
+        "configuration": {
+            "type": "object",
+            "title": "VSCode MCP Bridge",
+            "properties": {
+                "vscode-mcp-bridge.enableLog": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable logging for VSCode MCP Bridge operations"
+                }
+            }
+        }
+    },
     "scripts": {
         "vscode:prepublish": "pnpm esbuild:base --minify",
         "clean": "npx rimraf -rf ./out",
