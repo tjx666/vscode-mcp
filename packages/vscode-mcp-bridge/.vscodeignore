@@ -1,0 +1,29 @@
+# source
+src
+scripts
+assets
+!assets/logo.png
+
+# output
+out
+!out/src/extension.js
+*.map
+*.vsix
+
+# test
+test
+test-workspace
+.vscode-test
+
+# configs
+.github
+.vscode
+tsconfig.*
+.eslintrc*
+.prettier*
+.gitignore
+pnpm-lock.yaml
+
+# esbuild-visualizer
+meta.json
+stats.html

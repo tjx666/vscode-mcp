@@ -1,0 +1,78 @@
+{
+    "name": "vscode-mcp-bridge",
+    "displayName": "Vscode Mcp Bridge",
+    "version": "0.0.29",
+    "description": "A vscode extension which connect vscode and mcp",
+    "publisher": "YuTengjing",
+    "private": true,
+    "preview": true,
+    "author": {
+        "name": "YuTengjing",
+        "email": "ytj2713151713@gmail.com",
+        "url": "https://github.com/tjx666"
+    },
+    "license": "SEE LICENSE IN LICENSE",
+    "homepage": "https://github.com/tjx666/vscode-mcp-bridge/blob/master/README.md",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/tjx666/vscode-mcp-bridge"
+    },
+    "bugs": {
+        "url": "https://github.com/tjx666/vscode-mcp-bridge/issues",
+        "email": "ytj2713151713@gmail.com"
+    },
+    "keywords": [
+        "cursor",
+        "windsurf",
+        "mcp",
+        "lsp",
+        "command"
+    ],
+    "categories": [
+        "Other"
+    ],
+    "main": "./out/src/extension.js",
+    "icon": "assets/logo.png",
+    "engines": {
+        "vscode": "^1.99.1"
+    },
+    "badges": [
+        {
+            "url": "https://img.shields.io/badge/PRs-welcome-brightgreen.svg",
+            "description": "PRs Welcome",
+            "href": "https://github.com/tjx666/vscode-mcp-bridge/fork"
+        }
+    ],
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "contributes": {},
+    "scripts": {
+        "vscode:prepublish": "pnpm esbuild:base --minify",
+        "clean": "npx rimraf -rf ./out",
+        "esbuild:base": "tsx scripts/esbuild.ts",
+        "esbuild:watch": "pnpm esbuild:base --sourcemap --watch",
+        "esbuild:analyze": "pnpm esbuild:base --minify --metafile --analyze && esbuild-visualizer --metadata ./meta.json --open",
+        "compile:test": "pnpm clean && tsc -b ./test/tsconfig.json",
+        "lint": "eslint src --ext ts",
+        "test": "stale-dep && pnpm compile:test && node ./out/test/runTests.js",
+        "package": "vsce package --no-dependencies",
+        "release": "npx @yutengjing/release",
+        "publish:vs-marketplace": "vsce publish --no-dependencies",
+        "publish:open-vsx": "ovsx publish --no-dependencies"
+    },
+    "devDependencies": {
+        "@types/glob": "^9.0.0",
+        "@types/mocha": "^10.0.7",
+        "@types/vscode": "1.99.1",
+        "@vscode/test-electron": "^2.4.1",
+        "@vscode/vsce": "^3.0.0",
+        "@yutengjing/release": "^0.3.1",
+        "esbuild": "~0.25.5",
+        "esbuild-visualizer": "^0.7.0",
+        "glob": "^11.0.0",
+        "mocha": "^11.7.1",
+        "ovsx": "^0.10.4",
+        "rimraf": "^6.0.1"
+    }
+}

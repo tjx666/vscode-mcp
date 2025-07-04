@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+        "composite": true,
+        "sourceMap": true,
+
+        /* Basic Options */
+        "target": "ES2023",
+        "module": "CommonJS",
+
+        /* Strict Type-Checking Options */
+        "strict": true,
+
+        /* Additional Checks */
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+
+        /* Module Resolution Options */
+        "moduleResolution": "Node",
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+
+        /* Experimental Options */
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+
+        /* Advanced Options */
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true
+    }
+}
