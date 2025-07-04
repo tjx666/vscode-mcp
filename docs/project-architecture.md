@@ -2,55 +2,94 @@
 
 ## Project Background
 
-**VSCode MCP Bridge** is a VSCode extension that connects VSCode with MCP (Model Context Protocol), enabling MCP clients to access rich VSCode context information.
+**VSCode MCP Bridge** is a monorepo project that provides a comprehensive solution for connecting VSCode with MCP (Model Context Protocol), enabling MCP clients to access rich VSCode context information.
 
 ### Core Value
 
 - Enable AI assistants to access real-time code state (errors, warnings, type information)
 - Provide standardized interfaces compatible with all MCP clients
 - Get real-time LSP information, more accurate than static analysis
+- Modular architecture for easy maintenance and extension
 
-## Architecture Design
+## Monorepo Architecture
 
 ```
-MCP Client ↔ MCP Server ↔ VSCode Extension ↔ VSCode API
-   stdio    Unix Socket      Extension API
+MCP Client ↔ MCP Server ↔ IPC Layer ↔ VSCode Extension ↔ VSCode API
+   stdio      Unix Socket    Types     Extension API
+```
+
+### Project Structure
+
+```
+vscode-mcp/
+├── packages/
+│   ├── vscode-mcp-ipc/        # 🔗 IPC Communication Layer
+│   │   ├── src/
+│   │   │   ├── events.ts      # Event definitions and types
+│   │   │   ├── dispatch.ts    # Unix Socket communication
+│   │   │   └── index.ts       # Module exports
+│   │   ├── dist/              # Compiled output
+│   │   └── package.json
+│   │
+│   ├── vscode-mcp-bridge/     # 🔌 VSCode Extension
+│   │   ├── src/
+│   │   │   └── extension.ts   # Extension entry point
+│   │   ├── assets/
+│   │   └── package.json
+│   │
+│   └── vscode-mcp-server/     # 🌐 MCP Server
+│       ├── src/               # (To be implemented)
+│       └── package.json
+│
+├── docs/
+│   └── project-architecture.md
+├── pnpm-workspace.yaml
+└── package.json
 ```
 
 ### Component Responsibilities
 
-**VSCode Extension**:
+**1. vscode-mcp-ipc** (IPC Communication Layer):
+
+- Define all event types and interfaces between MCP Server and VSCode Extension
+- Provide type-safe event dispatching with Unix Socket communication
+- Handle cross-platform socket path generation
+- Manage request/response lifecycle with timeout and error handling
+- Export: `EventDispatcher`, `createDispatcher`, and all LSP-related types
+
+**2. vscode-mcp-bridge** (VSCode Extension):
 
 - Create Unix Domain Socket server based on workspace path
-- Expose VSCode's LSP capabilities
+- Implement VSCode's LSP capabilities handlers
 - Handle requests from MCP Server via Unix Socket
 - Main file: `src/extension.ts`
 - Lifecycle:
   - `activate()`: Start Unix Socket server
   - `deactivate()`: Close Unix Socket server and cleanup
 
-**MCP Server**:
+**3. vscode-mcp-server** (MCP Server):
 
 - Implement standard MCP protocol (stdio transport)
-- Connect to appropriate VSCode Extension via Unix Socket
-- Calculate socket path based on workspace_path parameter
+- Connect to appropriate VSCode Extension via Unix Socket using `vscode-mcp-ipc`
+- Handle MCP client requests and translate them to VSCode extension calls
 - Handle errors, retries, and timeout logic
 
 ### Communication Protocols
 
 - **MCP Client ↔ MCP Server**: stdio + JSON-RPC 2.0
-- **MCP Server ↔ VSCode Extension**: Unix Domain Sockets + JSON (no authentication)
+- **MCP Server ↔ IPC Layer**: TypeScript imports and function calls
+- **IPC Layer ↔ VSCode Extension**: Unix Domain Sockets + JSON (no authentication)
 
 ## Multi-Window Support
 
 ### Socket Path Generation
 
+The `vscode-mcp-ipc` package handles socket path generation:
+
 ```typescript
-/**
- * VSCode Extension generates socket path based on workspace
- */
-function getSocketPath(workspacePath: string): string {
-  const hash = crypto.createHash('md5').update(workspacePath).digest('hex').slice(0, 8);
+// From packages/vscode-mcp-ipc/src/dispatch.ts
+export function getSocketPath(workspacePath: string): string {
+  const hash = createHash('md5').update(workspacePath).digest('hex').slice(0, 8);
 
   return process.platform === 'win32'
     ? `\\\\.\\pipe\\vscode-mcp-${hash}`
@@ -63,6 +102,8 @@ function getSocketPath(workspacePath: string): string {
 ```
 
 ### Workspace Targeting
+
+MCP Server tools require `workspace_path` parameter to target specific VSCode instances:
 
 ```json
 {
@@ -85,157 +126,58 @@ function getSocketPath(workspacePath: string): string {
 
 ## API Specifications
 
-### Unix Socket Communication
+### IPC Layer Interface
 
-**Socket Path**: Calculated based on workspace path hash
-**Message Format**: JSON objects over Unix Socket
-**Protocol**: Request-Response pattern
+The `vscode-mcp-ipc` package defines all communication interfaces:
 
-### Message Format
+```typescript
+// Type-safe event dispatching
+const dispatcher = createDispatcher('/path/to/workspace');
 
-**Request Format**:
+// Get diagnostics
+const diagnostics = await dispatcher.dispatch('getDiagnostics', {
+  uri: 'file:///path/to/file.ts',
+});
 
-```json
-{
-  "id": "unique-request-id",
-  "method": "getDiagnostics",
-  "params": {
-    "uri": "file:///path/to/file.ts"
-  }
-}
+// Get definitions
+const definitions = await dispatcher.dispatch('getDefinition', {
+  uri: 'file:///path/to/file.ts',
+  line: 10,
+  character: 5,
+});
 ```
 
-**Response Format**:
+### Core Events (MVP Version)
 
-```json
-{
-  "id": "unique-request-id",
-  "result": {
-    "diagnostics": []
-  }
-}
-```
-
-**Error Response Format**:
-
-```json
-{
-  "id": "unique-request-id",
-  "error": {
-    "code": 500,
-    "message": "Failed to get diagnostics",
-    "details": "Document not found"
-  }
-}
-```
-
-### Core Methods (MVP Version)
+All events are defined in `packages/vscode-mcp-ipc/src/events.ts`:
 
 **Health Check**:
 
-```json
-{
-  "method": "health",
-  "params": {}
+```typescript
+health: {
+  params: Record<string, never>;
+  result: {
+    status: 'ok' | 'error';
+    version: string;
+    workspace?: string;
+  };
 }
 ```
 
-**Response**:
+**LSP Methods**:
 
-```json
-{
-  "result": {
-    "status": "ok",
-    "version": "1.0.0",
-    "workspace": "..."
-  }
-}
-```
+- `getDiagnostics`: Get file diagnostic information
+- `getDefinition`: Get symbol definition locations
+- `getReferences`: Get symbol reference locations
+- `getHover`: Get symbol hover information
+- `getCompletions`: Get auto-completion suggestions
+- `getSignatureHelp`: Get function signature help
+- `getDocumentSymbols`: Get document symbols
+- `getWorkspaceSymbols`: Search workspace symbols
 
-**LSP Methods (Core Language Service Functions)**:
+**Basic Utility**:
 
-**Get diagnostics**:
-
-```json
-{
-  "method": "getDiagnostics",
-  "params": { "uri": "file:///path/to/file.ts" }
-}
-```
-
-**Get definition**:
-
-```json
-{
-  "method": "getDefinition",
-  "params": { "uri": "file://...", "line": 10, "character": 5 }
-}
-```
-
-**Get references**:
-
-```json
-{
-  "method": "getReferences",
-  "params": { "uri": "file://...", "line": 10, "character": 5 }
-}
-```
-
-**Get hover information**:
-
-```json
-{
-  "method": "getHover",
-  "params": { "uri": "file://...", "line": 10, "character": 5 }
-}
-```
-
-**Get completions**:
-
-```json
-{
-  "method": "getCompletions",
-  "params": { "uri": "file://...", "line": 10, "character": 5 }
-}
-```
-
-**Get signature help**:
-
-```json
-{
-  "method": "getSignatureHelp",
-  "params": { "uri": "file://...", "line": 10, "character": 5 }
-}
-```
-
-**Get document symbols**:
-
-```json
-{
-  "method": "getDocumentSymbols",
-  "params": { "uri": "file:///path/to/file.ts" }
-}
-```
-
-**Get workspace symbols**:
-
-```json
-{
-  "method": "getWorkspaceSymbols",
-  "params": { "query": "className" }
-}
-```
-
-**Basic Utility Methods**:
-
-**Get workspace info**:
-
-```json
-{
-  "method": "getWorkspaceInfo",
-  "params": {}
-}
-```
+- `getWorkspaceInfo`: Get current workspace information
 
 ## Available MCP Tools (MVP Version)
 
@@ -271,13 +213,6 @@ await mcp.call('get_definition', {
   line: 10,
   character: 5,
 });
-
-await mcp.call('get_hover', {
-  workspace_path: '/Users/user/frontend-project',
-  uri: 'file:///Users/user/frontend-project/src/components/Button.tsx',
-  line: 15,
-  character: 8,
-});
 ```
 
 ## MVP Implementation Focus
@@ -306,19 +241,35 @@ This core set of capabilities enables MCP clients to:
 
 ## Development Conventions
 
+### Monorepo Structure
+
+- **Root Package**: `vscode-mcp` - Workspace configuration and shared tooling
+- **IPC Package**: `vscode-mcp-ipc` - Type definitions and communication layer
+- **Extension Package**: `vscode-mcp-bridge` - VSCode extension implementation
+- **Server Package**: `vscode-mcp-server` - MCP server implementation
+
+### Package Management
+
+- **Package Manager**: pnpm with workspace support
+- **Dependency Management**: Shared dependencies in root `package.json`
+- **Build System**: TypeScript compilation per package
+- **Version Management**: Independent versioning per package
+
 ### Code Organization
 
-- **Extension Entry**: `src/extension.ts`
-- **Socket Server**: Handle Unix Socket connections and LSP method routing
-- **Configuration**: `package.json`
-- **Build Scripts**: `scripts/`
+- **Extension Entry**: `packages/vscode-mcp-bridge/src/extension.ts`
+- **IPC Layer**: `packages/vscode-mcp-ipc/src/`
+- **Server Entry**: `packages/vscode-mcp-server/src/` (to be implemented)
+- **Shared Types**: All types defined in `vscode-mcp-ipc` package
 
 ### Technology Stack
 
 - **Runtime**: Node.js (VSCode extension environment)
+- **Language**: TypeScript with strict mode
 - **IPC**: Unix Domain Sockets (cross-platform)
 - **Communication Format**: JSON over Unix Socket
-- **Concurrency**: Support multiple MCP clients and multiple VSCode windows
+- **Build Tool**: TypeScript compiler
+- **Package Manager**: pnpm
 
 ### Socket Management
 
@@ -334,9 +285,52 @@ This core set of capabilities enables MCP clients to:
 - **No Authentication**: Simplified design for local development use
 - **Process Isolation**: Each VSCode window creates its own socket
 
+## Development Workflow
+
+### Building Packages
+
+```bash
+# Build all packages
+pnpm -r build
+
+# Build specific package
+pnpm --filter vscode-mcp-ipc build
+
+# Watch mode for development
+pnpm --filter vscode-mcp-ipc build:watch
+```
+
+### Installing Dependencies
+
+```bash
+# Install all dependencies
+pnpm install
+
+# Add dependency to specific package
+pnpm --filter vscode-mcp-server add some-package
+```
+
+### Testing
+
+```bash
+# Test all packages
+pnpm -r test
+
+# Test specific package
+pnpm --filter vscode-mcp-bridge test
+```
+
 ## Use Cases
 
 - **AI Programming Assistants**: Enable AI to get code diagnostic info, symbol definitions across multiple projects
 - **Code Analysis Tools**: Perform code analysis based on VSCode's LSP information
 - **Automation Scripts**: Automate VSCode operations across multiple workspaces
 - **Multi-Project Development**: Work with frontend/backend/shared libraries simultaneously
+
+## Next Steps
+
+1. **Implement vscode-mcp-server**: Create MCP server using `vscode-mcp-ipc`
+2. **Update vscode-mcp-bridge**: Implement socket server handlers
+3. **Add comprehensive testing**: Unit tests for all packages
+4. **Documentation**: API documentation and usage examples
+5. **CI/CD**: Automated testing and publishing workflows
