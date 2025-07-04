@@ -60,11 +60,15 @@ vscode-mcp/
 **2. vscode-mcp-bridge** (VSCode Extension):
 
 - Create Unix Domain Socket server based on workspace path
-- Implement VSCode's LSP capabilities handlers
+- Implement VSCode's LSP capabilities handlers through modular services
 - Handle requests from MCP Server via Unix Socket
-- Main file: `src/extension.ts`
+- Architecture:
+  - `src/extension.ts`: Extension entry point and lifecycle management
+  - `src/socketServer.ts`: Socket server with service registration
+  - `src/logger.ts`: Structured logging for service calls
+  - `src/services/`: Modular LSP service implementations
 - Lifecycle:
-  - `activate()`: Start Unix Socket server
+  - `activate()`: Start Unix Socket server and register services
   - `deactivate()`: Close Unix Socket server and cleanup
 
 **3. vscode-mcp-server** (MCP Server):
@@ -164,39 +168,39 @@ health: {
 }
 ```
 
-**LSP Methods**:
+**LSP Methods** (MVP Implementation):
 
-- `getDiagnostics`: Get file diagnostic information
+- `getDiagnostics`: Get file diagnostic information (errors, warnings)
 - `getDefinition`: Get symbol definition locations
 - `getReferences`: Get symbol reference locations
 - `getHover`: Get symbol hover information
-- `getCompletions`: Get auto-completion suggestions
 - `getSignatureHelp`: Get function signature help
-- `getDocumentSymbols`: Get document symbols
+- `getDocumentSymbols`: Get document symbols (functions, classes, variables)
+
+**Future Versions** will include:
+
+- `getCompletions`: Auto-completion suggestions
 - `getWorkspaceSymbols`: Search workspace symbols
-
-**Basic Utility**:
-
-- `getWorkspaceInfo`: Get current workspace information
+- `getWorkspaceInfo`: Workspace information
 
 ## Available MCP Tools (MVP Version)
 
 Through the MCP Server, clients can use these tools (all require `workspace_path` parameter):
 
-### Core LSP Tools
+### Core LSP Tools (MVP Implementation)
 
 - `get_diagnostics`: Get file diagnostic information (errors, warnings)
 - `get_definition`: Get symbol definition locations
 - `get_references`: Get symbol reference locations
 - `get_hover`: Get symbol hover information
-- `get_completions`: Get auto-completion suggestions
 - `get_signature_help`: Get function signature help
 - `get_document_symbols`: Get document symbols (functions, classes, variables)
+
+### Future Versions
+
+- `get_completions`: Auto-completion suggestions
 - `get_workspace_symbols`: Search workspace symbols
-
-### Basic Utility Tools
-
-- `get_workspace_info`: Get current workspace information
+- `get_workspace_info`: Workspace information
 
 ### Usage Example
 
@@ -221,8 +225,8 @@ The MVP version focuses on **Language Service capabilities** only, providing AI 
 
 1. **Real-time Code Analysis**: Access to live diagnostic information (errors, warnings, hints)
 2. **Symbol Navigation**: Definition lookup, reference finding, symbol hierarchies
-3. **Type Information**: Hover information, signature help, completions
-4. **Code Intelligence**: Document and workspace symbol search
+3. **Type Information**: Hover information, signature help
+4. **Code Intelligence**: Document symbol search
 
 This core set of capabilities enables MCP clients to:
 
@@ -258,6 +262,11 @@ This core set of capabilities enables MCP clients to:
 ### Code Organization
 
 - **Extension Entry**: `packages/vscode-mcp-bridge/src/extension.ts`
+- **Socket Server**: `packages/vscode-mcp-bridge/src/socketServer.ts`
+- **Logger**: `packages/vscode-mcp-bridge/src/logger.ts`
+- **Services**: `packages/vscode-mcp-bridge/src/services/`
+  - Service functions use type-safe signatures: `(payload: EventParams<T>) => Promise<EventResult<T>>`
+  - Error handling: Exceptions thrown are caught by socket server layer
 - **IPC Layer**: `packages/vscode-mcp-ipc/src/`
 - **Server Entry**: `packages/vscode-mcp-server/src/` (to be implemented)
 - **Shared Types**: All types defined in `vscode-mcp-ipc` package

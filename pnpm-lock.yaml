@@ -31,6 +31,10 @@ importers:
         version: 5.8.3
 
   packages/vscode-mcp-bridge:
+    dependencies:
+      '@vscode-mcp/vscode-mcp-ipc':
+        specifier: workspace:*
+        version: link:../vscode-mcp-ipc
     devDependencies:
       '@types/glob':
         specifier: ^9.0.0
@@ -68,6 +72,8 @@ importers:
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
+
+  packages/vscode-mcp-ipc: {}
 
 packages:
 

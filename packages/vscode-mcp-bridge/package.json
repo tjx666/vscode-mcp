@@ -61,6 +61,9 @@
         "publish:vs-marketplace": "vsce publish --no-dependencies",
         "publish:open-vsx": "ovsx publish --no-dependencies"
     },
+    "dependencies": {
+        "@vscode-mcp/vscode-mcp-ipc": "workspace:*"
+    },
     "devDependencies": {
         "@types/glob": "^9.0.0",
         "@types/mocha": "^10.0.7",
