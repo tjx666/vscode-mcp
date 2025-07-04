@@ -1,0 +1,3 @@
+{
+    "eslint.validate": ["typescript", "json", "jsonc", "markdown"]
+}
