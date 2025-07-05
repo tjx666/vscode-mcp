@@ -2,6 +2,8 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createDispatcher, GetHoverInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 import { z } from "zod";
 
+import { formatToolCallError } from "./utils.js";
+
 const inputSchema = {
   workspace_path: z.string().describe("VSCode workspace path to target"),
   ...GetHoverInputSchema.shape
@@ -11,7 +13,14 @@ export function registerGetHovers(server: McpServer) {
   server.registerTool("get_hovers", {
     title: "Get Hover Information",
     description: "Get hover information for multiple positions in code files. Supports getting all hover providers' information or just the first one.",
-    inputSchema
+    inputSchema,
+    annotations: {
+      title: "Get Hover Information",
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false
+    }
   }, async ({ workspace_path, positions, includeAllHovers }) => {
     const dispatcher = createDispatcher(workspace_path);
     
@@ -63,12 +72,7 @@ export function registerGetHovers(server: McpServer) {
         }]
       };
     } catch (error) {
-      return {
-        content: [{
-          type: "text",
-          text: `❌ **Failed to get hover information**: ${String(error)}`
-        }]
-      };
+      return formatToolCallError("Get Hover Information", error);
     }
   });
 } 

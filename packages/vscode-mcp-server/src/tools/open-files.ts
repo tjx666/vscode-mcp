@@ -2,6 +2,8 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createDispatcher, OpenFilesInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 import { z } from "zod";
 
+import { formatToolCallError } from "./utils.js";
+
 const inputSchema = {
   workspace_path: z.string().describe("VSCode workspace path to target"),
   ...OpenFilesInputSchema.shape
@@ -11,7 +13,14 @@ export function registerOpenFiles(server: McpServer) {
   server.registerTool("open_files", {
     title: "Open Files",
     description: "Open multiple files in VSCode. Each file can be optionally displayed in the editor or just loaded in the background for LSP processing.",
-    inputSchema
+    inputSchema,
+    annotations: {
+      title: "Open Files",
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false
+    }
   }, async ({ workspace_path, files }) => {
     const dispatcher = createDispatcher(workspace_path);
     
@@ -52,12 +61,7 @@ export function registerOpenFiles(server: McpServer) {
         }]
       };
     } catch (error) {
-      return {
-        content: [{
-          type: "text",
-          text: `❌ Error opening files: ${String(error)}`
-        }]
-      };
+      return formatToolCallError("Open Files", error);
     }
   });
 } 

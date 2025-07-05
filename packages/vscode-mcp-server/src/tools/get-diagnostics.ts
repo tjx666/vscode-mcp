@@ -2,6 +2,8 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createDispatcher, GetDiagnosticsInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 import { z } from "zod";
 
+import { formatToolCallError } from "./utils.js";
+
 const inputSchema = {
   workspace_path: z.string().describe("VSCode workspace path to target"),
   ...GetDiagnosticsInputSchema.shape
@@ -11,7 +13,14 @@ export function registerGetDiagnostics(server: McpServer) {
   server.registerTool("get_diagnostics", {
     title: "Get Diagnostics",
     description: "Get diagnostic information (errors, warnings, hints) for multiple files. Files will be automatically opened to ensure accurate diagnostics. If no URIs are provided (empty array), will get diagnostics for all git modified files (staged and unstaged) in the workspace.",
-    inputSchema
+    inputSchema,
+    annotations: {
+      title: "Get Diagnostics",
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false
+    }
   }, async ({ workspace_path, uris }) => {
     const dispatcher = createDispatcher(workspace_path);
     
@@ -60,12 +69,7 @@ export function registerGetDiagnostics(server: McpServer) {
         }]
       };
     } catch (error) {
-      return {
-        content: [{
-          type: "text",
-          text: `❌ Error getting diagnostics: ${String(error)}`
-        }]
-      };
+      return formatToolCallError("Get Diagnostics", error);
     }
   });
 } 
