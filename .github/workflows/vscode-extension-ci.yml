@@ -72,7 +72,6 @@ jobs:
 
       - name: Set GIT_TAG
         id: set-tag
-        if: runner.os == 'ubuntu-latest'
         run: |
           TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
           echo "GIT_TAG=$TAG" >> $GITHUB_OUTPUT
