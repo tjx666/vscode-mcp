@@ -12,9 +12,7 @@
   <a href="#available-tools">Available Tools</a> •
   <a href="#installation">Installation</a> •
   <a href="#architecture">Architecture</a> •
-  <a href="#usage">Usage</a> •
-  <a href="#development-status">Development Status</a> •
-  <a href="#disclaimer">Disclaimer</a>
+  <a href="#usage">Usage</a>
 </p>
 
 ## Overview
@@ -186,95 +184,8 @@ Once installed and configured, VSCode MCP works seamlessly with MCP-compatible c
 
 The system operates transparently - MCP clients use standard tool calls, and VSCode MCP handles all the complexity of communicating with VSCode's APIs.
 
-### Prerequisites
-
-- **Node.js 18+** (for running MCP server)
-- **VSCode** with the VSCode MCP Bridge extension installed (see Step 1 above)
-- **A workspace open in VSCode** (required for MCP server to connect)
-
-### Configuration
-
 All tools require the `workspace_path` parameter to target specific VSCode instances. Each VSCode workspace gets its own socket connection for multi-window support.
-
-## Development Status
-
-> **⚠️ EARLY DEVELOPMENT WARNING**
->
-> This project is currently in **active development** and should be considered **experimental**. Key points:
->
-> - **Pre-Alpha Stage**: Core functionality is being developed and tested
-> - **Breaking Changes**: APIs and interfaces may change without notice
-> - **Limited Testing**: Comprehensive test suite is not yet implemented
-> - **Documentation**: Some features may be undocumented or examples may be incomplete
-> - **Platform Support**: While designed for cross-platform use, testing has been limited
->
-> **We welcome early adopters and contributors**, but please be aware that stability is not guaranteed at this stage.
-
-### Current Implementation Status
-
-- ✅ **Core Architecture**: Monorepo structure with IPC communication
-- ✅ **Basic Tools**: Health check, diagnostics, code navigation
-- ✅ **File Operations**: Opening files, diff comparison
-- ✅ **Multi-Window Support**: Socket-based workspace targeting
-- 🚧 **Testing**: Limited manual testing only
-- 🚧 **Documentation**: Architecture documented, usage examples in progress
-- 🚧 **Error Handling**: Basic error handling implemented
-- ⏳ **Performance Optimization**: Not yet optimized for large codebases
-- ⏳ **Configuration**: No configuration options currently supported
-
-For detailed architecture information, see [Project Architecture](docs/project-architecture.md).
-
-## Disclaimer
-
-### Experimental Software Notice
-
-This software is provided "as is" without any warranties, express or implied. By using VSCode MCP, you acknowledge and agree to the following:
-
-### 🔒 Security Considerations
-
-- This software creates local Unix socket connections for communication
-- All communication is local-only and does not transmit data over the network
-- Socket files are restricted to the current user, but no additional authentication is implemented
-- **Use only in trusted development environments**
-
-### 📋 Functionality Limitations
-
-- **No Production Use**: This software is intended for development and testing purposes only
-- **Data Safety**: While read-only operations are generally safe, always backup your work before using file manipulation features
-- **Performance**: The software has not been optimized for large codebases or high-frequency operations
-- **Compatibility**: VSCode API compatibility is not guaranteed across all versions
-
-### 🛠️ Development Status
-
-- **Alpha Software**: Features may be incomplete, unstable, or subject to significant changes
-- **Limited Support**: Community support is provided on a best-effort basis
-- **Breaking Changes**: APIs may change without deprecation notices during development
-
-### 🔧 System Impact
-
-- The software may create temporary files and socket connections
-- Resource usage and cleanup behaviors are not fully optimized
-- **Monitor system resources** when using with large workspaces
-
-### 📞 Support and Liability
-
-- **No Warranty**: The authors and contributors provide no warranty of any kind
-- **No Liability**: Users assume all risks associated with using this software
-- **Community Support**: Support is provided by the community through GitHub issues
-- **Educational Purpose**: This software is primarily for learning and experimentation
-
-### 🧪 Recommended Usage
-
-- Use in isolated development environments
-- Test thoroughly before relying on any functionality
-- Keep backups of important work
-- Monitor system resources and performance
-- Report issues and contribute improvements
-
-**By using this software, you acknowledge that you have read, understood, and agreed to these terms.**
-
----
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the [Anti 996](https://github.com/996icu/996.ICU/blob/master/LICENSE) License - see the [LICENSE](LICENSE) file for details.
