@@ -8,7 +8,7 @@ import {        executeCommand,getCurrentWorkspacePath,
     getReferences,
     getSignatureHelp,
     health} from './services';
-import { SocketServer } from './socketServer';
+import { SocketServer } from './socket-server';
 
 // Global socket server instance
 let socketServer: SocketServer | null = null;

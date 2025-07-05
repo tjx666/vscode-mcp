@@ -1,10 +1,10 @@
 // Export service functions
-export { executeCommand } from './executeCommand';
-export { getDefinition } from './getDefinition';
-export { getDiagnostics } from './getDiagnostics';
-export { getHover } from './getHover';
-export { getReferences } from './getReferences';
-export { getSignatureHelp } from './getSignatureHelp';
+export { executeCommand } from './execute-command';
+export { getDefinition } from './get-definition';
+export { getDiagnostics } from './get-diagnostics';
+export { getHover } from './get-hover';
+export { getReferences } from './get-references';
+export { getSignatureHelp } from './get-signature-help';
 export { health } from './health';
 
 // Export utilities
