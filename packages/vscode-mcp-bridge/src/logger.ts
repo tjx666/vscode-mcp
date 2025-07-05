@@ -14,7 +14,7 @@ class Logger {
         );
     }
 
-    private _output(message: string, active: boolean, level: string): void {
+    private _output(message: string, level: string): void {
         const enableLog = vscode.workspace.getConfiguration().get('vscode-mcp-bridge.enableLog');
         if (!enableLog) return;
 
@@ -23,9 +23,6 @@ class Logger {
         }
 
         this.channel!.append(`[${level}] ${message}\n`);
-        if (active) {
-            this.channel!.show();
-        }
     }
 
     private _formatJson(obj: any): string {
@@ -36,12 +33,12 @@ class Logger {
         }
     }
 
-    info(message: string, active = false) {
-        this._output(message, active, 'INFO');
+    info(message: string) {
+        this._output(message, 'INFO');
     }
 
-    error(message: string, active = false) {
-        this._output(message, active, 'ERROR');
+    error(message: string) {
+        this._output(message, 'ERROR');
     }
 
     /**
@@ -56,7 +53,7 @@ class Logger {
             '---'
         ].join('\n');
         
-        this._output(message, false, 'INFO');
+        this._output(message, 'INFO');
     }
 
     /**
@@ -71,7 +68,7 @@ class Logger {
             '---'
         ].join('\n');
         
-        this._output(message, true, 'ERROR');
+        this._output(message, 'ERROR');
     }
 
     dispose(): void {
