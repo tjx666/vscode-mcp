@@ -12,6 +12,7 @@
     "packageManager": "pnpm@10.12.4",
     "devDependencies": {
         "@types/node": "~22.16.0",
+        "@typescript/native-preview": "latest",
         "@yutengjing/eslint-config-typescript": "^2.6.1",
         "@yutengjing/prettier-config": "^2.0.0",
         "eslint": "^9.30.1",
