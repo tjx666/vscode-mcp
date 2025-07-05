@@ -72,10 +72,17 @@ jobs:
 
       - name: Set GIT_TAG
         id: set-tag
+        if: runner.os == 'Linux'
         run: |
-          TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
-          echo "GIT_TAG=$TAG" >> $GITHUB_OUTPUT
-          echo "Git tag: $TAG"
+          git fetch --tags origin
+          GIT_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -n "$GIT_TAG" ] && [ "$(git rev-list -n 1 $GIT_TAG 2>/dev/null || echo "")" = "$(git rev-parse HEAD)" ]; then
+            echo "GIT_TAG=${GIT_TAG}" >> $GITHUB_OUTPUT
+            echo "Git tag: ${GIT_TAG}"
+          else
+            echo "GIT_TAG=" >> $GITHUB_OUTPUT
+            echo "No matching tag found for current commit"
+          fi
 
   publish:
     needs: test
