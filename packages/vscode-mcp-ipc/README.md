@@ -61,16 +61,9 @@ if (isConnected) {
 
 ## 支持的事件
 
-- `health` - 健康检查
-- `getDiagnostics` - 获取诊断信息
-- `getDefinition` - 获取定义
-- `getReferences` - 获取引用
-- `getHover` - 获取悬停信息
-- `getCompletions` - 获取补全
-- `getSignatureHelp` - 获取签名帮助
-- `getWorkspaceSymbols` - 获取工作区符号
-- `getWorkspaceInfo` - 获取工作区信息
-- `executeCommand` - 执行 VSCode 命令
+查看 `src/events/index.ts` 中的 `EventMap` 接口来了解所有可用的事件类型和参数。
+
+每个事件都有对应的输入和输出类型定义，确保类型安全的通信。
 
 ## Socket 路径生成
 
