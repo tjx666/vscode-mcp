@@ -9,6 +9,7 @@ import type { GetSignatureHelpPayload, GetSignatureHelpResult } from './get-sign
 import type { GetWorkspaceInfoPayload, GetWorkspaceInfoResult } from './get-workspace-info.js';
 import type { GetWorkspaceSymbolsPayload, GetWorkspaceSymbolsResult } from './get-workspace-symbols.js';
 import type { HealthCheckPayload, HealthCheckResult } from './health-check.js';
+import type { OpenFilesPayload, OpenFilesResult } from './open-file.js';
 
 // Re-export all event types and schemas
 export * from './common.js';
@@ -22,6 +23,7 @@ export * from './get-signature-help.js';
 export * from './get-workspace-info.js';
 export * from './get-workspace-symbols.js';
 export * from './health-check.js';
+export * from './open-file.js';
 
 /**
  * Base request structure
@@ -100,6 +102,12 @@ export interface EventMap {
   executeCommand: {
     params: ExecuteCommandPayload;
     result: ExecuteCommandResult;
+  };
+
+  /** Open files */
+  openFiles: {
+    params: OpenFilesPayload;
+    result: OpenFilesResult;
   };
 }
 

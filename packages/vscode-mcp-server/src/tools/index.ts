@@ -13,3 +13,4 @@ export { registerGetSignatureHelp } from "./get-signature-help.js";
 export { registerGetWorkspaceInfo } from "./get-workspace-info.js";
 export { registerGetWorkspaceSymbols } from "./get-workspace-symbols.js";
 export { registerHealthCheck } from "./health-check.js";
+export { registerOpenFiles } from "./open-files.js";

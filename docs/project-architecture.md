@@ -13,14 +13,14 @@
 
 ## Monorepo Architecture
 
-```
+```plaintext
 MCP Client ↔ MCP Server ↔ IPC Layer ↔ VSCode Extension ↔ VSCode API
    stdio      Unix Socket    Types     Extension API
 ```
 
 ### Project Structure
 
-```
+```plaintext
 vscode-mcp/
 ├── packages/
 │   ├── vscode-mcp-ipc/        # 🔗 IPC Communication Layer

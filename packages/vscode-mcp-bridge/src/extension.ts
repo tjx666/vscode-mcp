@@ -12,7 +12,9 @@ import {
     GetSignatureHelpInputSchema,
     GetSignatureHelpOutputSchema,
     HealthCheckInputSchema,
-    HealthCheckOutputSchema
+    HealthCheckOutputSchema,
+    OpenFilesInputSchema,
+    OpenFilesOutputSchema
 } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
@@ -23,7 +25,8 @@ import {        executeCommand,getCurrentWorkspacePath,
     getHover,
     getReferences,
     getSignatureHelp,
-    health} from './services';
+    health,
+    openFiles} from './services';
 import { SocketServer } from './socket-server';
 
 // Global socket server instance
@@ -89,6 +92,12 @@ export async function activate(context: vscode.ExtensionContext) {
             handler: executeCommand,
             payloadSchema: ExecuteCommandInputSchema,
             resultSchema: ExecuteCommandOutputSchema
+        });
+        
+        socketServer.register('openFiles', {
+            handler: openFiles,
+            payloadSchema: OpenFilesInputSchema,
+            resultSchema: OpenFilesOutputSchema
         });
         
         // Start socket server

@@ -9,7 +9,8 @@ import {
   registerGetSignatureHelp,
   registerGetWorkspaceInfo,
   registerGetWorkspaceSymbols,
-  registerHealthCheck} from "./tools/index.js";
+  registerHealthCheck,
+  registerOpenFiles} from "./tools/index.js";
 
 /**
  * Create and configure the VSCode MCP Server
@@ -30,6 +31,7 @@ export function createVSCodeMCPServer(name: string, version: string): McpServer 
   registerGetWorkspaceInfo(server);
   registerGetWorkspaceSymbols(server);
   registerExecuteCommand(server);
+  registerOpenFiles(server);
 
   return server;
 } 
