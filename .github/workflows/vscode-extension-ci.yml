@@ -9,7 +9,7 @@ on:
       - main
     paths:
       - 'packages/vscode-mcp-bridge/**'
-      - '.github/workflows/ci.yml'
+      - '.github/workflows/vscode-extension-ci.yml'
       - 'pnpm-lock.yaml'
 
 jobs:
@@ -115,7 +115,7 @@ jobs:
       - name: Publish to VS Marketplace
         run: pnpm publish:vs-marketplace
         env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+          VSCE_PAT: ${{ secrets.VS_MARKETPLACE_TOKEN }}
 
       - name: Publish to Open VSX
         run: pnpm publish:open-vsx

@@ -69,7 +69,7 @@
         "lint": "eslint src --ext ts",
         "test": "stale-dep && pnpm compile:test && node ./out/test/runTests.js",
         "package": "vsce package --no-dependencies",
-        "release": "npx @yutengjing/release",
+        "release": "tsx scripts/release.ts",
         "publish:vs-marketplace": "vsce publish --no-dependencies",
         "publish:open-vsx": "ovsx publish --no-dependencies"
     },
@@ -83,7 +83,6 @@
         "@types/vscode": "1.99.1",
         "@vscode/test-electron": "^2.4.1",
         "@vscode/vsce": "^3.0.0",
-        "@yutengjing/release": "^0.3.1",
         "esbuild": "~0.25.5",
         "esbuild-visualizer": "^0.7.0",
         "glob": "^11.0.0",
