@@ -50,7 +50,7 @@ export async function activate(context: vscode.ExtensionContext) {
     // Get current workspace path
     const workspacePath = getCurrentWorkspacePath();
     if (!workspacePath) {
-        logger.info('No workspace folder found, extension will not start socket server', true);
+        logger.info('No workspace folder found, extension will not start socket server');
         return;
     }
     
@@ -144,7 +144,7 @@ export async function activate(context: vscode.ExtensionContext) {
         });
         
     } catch (error) {
-        logger.error(`Failed to start socket server: ${error}`, true);
+        logger.error(`Failed to start socket server: ${error}`);
         vscode.window.showErrorMessage(`VSCode MCP Bridge: Failed to start socket server - ${error}`);
     }
 }
