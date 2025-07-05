@@ -228,7 +228,3 @@ MCP Client ↔ MCP Server ↔ Unix Socket ↔ VSCode Extension ↔ VSCode API
 ```
 
 This server acts as a bridge between MCP clients and VSCode's Language Server Protocol capabilities, providing real-time access to code intelligence information.
-
-## License
-
-MIT
