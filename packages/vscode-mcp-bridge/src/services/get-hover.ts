@@ -1,6 +1,8 @@
 import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
+import { ensureFileIsOpen } from './utils.js';
+
 /**
  * Get hover information for a single position
  */
@@ -11,6 +13,9 @@ async function getHoverForPosition(
     includeAllHovers: boolean = false
 ): Promise<{ position: { uri: string; line: number; character: number }; hovers: any[]; error?: string }> {
     try {
+        // Ensure file is open to get accurate hover information
+        await ensureFileIsOpen(uri);
+        
         const vscodeUri = vscode.Uri.parse(uri);
         const position = new vscode.Position(line, character);
         

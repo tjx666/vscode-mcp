@@ -1,12 +1,17 @@
 import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
+import { ensureFileIsOpen } from './utils.js';
+
 /**
  * Handle get references
  */
 export const getReferences = async (
     payload: EventParams<'getReferences'>
 ): Promise<EventResult<'getReferences'>> => {
+    // Ensure file is open to get accurate references
+    await ensureFileIsOpen(payload.uri);
+    
     const uri = vscode.Uri.parse(payload.uri);
     const position = new vscode.Position(payload.line, payload.character);
     

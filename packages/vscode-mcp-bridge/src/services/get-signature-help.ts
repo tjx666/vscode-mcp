@@ -1,12 +1,17 @@
 import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
+import { ensureFileIsOpen } from './utils.js';
+
 /**
  * Handle get signature help
  */
 export const getSignatureHelp = async (
     payload: EventParams<'getSignatureHelp'>
 ): Promise<EventResult<'getSignatureHelp'>> => {
+    // Ensure file is open to get accurate signature help
+    await ensureFileIsOpen(payload.uri);
+    
     const uri = vscode.Uri.parse(payload.uri);
     const position = new vscode.Position(payload.line, payload.character);
     
