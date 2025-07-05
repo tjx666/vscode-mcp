@@ -33,23 +33,37 @@ VSCode MCP provides the following tools through the MCP protocol:
 | **get_references**     | Get symbol reference locations                   | `uri`, `line`, `character`, `includeDeclaration?`                                            | ✅        | Find all symbol references           |
 | **get_hovers**         | Get hover information for multiple positions     | `positions` (array), `includeAllHovers?`                                                     | ✅        | Batch hover information              |
 | **get_signature_help** | Get function signature help                      | `uri`, `line`, `character`                                                                   | ✅        | Function parameter info              |
+| **rename_symbol** ⚠️   | Rename symbols across all files in workspace     | `uri`, `line`, `character`, `newName`                                                        | ❌        | **Language-aware cross-file rename** |
+| **request_input**      | Request simple text input from user              | `prompt`, `placeholder?`, `title?`, `password?`, `validateInput?`                            | ❌        | Interactive user input dialog        |
 | **open_files**         | Open multiple files with optional editor display | `files` (array with `uri` and `showEditor?`)                                                 | ✅        | Background LSP processing            |
 | **open_diff**          | Open diff editor to compare files or text        | `before?`, `after?`, `beforeText?`, `afterText?`, `beforeLabel?`, `afterLabel?`, `language?` | ✅        | Side-by-side comparison              |
 | **execute_command** ⚠️ | Execute VSCode commands with arguments           | `command`, `args?`                                                                           | ❌        | **DANGEROUS - Use with caution**     |
 
-> **⚠️ Security Warning**: The `execute_command` tool can execute arbitrary VSCode commands and potentially modify your workspace, settings, or trigger dangerous operations. Use with extreme caution and only with trusted AI models.
+> **⚠️ Security Warning**: The `execute_command` and `rename_symbol` tools can modify your workspace. The `execute_command` tool can execute arbitrary VSCode commands and potentially trigger dangerous operations. Use with extreme caution and only with trusted AI models.
 
 All tools require the `workspace_path` parameter to target specific VSCode instances.
 
 ## Installation
 
-**Install in Cursor** ✅ **Tested**
+> **🚨 IMPORTANT**: Before installing the MCP server, you must first install the VSCode MCP Bridge extension in your VSCode instance. The extension is required for the MCP server to communicate with VSCode.
 
-#### Click the button to install:
+### Step 1: Install VSCode Extension
+
+Install the VSCode MCP Bridge extension using ID: `YuTengjing.vscode-mcp-bridge`
+
+[![Install VSCode Extension](https://img.shields.io/badge/VSCode%20Marketplace-Install%20Extension-007ACC?style=for-the-badge&logo=visualstudiocode)](https://marketplace.visualstudio.com/items?itemName=YuTengjing.vscode-mcp-bridge)
+
+Or search for "VSCode MCP Bridge" in the VSCode Extensions marketplace.
+
+### Step 2: Install MCP Server
+
+#### Install in Cursor ✅ Tested
+
+##### Click the button to install
 
 [![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=vscode-mcp&config=eyJjb21tYW5kIjoibnB4IHZzY29kZS1tY3Atc2VydmVyQGxhdGVzdCJ9)
 
-#### Or install manually:
+##### Or install manually
 
 Go to `Cursor Settings` -> `MCP` -> `Add new MCP Server`. Name to your liking, use `command` type with the command `npx vscode-mcp-server@latest`. You can also verify config or add command line arguments via clicking `Edit`.
 
@@ -174,9 +188,9 @@ The system operates transparently - MCP clients use standard tool calls, and VSC
 
 ### Prerequisites
 
-- Node.js 18+
-- VSCode with the VSCode MCP extension installed
-- A workspace open in VSCode
+- **Node.js 18+** (for running MCP server)
+- **VSCode** with the VSCode MCP Bridge extension installed (see Step 1 above)
+- **A workspace open in VSCode** (required for MCP server to connect)
 
 ### Configuration
 
@@ -212,44 +226,44 @@ For detailed architecture information, see [Project Architecture](docs/project-a
 
 ## Disclaimer
 
-**EXPERIMENTAL SOFTWARE NOTICE**
+### Experimental Software Notice
 
 This software is provided "as is" without any warranties, express or implied. By using VSCode MCP, you acknowledge and agree to the following:
 
-### 🔒 **Security Considerations**
+### 🔒 Security Considerations
 
 - This software creates local Unix socket connections for communication
 - All communication is local-only and does not transmit data over the network
 - Socket files are restricted to the current user, but no additional authentication is implemented
 - **Use only in trusted development environments**
 
-### 📋 **Functionality Limitations**
+### 📋 Functionality Limitations
 
 - **No Production Use**: This software is intended for development and testing purposes only
 - **Data Safety**: While read-only operations are generally safe, always backup your work before using file manipulation features
 - **Performance**: The software has not been optimized for large codebases or high-frequency operations
 - **Compatibility**: VSCode API compatibility is not guaranteed across all versions
 
-### 🛠️ **Development Status**
+### 🛠️ Development Status
 
 - **Alpha Software**: Features may be incomplete, unstable, or subject to significant changes
 - **Limited Support**: Community support is provided on a best-effort basis
 - **Breaking Changes**: APIs may change without deprecation notices during development
 
-### 🔧 **System Impact**
+### 🔧 System Impact
 
 - The software may create temporary files and socket connections
 - Resource usage and cleanup behaviors are not fully optimized
 - **Monitor system resources** when using with large workspaces
 
-### 📞 **Support and Liability**
+### 📞 Support and Liability
 
 - **No Warranty**: The authors and contributors provide no warranty of any kind
 - **No Liability**: Users assume all risks associated with using this software
 - **Community Support**: Support is provided by the community through GitHub issues
 - **Educational Purpose**: This software is primarily for learning and experimentation
 
-### 🧪 **Recommended Usage**
+### 🧪 Recommended Usage
 
 - Use in isolated development environments
 - Test thoroughly before relying on any functionality

@@ -4,6 +4,32 @@
 
 **VSCode MCP Bridge** is a monorepo project that provides a comprehensive solution for connecting VSCode with MCP (Model Context Protocol), enabling MCP clients to access rich VSCode context information.
 
+## Core Mission
+
+**VSCode MCP Bridge primarily serves AI IDEs (like Cursor) and AI coding agents**, helping them develop and analyze code more efficiently.
+
+### Design Motivation
+
+Traditional AI coding agents often need to execute time-consuming commands when validating code modifications:
+
+- `tsc --noEmit` - TypeScript type checking
+- `eslint .` - Code style checking
+- `npm run build` - Project building
+
+These commands run slowly in large projects, severely impacting AI development efficiency. VSCode MCP Bridge provides real-time LSP (Language Server Protocol) information, allowing AI agents to:
+
+- **Get fast diagnostics** (`get-diagnostics`) - Replace time-consuming type checking and lint commands
+- **Access real-time type information** (`get-hover`) - Get accurate type definitions without compilation
+- **Navigate code efficiently** (`get-definition`, `get-references`) - Understand code structure and dependencies
+- **Smart file operations** (`open-files`, `open-diff`) - Efficient code review and comparison
+
+### Core Advantages
+
+1. **Real-time**: Leverage VSCode's LSP for real-time code state without executing slow commands
+2. **Accuracy**: Precise analysis based on language servers, more reliable than static analysis
+3. **Efficiency**: Significantly reduce AI coding agent wait times
+4. **Integration**: Deep integration with VSCode ecosystem, supporting multiple languages and extensions
+
 ### Core Value
 
 - Enable AI assistants to access real-time code state (errors, warnings, type information)

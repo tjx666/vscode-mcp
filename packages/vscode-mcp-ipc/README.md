@@ -36,6 +36,15 @@ const definitions = await dispatcher.dispatch('getDefinition', {
 // 健康检查
 const health = await dispatcher.dispatch('health', {});
 
+// 请求用户输入
+const input = await dispatcher.dispatch('requestInput', {
+  prompt: 'Please enter your API key:',
+  placeholder: 'Enter API key here...',
+  title: 'API Configuration',
+  password: true,
+  validateInput: true,
+});
+
 // 执行 VSCode 命令
 const result = await dispatcher.dispatch('executeCommand', {
   command: 'editor.action.formatDocument',

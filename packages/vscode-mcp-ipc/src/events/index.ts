@@ -8,6 +8,8 @@ import type { GetSignatureHelpPayload, GetSignatureHelpResult } from './get-sign
 import type { HealthCheckPayload, HealthCheckResult } from './health-check.js';
 import type { OpenDiffPayload, OpenDiffResult } from './open-diff.js';
 import type { OpenFilesPayload, OpenFilesResult } from './open-file.js';
+import type { RenameSymbolPayload, RenameSymbolResult } from './rename-symbol.js';
+import type { RequestInputPayload, RequestInputResult } from './request-input.js';
 
 // Re-export all event types and schemas
 export * from './common.js';
@@ -20,6 +22,8 @@ export * from './get-signature-help.js';
 export * from './health-check.js';
 export * from './open-diff.js';
 export * from './open-file.js';
+export * from './rename-symbol.js';
+export * from './request-input.js';
 
 /**
  * Base request structure
@@ -95,6 +99,18 @@ export interface EventMap {
   openFiles: {
     params: OpenFilesPayload;
     result: OpenFilesResult;
+  };
+
+  /** Rename symbol */
+  renameSymbol: {
+    params: RenameSymbolPayload;
+    result: RenameSymbolResult;
+  };
+
+  /** Request user input */
+  requestInput: {
+    params: RequestInputPayload;
+    result: RequestInputResult;
   };
 }
 

@@ -9,10 +9,38 @@ const inputSchema = {
   ...GetDiagnosticsInputSchema.shape
 };
 
+const DESCRIPTION = `Get real-time diagnostic information (errors, warnings, hints) from VSCode's language servers - the efficient alternative to running tsc/eslint commands.
+
+**AI Coding Agent Use Cases:**
+- Quickly validate code changes without running slow tsc --noEmit or eslint commands
+- Get instant feedback on syntax errors and type issues during code generation
+- Verify large-scale refactoring impacts without full project rebuilds
+- Smart Git integration: automatically check all modified files for issues
+
+**Parameter Examples:**
+- Check modified files: uris: [] (auto-detects git changes, much faster than npm run build)
+- Validate specific files: uris: ['file:///src/app.ts', 'file:///src/utils.js']
+- Single file verification: uris: ['file:///components/Button.tsx']
+
+**Return Format:**
+Structured diagnostic results with severity levels, positions, and detailed error messages
+
+**AI Coding Agent Benefits:**
+- Replaces slow tsc --noEmit with instant LSP diagnostics
+- Avoids expensive eslint . runs on large codebases
+- Provides real-time feedback during iterative code generation
+- Git integration automatically finds files that need checking
+
+**Important Notes:**
+- Files are automatically opened to ensure accurate LSP diagnostics
+- Empty uris array triggers Git integration to find all modified files
+- Severity levels: 1=ERROR, 2=WARNING, 3=INFO, 4=HINT
+- Line and character numbers are zero-based`;
+
 export function registerGetDiagnostics(server: McpServer) {
   server.registerTool("get_diagnostics", {
     title: "Get Diagnostics",
-    description: "Get diagnostic information (errors, warnings, hints) for multiple files. Files will be automatically opened to ensure accurate diagnostics. If no URIs are provided (empty array), will get diagnostics for all git modified files (staged and unstaged) in the workspace.",
+    description: DESCRIPTION,
     inputSchema,
     annotations: {
       title: "Get Diagnostics",

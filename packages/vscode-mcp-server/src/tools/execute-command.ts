@@ -9,10 +9,39 @@ const inputSchema = {
   ...ExecuteCommandInputSchema.shape
 };
 
+const DESCRIPTION = `⚠️ Execute VSCode commands with arguments - DANGEROUS tool that can modify workspace, settings, or trigger harmful operations.
+
+**SECURITY WARNING:**
+This tool can execute arbitrary VSCode commands and potentially:
+- Modify files, settings, or workspace configuration
+- Install/uninstall extensions
+- Change editor state or user preferences
+- Trigger external processes or network operations
+
+**AI Coding Agent Use Cases:**
+- Format documents: 'editor.action.formatDocument'
+- Open specific files: 'vscode.open' with file URI
+- Trigger refactoring operations: 'editor.action.rename'
+- Run build tasks: 'workbench.action.tasks.runTask'
+
+**Parameter Examples:**
+- Format code: command: 'editor.action.formatDocument'
+- Open file: command: 'vscode.open', args: ['file:///path/to/file.ts']
+- Save all: command: 'workbench.action.files.saveAll'
+
+**Return Format:**
+Command execution result or confirmation message
+
+**Important Notes:**
+- USE WITH EXTREME CAUTION - can cause irreversible changes
+- Always validate command safety before execution
+- Some commands may require specific context or editor state
+- Command availability depends on installed extensions and VSCode version`;
+
 export function registerExecuteCommand(server: McpServer) {
   server.registerTool("execute_command", {
     title: "⚠️ Execute VSCode Command",
-    description: "⚠️ DANGER: Execute arbitrary VSCode commands. This tool can modify files, change settings, or trigger any VSCode action. SECURITY WARNING: Only use with trusted inputs.",
+    description: DESCRIPTION,
     inputSchema,
     annotations: {
       title: "⚠️ Execute VSCode Command",

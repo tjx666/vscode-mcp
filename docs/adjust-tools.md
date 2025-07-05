@@ -275,10 +275,10 @@ const dangerousToolAnnotations = {
 ```typescript
 const description = `Brief functional description.
 
-**Use Cases:**
-- When to use this tool
-- What problems it solves  
-- How it works with other tools
+**AI Coding Agent Use Cases:**
+- How AI agents can leverage this tool effectively
+- What coding problems it solves for AI development
+- How it integrates with AI coding workflows
 
 **Parameter Examples:**
 - Example 1: specific parameter format
@@ -286,6 +286,11 @@ const description = `Brief functional description.
 
 **Return Format:** 
 Brief description of returned data structure
+
+**AI Coding Agent Benefits:**
+- Efficiency improvements for AI development
+- How it replaces slower traditional approaches
+- Integration advantages with AI workflows
 
 **Important Notes:**
 Key limitations or special behaviors`;

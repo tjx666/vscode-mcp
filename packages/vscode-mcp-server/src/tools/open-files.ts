@@ -9,14 +9,42 @@ const inputSchema = {
   ...OpenFilesInputSchema.shape
 };
 
+const DESCRIPTION = `Open multiple files in VSCode with optional editor display control for efficient LSP processing.
+
+**AI Coding Agent Use Cases:**
+- Load files for analysis without cluttering the editor interface
+- Prepare files for batch operations like diagnostics or refactoring
+- Ensure accurate LSP information by opening files in VSCode context
+- Pre-load related files before performing cross-file operations
+
+**Parameter Examples:**
+- Background loading: files: [{ uri: 'file:///app.ts', showEditor: false }]
+- Open in editor: files: [{ uri: 'file:///main.js', showEditor: true }]
+- Mixed mode: files: [{ uri: 'file:///config.ts', showEditor: true }, { uri: 'file:///utils.ts', showEditor: false }]
+
+**Return Format:**
+Success status with count of files processed and any errors encountered
+
+**AI Coding Agent Benefits:**
+- Optimize LSP performance by ensuring files are loaded
+- Reduce editor clutter when analyzing multiple files
+- Enable accurate cross-file analysis and operations
+- Prepare workspace state for subsequent AI operations
+
+**Important Notes:**
+- showEditor: false loads files for LSP without displaying tabs
+- Files must exist and be accessible to VSCode
+- Loading large numbers of files may impact performance
+- Essential for accurate diagnostics and code analysis`;
+
 export function registerOpenFiles(server: McpServer) {
   server.registerTool("open_files", {
     title: "Open Files",
-    description: "Open multiple files in VSCode. Each file can be optionally displayed in the editor or just loaded in the background for LSP processing.",
+    description: DESCRIPTION,
     inputSchema,
     annotations: {
       title: "Open Files",
-      readOnlyHint: false,
+      readOnlyHint: true,
       destructiveHint: false,
       idempotentHint: true,
       openWorldHint: false

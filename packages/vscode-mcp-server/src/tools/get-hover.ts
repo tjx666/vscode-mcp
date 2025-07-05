@@ -9,10 +9,38 @@ const inputSchema = {
   ...GetHoverInputSchema.shape
 };
 
+const DESCRIPTION = `Get rich type information, documentation, and value details for multiple code positions - essential for type-aware AI coding.
+
+**AI Coding Agent Use Cases:**
+- Understand complex TypeScript types when generating type-safe code
+- Read inline documentation to understand function behavior and parameters
+- Verify variable types and values during debugging assistance
+- Batch analyze multiple symbols for comprehensive code understanding
+
+**Parameter Examples:**
+- Get type info: positions: [{ uri: 'file:///app.ts', line: 25, character: 8 }]
+- Batch analysis: positions: [{ uri: 'file:///utils.js', line: 10, character: 5 }, { uri: 'file:///api.ts', line: 15, character: 12 }]
+- Comprehensive info: includeAllHovers: true
+
+**Return Format:**
+Detailed hover information with types, documentation, and value details
+
+**AI Coding Agent Benefits:**
+- Generate type-accurate code without guessing types
+- Understand complex generic types and union types
+- Access embedded documentation for better code generation
+- Reduce type-related errors in generated code
+
+**Important Notes:**
+- Line and character numbers are zero-based
+- includeAllHovers: true provides comprehensive info but may be slower
+- Returns empty hovers array if no information available at position
+- Hover contents may include markdown formatting`;
+
 export function registerGetHovers(server: McpServer) {
   server.registerTool("get_hovers", {
     title: "Get Hover Information",
-    description: "Get hover information for multiple positions in code files. Supports getting all hover providers' information or just the first one.",
+    description: DESCRIPTION,
     inputSchema,
     annotations: {
       title: "Get Hover Information",

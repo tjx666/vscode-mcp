@@ -16,7 +16,11 @@ import {
     OpenDiffInputSchema,
     OpenDiffOutputSchema,
     OpenFilesInputSchema,
-    OpenFilesOutputSchema
+    OpenFilesOutputSchema,
+    RenameSymbolInputSchema,
+    RenameSymbolOutputSchema,
+    RequestInputInputSchema,
+    RequestInputOutputSchema
 } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
@@ -29,7 +33,9 @@ import {        executeCommand,getCurrentWorkspacePath,
     getSignatureHelp,
     health,
     openDiff,
-    openFiles} from './services';
+    openFiles,
+    renameSymbol,
+    requestInput} from './services';
 import { SocketServer } from './socket-server';
 
 // Global socket server instance
@@ -107,6 +113,18 @@ export async function activate(context: vscode.ExtensionContext) {
             handler: openFiles,
             payloadSchema: OpenFilesInputSchema,
             resultSchema: OpenFilesOutputSchema
+        });
+        
+        socketServer.register('requestInput', {
+            handler: requestInput,
+            payloadSchema: RequestInputInputSchema,
+            resultSchema: RequestInputOutputSchema
+        });
+        
+        socketServer.register('renameSymbol', {
+            handler: renameSymbol,
+            payloadSchema: RenameSymbolInputSchema,
+            resultSchema: RenameSymbolOutputSchema
         });
         
         // Start socket server

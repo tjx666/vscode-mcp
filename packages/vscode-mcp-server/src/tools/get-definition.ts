@@ -9,10 +9,28 @@ const inputSchema = {
   ...GetDefinitionInputSchema.shape
 };
 
+const DESCRIPTION = `Navigate to the definition of a symbol (variable, function, class, etc.) at a specific position.
+
+**AI Coding Agent Use Cases:**
+- Find where a symbol is declared/defined
+- Understand the implementation of a function/class
+- Navigate through code dependencies before making changes
+
+**Parameter Examples:**
+- Jump to function: uri: 'file:///path/to/file.ts', line: 10, character: 15
+- Find class: uri: 'file:///component.tsx', line: 25, character: 8
+
+**Return Format:**
+Array of Location objects with file URI and exact position coordinates
+
+**Important Notes:**
+- Line and character numbers are zero-based
+- Returns empty array if no definition found`;
+
 export function registerGetDefinition(server: McpServer) {
   server.registerTool("get_definition", {
     title: "Get Definition",
-    description: "Get definition locations for a symbol at a specific position",
+    description: DESCRIPTION,
     inputSchema,
     annotations: {
       title: "Get Definition",
