@@ -3,6 +3,7 @@
     "version": "0.0.1",
     "description": "",
     "main": "index.js",
+    "private": true,
     "scripts": {
         "release": "bumpp -c \"release: v%s\" -r && pnpm -r publish"
     },
