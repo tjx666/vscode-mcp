@@ -1,10 +1,10 @@
 {
     "name": "vscode-mcp",
-    "version": "1.0.0",
+    "version": "0.0.0",
     "description": "",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "release": "bumpp -c \"release: v%s\" -r && pnpm -r publish"
     },
     "keywords": [],
     "author": "",
@@ -15,6 +15,7 @@
         "@typescript/native-preview": "latest",
         "@yutengjing/eslint-config-typescript": "^2.6.1",
         "@yutengjing/prettier-config": "^2.0.0",
+        "bumpp": "^10.2.0",
         "eslint": "^9.30.1",
         "prettier": "^3.6.2",
         "tsx": "^4.19.0",

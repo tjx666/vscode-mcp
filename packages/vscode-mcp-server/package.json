@@ -1,6 +1,6 @@
 {
     "name": "@vscode-mcp/vscode-mcp-server",
-    "version": "0.0.1",
+    "version": "0.0.0",
     "type": "module",
     "description": "MCP Server that connects to VSCode Extension via Unix Socket",
     "main": "dist/index.js",
@@ -18,7 +18,8 @@
         "clean": "rm -rf dist",
         "dev": "tsx src/index.ts",
         "start": "node dist/index.js",
-        "typecheck": "tsgo --noEmit"
+        "typecheck": "tsgo --noEmit",
+        "prepublishOnly": "pnpm run clean && pnpm run build"
     },
     "keywords": [
         "mcp",
