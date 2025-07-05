@@ -7,7 +7,7 @@
 export { registerExecuteCommand } from "./execute-command.js"; 
 export { registerGetDefinition } from "./get-definition.js";
 export { registerGetDiagnostics } from "./get-diagnostics.js";
-export { registerGetHover } from "./get-hover.js";
+export { registerGetHovers } from "./get-hover.js";
 export { registerGetReferences } from "./get-references.js";
 export { registerGetSignatureHelp } from "./get-signature-help.js";
 export { registerHealthCheck } from "./health-check.js";

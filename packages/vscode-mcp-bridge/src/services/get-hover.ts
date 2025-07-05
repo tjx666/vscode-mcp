@@ -2,29 +2,34 @@ import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
 /**
- * Handle get hover
+ * Get hover information for a single position
  */
-export const getHover = async (
-    payload: EventParams<'getHover'>
-): Promise<EventResult<'getHover'>> => {
-    const uri = vscode.Uri.parse(payload.uri);
-    const position = new vscode.Position(payload.line, payload.character);
-    
-    // Execute hover provider
-    const hovers = await vscode.commands.executeCommand<vscode.Hover[]>(
-        'vscode.executeHoverProvider',
-        uri,
-        position
-    );
-    
-    if (!hovers || hovers.length === 0) {
-        return { hover: null };
-    }
-    
-    const hover = hovers[0]; // Take the first hover
-    
-    return {
-        hover: {
+async function getHoverForPosition(
+    uri: string,
+    line: number,
+    character: number,
+    includeAllHovers: boolean = false
+): Promise<{ position: { uri: string; line: number; character: number }; hovers: any[]; error?: string }> {
+    try {
+        const vscodeUri = vscode.Uri.parse(uri);
+        const position = new vscode.Position(line, character);
+        
+        // Execute hover provider
+        const hovers = await vscode.commands.executeCommand<vscode.Hover[]>(
+            'vscode.executeHoverProvider',
+            vscodeUri,
+            position
+        );
+        
+        if (!hovers || hovers.length === 0) {
+            return {
+                position: { uri, line, character },
+                hovers: []
+            };
+        }
+        
+        // Process hovers based on includeAllHovers option
+        const processedHovers = (includeAllHovers ? hovers : [hovers[0]]).map(hover => ({
             contents: hover.contents.map(content => {
                 if (typeof content === 'string') {
                     return content;
@@ -38,6 +43,35 @@ export const getHover = async (
                 start: { line: hover.range.start.line, character: hover.range.start.character },
                 end: { line: hover.range.end.line, character: hover.range.end.character }
             } : undefined
-        }
-    };
+        }));
+        
+        return {
+            position: { uri, line, character },
+            hovers: processedHovers
+        };
+    } catch (error) {
+        return {
+            position: { uri, line, character },
+            hovers: [],
+            error: `Failed to get hover for ${uri}:${line}:${character}: ${error}`
+        };
+    }
+}
+
+/**
+ * Handle get hover for multiple positions
+ */
+export const getHover = async (
+    payload: EventParams<'getHover'>
+): Promise<EventResult<'getHover'>> => {
+    const { positions, includeAllHovers = false } = payload;
+    
+    // Process all positions in parallel
+    const results = await Promise.all(
+        positions.map(pos => 
+            getHoverForPosition(pos.uri, pos.line, pos.character, includeAllHovers)
+        )
+    );
+    
+    return { results };
 }; 

@@ -184,9 +184,14 @@ All MCP tools require `workspace_path` parameter to target specific VSCode insta
 - **Description**: Get symbol reference locations
 - **Parameters**: `uri`, `line`, `character`, `includeDeclaration?`
 
-- **Tool**: `get_hover`
-- **Description**: Get hover information for symbols
-- **Parameters**: `uri`, `line`, `character`
+- **Tool**: `get_hovers`
+- **Description**: Get hover information for multiple positions in code files
+- **Parameters**: `positions` (array of position objects), `includeAllHovers?` (boolean)
+- **Features**:
+  - Batch processing multiple positions
+  - Option to get all hover providers' information vs first one only
+  - Parallel processing for performance
+  - Individual error handling for each position
 
 - **Tool**: `get_signature_help`
 - **Description**: Get function signature help
@@ -435,6 +440,17 @@ When adding/modifying tools, follow this exact order:
   "beforeLabel": "Old Code",
   "afterLabel": "New Code",
   "language": "typescript"
+}
+```
+
+```json
+{
+  "workspace_path": "/path/to/workspace",
+  "positions": [
+    { "uri": "file:///path/to/file1.ts", "line": 10, "character": 5 },
+    { "uri": "file:///path/to/file2.ts", "line": 20, "character": 10 }
+  ],
+  "includeAllHovers": true
 }
 ```
 

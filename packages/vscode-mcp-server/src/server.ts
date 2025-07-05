@@ -4,7 +4,7 @@ import {
   registerExecuteCommand,
   registerGetDefinition,
   registerGetDiagnostics,
-  registerGetHover,
+  registerGetHovers,
   registerGetReferences,
   registerGetSignatureHelp,
   registerHealthCheck,
@@ -25,7 +25,7 @@ export function createVSCodeMCPServer(name: string, version: string): McpServer 
   registerGetDiagnostics(server);
   registerGetDefinition(server);
   registerGetReferences(server);
-  registerGetHover(server);
+  registerGetHovers(server);
   registerGetSignatureHelp(server);
   registerExecuteCommand(server);
   registerOpenDiff(server);

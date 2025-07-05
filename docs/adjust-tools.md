@@ -448,6 +448,7 @@ const inputSchema = {
 
 - `get-definition`: 正确的 Schema 复用示例
 - `get-diagnostics`: 复杂的批量操作和条件逻辑
+- `get-hovers`: 批量位置处理，支持多选项的高级工具
 - `open-files`: 批量操作和可选参数处理
 - `execute-command`: 简单的参数传递和命令执行
 - `health`: 最简单的无参数工具
