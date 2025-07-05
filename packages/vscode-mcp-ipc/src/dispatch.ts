@@ -3,7 +3,7 @@ import { Socket } from 'node:net';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import type { BaseRequest, BaseResponse,EventName, EventParams, EventResult } from './events.js';
+import type { BaseRequest, BaseResponse, EventName, EventParams, EventResult } from './events/index.js';
 
 /**
  * Generate socket path based on workspace path
@@ -69,7 +69,7 @@ export class EventDispatcher {
           params: params as Record<string, any>,
         };
 
-        socket.write(`${JSON.stringify(request)  }\n`);
+        socket.write(`${JSON.stringify(request)}\n`);
       });
 
       // Handle socket data
