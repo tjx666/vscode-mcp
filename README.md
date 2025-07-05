@@ -25,21 +25,21 @@ VSCode MCP is a comprehensive monorepo solution that enables MCP (Model Context 
 
 VSCode MCP provides the following tools through the MCP protocol:
 
-| Tool                   | Description                                      | Parameters                                                                                   | Read-only | Notes                                |
-| ---------------------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------- | --------- | ------------------------------------ |
-| **health_check**       | Test connection and get extension status         | None                                                                                         | ✅        | Check if VSCode extension is running |
-| **get_diagnostics**    | Get diagnostic information with Git integration  | `uris` (array, empty = all git modified files)                                               | ✅        | Auto-detects modified files          |
-| **get_definition**     | Get symbol definition locations                  | `uri`, `line`, `character`                                                                   | ✅        | Jump to symbol definitions           |
-| **get_references**     | Get symbol reference locations                   | `uri`, `line`, `character`, `includeDeclaration?`                                            | ✅        | Find all symbol references           |
-| **get_hovers**         | Get hover information for multiple positions     | `positions` (array), `includeAllHovers?`                                                     | ✅        | Batch hover information              |
-| **get_signature_help** | Get function signature help                      | `uri`, `line`, `character`                                                                   | ✅        | Function parameter info              |
-| **rename_symbol** ⚠️   | Rename symbols across all files in workspace     | `uri`, `line`, `character`, `newName`                                                        | ❌        | **Language-aware cross-file rename** |
-| **request_input**      | Request simple text input from user              | `prompt`, `placeholder?`, `title?`, `password?`, `validateInput?`                            | ❌        | Interactive user input dialog        |
-| **open_files**         | Open multiple files with optional editor display | `files` (array with `uri` and `showEditor?`)                                                 | ✅        | Background LSP processing            |
-| **open_diff**          | Open diff editor to compare files or text        | `before?`, `after?`, `beforeText?`, `afterText?`, `beforeLabel?`, `afterLabel?`, `language?` | ✅        | Side-by-side comparison              |
-| **execute_command** ⚠️ | Execute VSCode commands with arguments           | `command`, `args?`                                                                           | ❌        | **DANGEROUS - Use with caution**     |
+| Tool                   | Description                                      | Parameters                                                                                   |
+| ---------------------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| **health_check**       | Test connection and get extension status         | None                                                                                         |
+| **get_diagnostics**    | Get diagnostic information with Git integration  | `uris` (array, empty = all git modified files)                                               |
+| **get_definition**     | Get symbol definition locations                  | `uri`, `line`, `character`                                                                   |
+| **get_references**     | Get symbol reference locations                   | `uri`, `line`, `character`, `includeDeclaration?`                                            |
+| **get_hovers**         | Get hover information for multiple positions     | `positions` (array), `includeAllHovers?`                                                     |
+| **get_signature_help** | Get function signature help                      | `uri`, `line`, `character`                                                                   |
+| **rename_symbol**      | Rename symbols across all files in workspace     | `uri`, `line`, `character`, `newName`                                                        |
+| **request_input**      | Request simple text input from user              | `prompt`, `placeholder?`, `title?`, `password?`, `validateInput?`                            |
+| **open_files**         | Open multiple files with optional editor display | `files` (array with `uri` and `showEditor?`)                                                 |
+| **open_diff**          | Open diff editor to compare files or text        | `before?`, `after?`, `beforeText?`, `afterText?`, `beforeLabel?`, `afterLabel?`, `language?` |
+| **execute_command**    | Execute VSCode commands with arguments           | `command`, `args?`                                                                           |
 
-> **⚠️ Security Warning**: The `execute_command` and `rename_symbol` tools can modify your workspace. The `execute_command` tool can execute arbitrary VSCode commands and potentially trigger dangerous operations. Use with extreme caution and only with trusted AI models.
+> **⚠️ Security Warning**: The `execute_command` tool can execute arbitrary VSCode commands and potentially trigger dangerous operations. Use with extreme caution and only with trusted AI models.
 
 All tools require the `workspace_path` parameter to target specific VSCode instances.
 
@@ -61,18 +61,18 @@ Or search for "VSCode MCP Bridge" in the VSCode Extensions marketplace.
 
 ##### Click the button to install
 
-[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=vscode-mcp&config=eyJjb21tYW5kIjoibnB4IHZzY29kZS1tY3Atc2VydmVyQGxhdGVzdCJ9)
+[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=vscode-mcp&config=eyJjb21tYW5kIjoibnB4IEB2c2NvZGUtbWNwL3ZzY29kZS1tY3Atc2VydmVyQGxhdGVzdCJ9)
 
 ##### Or install manually
 
-Go to `Cursor Settings` -> `MCP` -> `Add new MCP Server`. Name to your liking, use `command` type with the command `npx vscode-mcp-server@latest`. You can also verify config or add command line arguments via clicking `Edit`.
+Go to `Cursor Settings` -> `MCP` -> `Add new MCP Server`. Name to your liking, use `command` type with the command `npx @vscode-mcp/vscode-mcp-server@latest`. You can also verify config or add command line arguments via clicking `Edit`.
 
 ```json
 {
   "mcpServers": {
     "vscode-mcp": {
       "command": "npx",
-      "args": ["vscode-mcp-server@latest"]
+      "args": ["@vscode-mcp/vscode-mcp-server@latest"]
     }
   }
 }
@@ -81,15 +81,15 @@ Go to `Cursor Settings` -> `MCP` -> `Add new MCP Server`. Name to your liking, u
 <details>
 <summary><strong>Install in VS Code</strong></summary>
 
-[Install in VS Code](https://insiders.vscode.dev/redirect?url=vscode%3Amcp%2Finstall%3F%257B%2522name%2522%253A%2522vscode-mcp%2522%252C%2522command%2522%253A%2522npx%2522%252C%2522args%2522%253A%255B%2522vscode-mcp-server%2540latest%2522%255D%257D)
+[Install in VS Code](https://insiders.vscode.dev/redirect?url=vscode%3Amcp%2Finstall%3F%257B%2522name%2522%253A%2522vscode-mcp%2522%252C%2522command%2522%253A%2522npx%2522%252C%2522args%2522%253A%255B%2522%2540vscode-mcp%252Fvscode-mcp-server%2540latest%2522%255D%257D)
 
-[Install in VS Code Insiders](https://insiders.vscode.dev/redirect?url=vscode-insiders%3Amcp%2Finstall%3F%257B%2522name%2522%253A%2522vscode-mcp%2522%252C%2522command%2522%253A%2522npx%2522%252C%2522args%2522%253A%255B%2522vscode-mcp-server%2540latest%2522%255D%257D)
+[Install in VS Code Insiders](https://insiders.vscode.dev/redirect?url=vscode-insiders%3Amcp%2Finstall%3F%257B%2522name%2522%253A%2522vscode-mcp%2522%252C%2522command%2522%253A%2522npx%2522%252C%2522args%2522%253A%255B%2522%2540vscode-mcp%252Fvscode-mcp-server%2540latest%2522%255D%257D)
 
 You can also install the VSCode MCP server using the VS Code CLI:
 
 ```bash
 # For VS Code
-code --add-mcp '{"name":"vscode-mcp","command":"npx","args":["vscode-mcp-server@latest"]}'
+code --add-mcp '{"name":"vscode-mcp","command":"npx","args":["@vscode-mcp/vscode-mcp-server@latest"]}'
 ```
 
 After installation, the VSCode MCP server will be available for use with your GitHub Copilot agent in VS Code.
@@ -106,7 +106,7 @@ Follow Windsurf MCP [documentation](https://docs.windsurf.com/windsurf/cascade/m
   "mcpServers": {
     "vscode-mcp": {
       "command": "npx",
-      "args": ["vscode-mcp-server@latest"]
+      "args": ["@vscode-mcp/vscode-mcp-server@latest"]
     }
   }
 }

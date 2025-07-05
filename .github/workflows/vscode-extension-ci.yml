@@ -128,7 +128,7 @@ jobs:
           OVSX_PAT: ${{ secrets.OPEN_VSX_TOKEN }}
 
       - name: Generate changelog
-        run: npx changelogithub --from $(git describe --tags --abbrev=0 HEAD~1) --to ${{ needs.test.outputs.GIT_TAG }}
+        run: npx changelogithub
         working-directory: .
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
