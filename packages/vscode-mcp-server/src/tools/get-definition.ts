@@ -9,7 +9,7 @@ const inputSchema = {
   ...GetDefinitionInputSchema.shape
 };
 
-const DESCRIPTION = `Navigate to the definition of a symbol (variable, function, class, etc.) at a specific position.
+const DESCRIPTION = `Navigate to the definition of a symbol (variable, function, class, etc.) at a specific position. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
 
 **AI Coding Agent Use Cases:**
 - Find where a symbol is declared/defined

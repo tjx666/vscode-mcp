@@ -9,7 +9,7 @@ const inputSchema = {
   ...GetHoverInputSchema.shape
 };
 
-const DESCRIPTION = `Get rich type information, documentation, and value details for multiple code positions - essential for type-aware AI coding.
+const DESCRIPTION = `Get rich type information, documentation, and value details for multiple code positions - essential for type-aware AI coding. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
 
 **AI Coding Agent Use Cases:**
 - Understand complex TypeScript types when generating type-safe code

@@ -12,7 +12,7 @@
   <a href="#available-tools">Available Tools</a> •
   <a href="#installation">Installation</a> •
   <a href="#architecture">Architecture</a> •
-  <a href="#usage">Usage</a>
+  <a href="#license">License</a>
 </p>
 
 ## Overview
@@ -171,8 +171,6 @@ Each VSCode workspace gets its own socket connection:
 - `/Users/user/frontend` → `/tmp/vscode-mcp-a1b2c3d4.sock`
 - `/Users/user/backend` → `/tmp/vscode-mcp-e5f6g7h8.sock`
 
-## Usage
-
 ### How It Works
 
 Once installed and configured, VSCode MCP works seamlessly with MCP-compatible clients:
@@ -188,4 +186,4 @@ All tools require the `workspace_path` parameter to target specific VSCode insta
 
 ## License
 
-This project is licensed under the [Anti 996](https://github.com/996icu/996.ICU/blob/master/LICENSE) License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the [Anti 996](https://github.com/996icu/996.ICU/blob/master/LICENSE) License.
