@@ -360,6 +360,38 @@ const inputSchema = {
 };
 ```
 
+### 问题 5: 带验证的 Schema 无法复用
+
+**症状**: 使用 `.refine()` 验证的 Schema 变成 `ZodEffects` 类型，没有 `.shape` 属性
+
+**解决方案**: 分离基础 Schema 和验证 Schema：
+
+```typescript
+// IPC 层：分离基础 Schema 和验证 Schema
+export const YourToolBaseInputSchema = z
+  .object({
+    param1: z.string().describe('参数1'),
+    param2: z.string().optional().describe('参数2'),
+  })
+  .strict();
+
+export const YourToolInputSchema = YourToolBaseInputSchema.refine(
+  (data) => {
+    // 验证逻辑
+    return data.param1 && data.param2;
+  },
+  { message: '验证失败' },
+);
+
+// MCP Server 层：复用基础 Schema
+import { YourToolBaseInputSchema } from '@vscode-mcp/vscode-mcp-ipc';
+
+const inputSchema = {
+  workspace_path: z.string().describe('VSCode workspace path to target'),
+  ...YourToolBaseInputSchema.shape, // ✅ 复用基础 Schema
+};
+```
+
 ## 最佳实践
 
 ### 1. 命名规范
@@ -419,5 +451,6 @@ const inputSchema = {
 - `open-files`: 批量操作和可选参数处理
 - `execute-command`: 简单的参数传递和命令执行
 - `health`: 最简单的无参数工具
+- `open-diff`: 分离基础 Schema 和验证 Schema 的示例，支持多种参数模式
 
 遵循这个流程可以确保工具开发的一致性和可维护性。

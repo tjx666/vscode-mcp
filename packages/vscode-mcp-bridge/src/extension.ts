@@ -13,6 +13,8 @@ import {
     GetSignatureHelpOutputSchema,
     HealthCheckInputSchema,
     HealthCheckOutputSchema,
+    OpenDiffInputSchema,
+    OpenDiffOutputSchema,
     OpenFilesInputSchema,
     OpenFilesOutputSchema
 } from '@vscode-mcp/vscode-mcp-ipc';
@@ -26,6 +28,7 @@ import {        executeCommand,getCurrentWorkspacePath,
     getReferences,
     getSignatureHelp,
     health,
+    openDiff,
     openFiles} from './services';
 import { SocketServer } from './socket-server';
 
@@ -92,6 +95,12 @@ export async function activate(context: vscode.ExtensionContext) {
             handler: executeCommand,
             payloadSchema: ExecuteCommandInputSchema,
             resultSchema: ExecuteCommandOutputSchema
+        });
+        
+        socketServer.register('openDiff', {
+            handler: openDiff,
+            payloadSchema: OpenDiffInputSchema,
+            resultSchema: OpenDiffOutputSchema
         });
         
         socketServer.register('openFiles', {

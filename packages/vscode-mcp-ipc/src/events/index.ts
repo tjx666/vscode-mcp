@@ -6,6 +6,7 @@ import type { GetHoverPayload, GetHoverResult } from './get-hover.js';
 import type { GetReferencesPayload, GetReferencesResult } from './get-references.js';
 import type { GetSignatureHelpPayload, GetSignatureHelpResult } from './get-signature-help.js';
 import type { HealthCheckPayload, HealthCheckResult } from './health-check.js';
+import type { OpenDiffPayload, OpenDiffResult } from './open-diff.js';
 import type { OpenFilesPayload, OpenFilesResult } from './open-file.js';
 
 // Re-export all event types and schemas
@@ -17,6 +18,7 @@ export * from './get-hover.js';
 export * from './get-references.js';
 export * from './get-signature-help.js';
 export * from './health-check.js';
+export * from './open-diff.js';
 export * from './open-file.js';
 
 /**
@@ -81,6 +83,12 @@ export interface EventMap {
   executeCommand: {
     params: ExecuteCommandPayload;
     result: ExecuteCommandResult;
+  };
+
+  /** Open diff editor */
+  openDiff: {
+    params: OpenDiffPayload;
+    result: OpenDiffResult;
   };
 
   /** Open files */

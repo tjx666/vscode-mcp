@@ -1,0 +1,128 @@
+name: CI
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/vscode-mcp-bridge/**'
+      - '.github/workflows/ci.yml'
+      - 'pnpm-lock.yaml'
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: packages/vscode-mcp-bridge
+    outputs:
+      GIT_TAG: ${{ steps.set-tag.outputs.GIT_TAG }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+        working-directory: .
+
+      - name: Build IPC package
+        run: pnpm --filter @vscode-mcp/vscode-mcp-ipc build
+        working-directory: .
+
+      - name: Get the date on Ubuntu/MacOS
+        id: date_unix
+        if: runner.os != 'Windows'
+        run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+
+      - name: Get the date on Windows
+        id: date_windows
+        if: runner.os == 'Windows'
+        run: echo "DATE=$(Get-Date -Format 'yyyyMMdd')" >> $GITHUB_OUTPUT
+
+      - name: Cache .vscode-test
+        uses: actions/cache@v4
+        env:
+          CACHE_PREFIX: ${{ runner.os }}-vscode-test-${{ steps.date_unix.outputs.DATE || steps.date_windows.outputs.DATE }}
+        with:
+          path: packages/vscode-mcp-bridge/.vscode-test
+          key: ${{ env.CACHE_PREFIX }}-${{ hashFiles('packages/vscode-mcp-bridge/test/runTests.ts') }}
+          restore-keys: ${{ env.CACHE_PREFIX }}
+
+      - run: xvfb-run -a pnpm test
+        if: runner.os == 'Linux'
+      - run: pnpm test
+        if: runner.os != 'Linux'
+
+      - name: Set GIT_TAG
+        id: set-tag
+        if: runner.os == 'ubuntu-latest'
+        run: |
+          TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
+          echo "GIT_TAG=$TAG" >> $GITHUB_OUTPUT
+          echo "Git tag: $TAG"
+
+  publish:
+    needs: test
+    if: startsWith(needs.test.outputs.GIT_TAG, 'v')
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/vscode-mcp-bridge
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+        working-directory: .
+
+      - name: Build IPC package
+        run: pnpm --filter @vscode-mcp/vscode-mcp-ipc build
+        working-directory: .
+
+      - name: Build extension
+        run: pnpm esbuild:base --minify
+
+      - name: Publish to VS Marketplace
+        run: pnpm publish:vs-marketplace
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+
+      - name: Publish to Open VSX
+        run: pnpm publish:open-vsx
+        env:
+          OVSX_PAT: ${{ secrets.OPEN_VSX_TOKEN }}
+
+      - name: Generate changelog
+        run: npx changelogithub --from $(git describe --tags --abbrev=0 HEAD~1) --to ${{ needs.test.outputs.GIT_TAG }}
+        working-directory: .
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

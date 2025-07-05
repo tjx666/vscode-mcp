@@ -31,6 +31,7 @@ vscode-mcp/
 │   │   │   │   ├── health-check.ts
 │   │   │   │   ├── get-*.ts   # LSP method definitions
 │   │   │   │   ├── execute-command.ts
+│   │   │   │   ├── open-diff.ts
 │   │   │   │   └── open-file.ts
 │   │   │   ├── dispatch.ts    # Unix Socket communication
 │   │   │   └── index.ts       # Module exports
@@ -49,6 +50,7 @@ vscode-mcp/
 │   │   │   │   ├── health.ts
 │   │   │   │   ├── get-*.ts   # LSP service implementations
 │   │   │   │   ├── execute-command.ts
+│   │   │   │   ├── open-diff.ts
 │   │   │   │   └── open-files.ts
 │   │   │   └── tsconfig.json
 │   │   ├── assets/
@@ -65,6 +67,7 @@ vscode-mcp/
 │       │       ├── health-check.ts
 │       │       ├── get-*.ts   # LSP tools
 │       │       ├── execute-command.ts
+│       │       ├── open-diff.ts
 │       │       └── open-files.ts
 │       ├── tsconfig.json
 │       └── package.json
@@ -199,7 +202,20 @@ All MCP tools require `workspace_path` parameter to target specific VSCode insta
   - Background loading for LSP processing
   - Individual operation status reporting
 
-#### 5. **Command Execution**
+#### 5. **Diff Operations**
+
+- **Tool**: `open_diff`
+- **Description**: Open a diff editor in VSCode to compare two files or text content side by side
+- **Parameters**: `before?`, `after?`, `beforeText?`, `afterText?`, `beforeLabel?`, `afterLabel?`, `language?`
+- **Features**:
+  - File-to-file comparison using URIs
+  - Text-to-text comparison using content strings
+  - Mixed mode (file vs text) comparison
+  - Custom labels for text content
+  - Language-specific syntax highlighting
+  - Automatic diff editor title generation
+
+#### 6. **Command Execution**
 
 - **Tool**: `execute_command`
 - **Description**: Execute VSCode commands with arguments
@@ -240,6 +256,34 @@ socketServer.register('toolName', {
 const inputSchema = {
   workspace_path: z.string().describe('VSCode workspace path to target'),
   ...ToolInputSchema.shape, // ✅ Correct schema reuse
+};
+```
+
+**Special Case: Schema with Validation**
+
+For schemas that need validation (e.g., `.refine()`), use the base schema pattern:
+
+```typescript
+// IPC Layer: Define base schema for reuse
+export const ToolBaseInputSchema = z
+  .object({
+    // Schema definition here
+  })
+  .strict();
+
+// IPC Layer: Define complete schema with validation
+export const ToolInputSchema = ToolBaseInputSchema.refine(
+  (data) => {
+    // Validation logic here
+    return isValid;
+  },
+  { message: 'Validation error message' },
+);
+
+// MCP Server: Reuse base schema to avoid ZodEffects type issues
+const inputSchema = {
+  workspace_path: z.string().describe('VSCode workspace path to target'),
+  ...ToolBaseInputSchema.shape, // ✅ Correct base schema reuse
 };
 ```
 
@@ -371,6 +415,26 @@ When adding/modifying tools, follow this exact order:
     { "uri": "file:///path/to/file1.ts", "showEditor": true },
     { "uri": "file:///path/to/file2.ts", "showEditor": false }
   ]
+}
+```
+
+```json
+{
+  "workspace_path": "/path/to/workspace",
+  "before": "file:///path/to/file1.ts",
+  "after": "file:///path/to/file2.ts",
+  "language": "typescript"
+}
+```
+
+```json
+{
+  "workspace_path": "/path/to/workspace",
+  "beforeText": "const old = 'version';",
+  "afterText": "const new = 'version';",
+  "beforeLabel": "Old Code",
+  "afterLabel": "New Code",
+  "language": "typescript"
 }
 ```
 

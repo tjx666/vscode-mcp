@@ -6,6 +6,7 @@ export { getHover } from './get-hover';
 export { getReferences } from './get-references';
 export { getSignatureHelp } from './get-signature-help';
 export { health } from './health';
+export { openDiff } from './open-diff';
 export { openFiles } from './open-files';
 
 // Export utilities
