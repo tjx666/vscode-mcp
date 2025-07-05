@@ -1,3 +1,19 @@
+import { 
+    ExecuteCommandInputSchema, 
+    ExecuteCommandOutputSchema,
+    GetDefinitionInputSchema,
+    GetDefinitionOutputSchema,
+    GetDiagnosticsInputSchema,
+    GetDiagnosticsOutputSchema,
+    GetHoverInputSchema,
+    GetHoverOutputSchema,
+    GetReferencesInputSchema,
+    GetReferencesOutputSchema,
+    GetSignatureHelpInputSchema,
+    GetSignatureHelpOutputSchema,
+    HealthCheckInputSchema,
+    HealthCheckOutputSchema
+} from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
 import { logger } from './logger';
@@ -32,14 +48,48 @@ export async function activate(context: vscode.ExtensionContext) {
         // Create socket server
         socketServer = new SocketServer(workspacePath);
         
-        // Register all services
-        socketServer.register('health', health);
-        socketServer.register('getDiagnostics', getDiagnostics);
-        socketServer.register('getDefinition', getDefinition);
-        socketServer.register('getReferences', getReferences);
-        socketServer.register('getHover', getHover);
-        socketServer.register('getSignatureHelp', getSignatureHelp);
-        socketServer.register('executeCommand', executeCommand);
+        // Register all services with schema validation
+        socketServer.register('health', {
+            handler: health,
+            payloadSchema: HealthCheckInputSchema,
+            resultSchema: HealthCheckOutputSchema
+        });
+        
+        socketServer.register('getDiagnostics', {
+            handler: getDiagnostics,
+            payloadSchema: GetDiagnosticsInputSchema,
+            resultSchema: GetDiagnosticsOutputSchema
+        });
+        
+        socketServer.register('getDefinition', {
+            handler: getDefinition,
+            payloadSchema: GetDefinitionInputSchema,
+            resultSchema: GetDefinitionOutputSchema
+        });
+        
+        socketServer.register('getReferences', {
+            handler: getReferences,
+            payloadSchema: GetReferencesInputSchema,
+            resultSchema: GetReferencesOutputSchema
+        });
+        
+        socketServer.register('getHover', {
+            handler: getHover,
+            payloadSchema: GetHoverInputSchema,
+            resultSchema: GetHoverOutputSchema
+        });
+        
+        socketServer.register('getSignatureHelp', {
+            handler: getSignatureHelp,
+            payloadSchema: GetSignatureHelpInputSchema,
+            resultSchema: GetSignatureHelpOutputSchema
+        });
+        
+        socketServer.register('executeCommand', {
+            handler: executeCommand,
+            payloadSchema: ExecuteCommandInputSchema,
+            resultSchema: ExecuteCommandOutputSchema
+        });
         
         // Start socket server
         await socketServer.start();

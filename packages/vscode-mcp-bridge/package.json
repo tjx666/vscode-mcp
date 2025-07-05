@@ -74,7 +74,8 @@
         "publish:open-vsx": "ovsx publish --no-dependencies"
     },
     "dependencies": {
-        "@vscode-mcp/vscode-mcp-ipc": "workspace:*"
+        "@vscode-mcp/vscode-mcp-ipc": "workspace:*",
+        "zod": "^3.25.74"
     },
     "devDependencies": {
         "@types/glob": "^9.0.0",

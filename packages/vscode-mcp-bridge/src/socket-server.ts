@@ -5,6 +5,7 @@ import * as os from 'os';
 import * as path from 'path';
 
 import type { BaseRequest, BaseResponse, EventName } from '@vscode-mcp/vscode-mcp-ipc';
+import { z } from 'zod';
 
 import { logger } from './logger';
 
@@ -13,12 +14,30 @@ type ServiceFunction = (
 ) => Promise<any>;
 
 /**
+ * Service registration information
+ */
+interface ServiceRegistration {
+    handler: ServiceFunction;
+    payloadSchema?: z.ZodSchema<any>;
+    resultSchema?: z.ZodSchema<any>;
+}
+
+/**
+ * Service registration options
+ */
+interface ServiceRegistrationOptions {
+    handler: ServiceFunction;
+    payloadSchema?: z.ZodSchema<any>;
+    resultSchema?: z.ZodSchema<any>;
+}
+
+/**
  * Socket Server for handling MCP communication
  */
 export class SocketServer {
     private server: net.Server | null = null;
     private socketPath: string | null = null;
-    private services: Map<string, ServiceFunction> = new Map();
+    private services: Map<string, ServiceRegistration> = new Map();
 
     constructor(private workspacePath: string) {
         this.socketPath = this.generateSocketPath(workspacePath);
@@ -35,10 +54,14 @@ export class SocketServer {
     }
 
     /**
-     * Register a service handler
+     * Register a service handler with optional schema validation
      */
-    register(method: EventName, handler: ServiceFunction): void {
-        this.services.set(method, handler);
+    register(method: EventName, options: ServiceRegistrationOptions): void {
+        this.services.set(method, {
+            handler: options.handler,
+            payloadSchema: options.payloadSchema,
+            resultSchema: options.resultSchema
+        });
         logger.info(`Registered service: ${method}`);
     }
 
@@ -50,9 +73,9 @@ export class SocketServer {
         
         logger.info(`Processing request: ${method}`);
         
-        // Look up handler
-        const handler = this.services.get(method);
-        if (!handler) {
+        // Look up service registration
+        const registration = this.services.get(method);
+        if (!registration) {
             return {
                 id,
                 error: {
@@ -63,8 +86,46 @@ export class SocketServer {
         }
 
         try {
+            // Validate payload if schema is provided
+            let validatedPayload = params || {};
+            if (registration.payloadSchema) {
+                try {
+                    validatedPayload = registration.payloadSchema.parse(params || {});
+                } catch (validationError) {
+                    return {
+                        id,
+                        error: {
+                            code: 400,
+                            message: `Invalid payload for ${method}`,
+                            details: validationError instanceof z.ZodError 
+                                ? validationError.errors.map((e: z.ZodIssue) => `${e.path.join('.')}: ${e.message}`).join(', ')
+                                : String(validationError)
+                        }
+                    };
+                }
+            }
+
             // Call service function
-            const result = await handler(params || {});
+            const result = await registration.handler(validatedPayload);
+
+            // Validate result if schema is provided
+            if (registration.resultSchema) {
+                try {
+                    registration.resultSchema.parse(result);
+                } catch (validationError) {
+                    logger.error(`Result validation failed for ${method}: ${validationError}`);
+                    return {
+                        id,
+                        error: {
+                            code: 500,
+                            message: `Invalid result from ${method}`,
+                            details: validationError instanceof z.ZodError 
+                                ? validationError.errors.map((e: z.ZodIssue) => `${e.path.join('.')}: ${e.message}`).join(', ')
+                                : String(validationError)
+                        }
+                    };
+                }
+            }
             
             // Log successful service call
             logger.logServiceCall(method, params, result);
