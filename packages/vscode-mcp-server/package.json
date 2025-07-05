@@ -8,6 +8,10 @@
     "bin": {
         "vscode-mcp-server": "dist/index.js"
     },
+    "publishConfig": {
+        "registry": "https://registry.npmjs.org/",
+        "access": "public"
+    },
     "scripts": {
         "build": "tsc",
         "build:watch": "tsc --watch",
