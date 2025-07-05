@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { CallToolRequestSchema, ErrorCode, ListToolsRequestSchema, McpError } from "@modelcontextprotocol/sdk/types.js";
 
-import { VSCodeMCPServer } from "./server.js";
+import { createVSCodeMCPServer } from "./server.js";
 
 // Package info
 const PACKAGE_NAME = "vscode-mcp-server";
@@ -63,44 +61,8 @@ async function main(): Promise<void> {
     return;
   }
 
-  const server = new Server({
-    name: PACKAGE_NAME,
-    version: PACKAGE_VERSION,
-  }, {
-    capabilities: {
-      tools: {},
-    },
-  });
-
-  // Create VSCode MCP server instance
-  const vscodeServer = new VSCodeMCPServer();
-
-  // List tools handler
-  server.setRequestHandler(ListToolsRequestSchema, async () => {
-    return {
-      tools: vscodeServer.getTools(),
-    };
-  });
-
-  // Call tool handler
-  server.setRequestHandler(CallToolRequestSchema, async (request) => {
-    const { name, arguments: args } = request.params;
-    
-    try {
-      const result = await vscodeServer.callTool(name, args || {});
-      return {
-        content: [
-          {
-            type: "text",
-            text: typeof result === "string" ? result : JSON.stringify(result, null, 2),
-          },
-        ],
-      };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      throw new McpError(ErrorCode.InternalError, message);
-    }
-  });
+  // Create the server using the new architecture
+  const server = createVSCodeMCPServer(PACKAGE_NAME, PACKAGE_VERSION);
 
   // Start the server
   const transport = new StdioServerTransport();
