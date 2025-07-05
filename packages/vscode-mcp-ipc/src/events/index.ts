@@ -1,27 +1,21 @@
 // Import all event modules
 import type { ExecuteCommandPayload, ExecuteCommandResult } from './execute-command.js';
-import type { GetCompletionsPayload, GetCompletionsResult } from './get-completions.js';
 import type { GetDefinitionPayload, GetDefinitionResult } from './get-definition.js';
 import type { GetDiagnosticsPayload, GetDiagnosticsResult } from './get-diagnostics.js';
 import type { GetHoverPayload, GetHoverResult } from './get-hover.js';
 import type { GetReferencesPayload, GetReferencesResult } from './get-references.js';
 import type { GetSignatureHelpPayload, GetSignatureHelpResult } from './get-signature-help.js';
-import type { GetWorkspaceInfoPayload, GetWorkspaceInfoResult } from './get-workspace-info.js';
-import type { GetWorkspaceSymbolsPayload, GetWorkspaceSymbolsResult } from './get-workspace-symbols.js';
 import type { HealthCheckPayload, HealthCheckResult } from './health-check.js';
 import type { OpenFilesPayload, OpenFilesResult } from './open-file.js';
 
 // Re-export all event types and schemas
 export * from './common.js';
 export * from './execute-command.js';
-export * from './get-completions.js';
 export * from './get-definition.js';
 export * from './get-diagnostics.js';
 export * from './get-hover.js';
 export * from './get-references.js';
 export * from './get-signature-help.js';
-export * from './get-workspace-info.js';
-export * from './get-workspace-symbols.js';
 export * from './health-check.js';
 export * from './open-file.js';
 
@@ -78,24 +72,9 @@ export interface EventMap {
     result: GetHoverResult;
   };
 
-  getCompletions: {
-    params: GetCompletionsPayload;
-    result: GetCompletionsResult;
-  };
-
   getSignatureHelp: {
     params: GetSignatureHelpPayload;
     result: GetSignatureHelpResult;
-  };
-
-  getWorkspaceSymbols: {
-    params: GetWorkspaceSymbolsPayload;
-    result: GetWorkspaceSymbolsResult;
-  };
-
-  getWorkspaceInfo: {
-    params: GetWorkspaceInfoPayload;
-    result: GetWorkspaceInfoResult;
   };
 
   /** Execute VSCode command */

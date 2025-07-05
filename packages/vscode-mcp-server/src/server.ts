@@ -7,8 +7,6 @@ import {
   registerGetHover,
   registerGetReferences,
   registerGetSignatureHelp,
-  registerGetWorkspaceInfo,
-  registerGetWorkspaceSymbols,
   registerHealthCheck,
   registerOpenFiles} from "./tools/index.js";
 
@@ -28,8 +26,6 @@ export function createVSCodeMCPServer(name: string, version: string): McpServer 
   registerGetReferences(server);
   registerGetHover(server);
   registerGetSignatureHelp(server);
-  registerGetWorkspaceInfo(server);
-  registerGetWorkspaceSymbols(server);
   registerExecuteCommand(server);
   registerOpenFiles(server);
 
