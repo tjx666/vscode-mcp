@@ -9,20 +9,15 @@ const inputSchema = {
   ...RequestInputInputSchema.shape,
 };
 
-const DESCRIPTION = `Request simple text input from the user through VSCode input dialog.
+const DESCRIPTION = `Request simple text input from the user through editor input dialog. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
 
 **AI Coding Agent Use Cases:**
-- When user declines a request and you need to understand the reason
-- When user forgot to provide key information (screenshot paths, error messages, config values, etc.)
-- When you need simple text input to continue coding tasks
-- When clarification is needed for ambiguous instructions
-- Getting API keys, file paths, or configuration values during development
-
-**适用场景:**
-- 获取简单的文本输入（单行）
-- 获取文件路径、URL、错误信息等
-- 获取用户偏好或配置值
-- 快速澄清或确认信息
+- Get missing information needed to complete coding tasks (API keys, file paths, URLs)
+- Clarify ambiguous requirements or user intentions during development
+- Request specific values for configuration files or environment variables
+- Ask for error messages or logs when troubleshooting issues
+- Collect user preferences for code generation (naming conventions, patterns)
+- Get confirmation for potentially destructive operations
 
 **Parameter Examples:**
 - Request reason: prompt: "Why did you decline the previous request?", placeholder: "e.g., security concern"
@@ -34,12 +29,6 @@ const DESCRIPTION = `Request simple text input from the user through VSCode inpu
 **Return Format:**
 - userInput: string (user's input text) or undefined if cancelled
 - cancelled: boolean (true if user cancelled the dialog)
-
-**AI Coding Agent Benefits:**
-- Enables interactive debugging and problem-solving
-- Allows AI to request missing information without ending the conversation
-- Improves user experience by getting clarification in real-time
-- Supports secure input with password masking for sensitive data
 
 **Important Notes:**
 - Best for simple, single-line text input

@@ -9,13 +9,14 @@ const inputSchema = {
   ...GetReferencesInputSchema.shape
 };
 
-const DESCRIPTION = `Find all reference locations for a symbol (variable, function, class, etc.) across the codebase.
+const DESCRIPTION = `Find all reference locations for a symbol (variable, function, class, etc.) across the codebase. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
 
 **AI Coding Agent Use Cases:**
-- Assess the impact of modifying/removing a symbol
-- Find all usage patterns of a function or variable
-- Understand code dependencies before refactoring
-- Identify unused code or find migration opportunities
+- Assess the impact of modifying or removing a symbol before making changes
+- Find all usage patterns of a function or variable for comprehensive understanding
+- Identify dependencies and relationships in complex codebases
+- Locate unused code or find opportunities for refactoring and cleanup
+- Understand how changes to APIs or interfaces will affect the entire codebase
 
 **Parameter Examples:**
 - Find function usage: uri: 'file:///utils.ts', line: 15, character: 10, includeDeclaration: true
@@ -24,12 +25,6 @@ const DESCRIPTION = `Find all reference locations for a symbol (variable, functi
 
 **Return Format:**
 Array of reference locations with file paths and exact positions
-
-**AI Coding Agent Benefits:**
-- Safe refactoring with full impact analysis
-- Identify breaking changes before implementation
-- Find usage patterns for code generation
-- Discover related functionality across the codebase
 
 **Important Notes:**
 - Line and character numbers are zero-based

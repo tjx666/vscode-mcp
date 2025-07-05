@@ -10,13 +10,14 @@ const inputSchema = {
   ...OpenDiffBaseInputSchema.shape,
 };
 
-const DESCRIPTION = `Open diff editor in VSCode to compare files or text content side by side.
+const DESCRIPTION = `Open diff editor to compare files or text content side by side. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
 
 **AI Coding Agent Use Cases:**
-- Show before/after comparisons of code changes
-- Compare different versions of files during refactoring
-- Demonstrate code improvements or alternatives
-- Review generated code against existing implementations
+- Show before/after comparisons of AI-generated code changes
+- Compare different versions of files during refactoring or migration
+- Demonstrate code improvements or alternative implementations
+- Review AI-generated code against existing implementations for quality assessment
+- Visualize the impact of proposed changes before applying them
 
 **Parameter Examples:**
 - Compare files: before: 'file:///old.ts', after: 'file:///new.ts'
@@ -25,12 +26,6 @@ const DESCRIPTION = `Open diff editor in VSCode to compare files or text content
 
 **Return Format:**
 Confirmation of diff editor opened successfully
-
-**AI Coding Agent Benefits:**
-- Visual code comparison for better understanding
-- Clear demonstration of proposed changes
-- Easy review of AI-generated modifications
-- Side-by-side analysis of code alternatives
 
 **Important Notes:**
 - Either use file URIs (before/after) or text content (beforeText/afterText)

@@ -9,13 +9,14 @@ const inputSchema = {
   ...GetDiagnosticsInputSchema.shape
 };
 
-const DESCRIPTION = `Get real-time diagnostic information (errors, warnings, hints) from VSCode's language servers - the efficient alternative to running tsc/eslint commands.
+const DESCRIPTION = `Get real-time diagnostic information (errors, warnings, hints) from language servers - the efficient alternative to running tsc/eslint commands. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
 
 **AI Coding Agent Use Cases:**
-- Quickly validate code changes without running slow tsc --noEmit or eslint commands
-- Get instant feedback on syntax errors and type issues during code generation
-- Verify large-scale refactoring impacts without full project rebuilds
-- Smart Git integration: automatically check all modified files for issues
+- Replace slow 'tsc --noEmit' and 'eslint .' commands with instant LSP diagnostics
+- Validate code changes immediately after generation without running full builds
+- Auto-check all git modified files to catch issues across entire changesets
+- Get precise error locations and messages for targeted code fixes
+- Monitor code health during iterative AI-assisted development
 
 **Parameter Examples:**
 - Check modified files: uris: [] (auto-detects git changes, much faster than npm run build)
@@ -24,12 +25,6 @@ const DESCRIPTION = `Get real-time diagnostic information (errors, warnings, hin
 
 **Return Format:**
 Structured diagnostic results with severity levels, positions, and detailed error messages
-
-**AI Coding Agent Benefits:**
-- Replaces slow tsc --noEmit with instant LSP diagnostics
-- Avoids expensive eslint . runs on large codebases
-- Provides real-time feedback during iterative code generation
-- Git integration automatically finds files that need checking
 
 **Important Notes:**
 - Files are automatically opened to ensure accurate LSP diagnostics

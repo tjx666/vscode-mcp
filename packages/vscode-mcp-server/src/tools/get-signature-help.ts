@@ -9,13 +9,14 @@ const inputSchema = {
   ...GetSignatureHelpInputSchema.shape
 };
 
-const DESCRIPTION = `Get detailed function signature information including parameter types, descriptions, and current parameter context.
+const DESCRIPTION = `Get detailed function signature information including parameter types, descriptions, and current parameter context. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
 
 **AI Coding Agent Use Cases:**
-- Generate correct function calls with proper parameter types
-- Understand function overloads and parameter requirements
-- Provide contextual assistance for function parameter completion
-- Verify function usage patterns during code generation
+- Generate correct function calls with precise parameter types and order
+- Understand function overloads and choose the right signature for the context
+- Get real-time parameter help when writing complex API calls
+- Validate function usage patterns and argument types during code generation
+- Handle complex generic functions with multiple parameter constraints
 
 **Parameter Examples:**
 - Get function signature: uri: 'file:///api.ts', line: 25, character: 15 (at function call position)
@@ -24,12 +25,6 @@ const DESCRIPTION = `Get detailed function signature information including param
 
 **Return Format:**
 Detailed signature information with parameter details and documentation
-
-**AI Coding Agent Benefits:**
-- Generate type-safe function calls
-- Understand complex function signatures and overloads
-- Provide accurate parameter suggestions
-- Reduce function call errors in generated code
 
 **Important Notes:**
 - Line and character numbers are zero-based

@@ -9,7 +9,7 @@ const inputSchema = {
   ...ExecuteCommandInputSchema.shape
 };
 
-const DESCRIPTION = `⚠️ Execute VSCode commands with arguments - DANGEROUS tool that can modify workspace, settings, or trigger harmful operations.
+const DESCRIPTION = `⚠️ Execute VSCode commands with arguments - DANGEROUS tool that can modify workspace, settings, or trigger harmful operations. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
 
 **SECURITY WARNING:**
 This tool can execute arbitrary VSCode commands and potentially:
@@ -19,10 +19,11 @@ This tool can execute arbitrary VSCode commands and potentially:
 - Trigger external processes or network operations
 
 **AI Coding Agent Use Cases:**
-- Format documents: 'editor.action.formatDocument'
-- Open specific files: 'vscode.open' with file URI
-- Trigger refactoring operations: 'editor.action.rename'
-- Run build tasks: 'workbench.action.tasks.runTask'
+- Format entire documents or selected code: 'editor.action.formatDocument'
+- Open specific files for analysis: 'vscode.open' with file URI
+- Trigger intelligent refactoring operations: 'editor.action.rename'
+- Run build tasks and scripts: 'workbench.action.tasks.runTask'
+- Save all modified files after bulk operations: 'workbench.action.files.saveAll'
 
 **Parameter Examples:**
 - Format code: command: 'editor.action.formatDocument'

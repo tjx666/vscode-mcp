@@ -9,13 +9,14 @@ const inputSchema = {
   ...HealthCheckInputSchema.shape
 };
 
-const DESCRIPTION = `Verify VSCode extension connectivity and readiness for AI coding operations.
+const DESCRIPTION = `Verify VSCode extension connectivity and readiness for AI coding operations. Supports all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
 
 **AI Coding Agent Use Cases:**
-- Confirm MCP connection before starting coding sessions
-- Diagnose issues when other tools fail to respond
-- Validate multi-workspace setup for complex projects
-- Ensure reliable tool availability for AI workflows
+- Confirm MCP connection before starting coding sessions to avoid tool failures
+- Quick health check when other tools return unexpected errors or timeouts
+- Validate multi-workspace setup for complex projects with multiple repositories
+- Test workspace targeting when switching between different project folders
+- Troubleshoot extension connectivity issues during development setup
 
 **Parameter Examples:**
 - Basic check: workspace_path: '/path/to/workspace'
@@ -23,12 +24,6 @@ const DESCRIPTION = `Verify VSCode extension connectivity and readiness for AI c
 
 **Return Format:**
 Health and connection status information
-
-**AI Coding Agent Benefits:**
-- Prevent tool failures with proactive health checks
-- Ensure reliable AI coding workflows
-- Quick troubleshooting for connection issues
-- Validate workspace-specific tool availability
 
 **Important Notes:**
 - Each workspace has its own extension instance and socket

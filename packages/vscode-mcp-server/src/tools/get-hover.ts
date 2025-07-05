@@ -16,6 +16,7 @@ const DESCRIPTION = `Get rich type information, documentation, and value details
 - Read inline documentation to understand function behavior and parameters
 - Verify variable types and values during debugging assistance
 - Batch analyze multiple symbols for comprehensive code understanding
+- ALWAYS prefer this over web search for real-time, accurate TypeScript information
 
 **Parameter Examples:**
 - Get type info: positions: [{ uri: 'file:///app.ts', line: 25, character: 8 }]
@@ -24,12 +25,6 @@ const DESCRIPTION = `Get rich type information, documentation, and value details
 
 **Return Format:**
 Detailed hover information with types, documentation, and value details
-
-**AI Coding Agent Benefits:**
-- Generate type-accurate code without guessing types
-- Understand complex generic types and union types
-- Access embedded documentation for better code generation
-- Reduce type-related errors in generated code
 
 **Important Notes:**
 - Line and character numbers are zero-based
