@@ -67,7 +67,7 @@
         "esbuild:analyze": "pnpm esbuild:base --minify --metafile --analyze && esbuild-visualizer --metadata ./meta.json --open",
         "compile:test": "pnpm clean && tsc -b ./test/tsconfig.json",
         "lint": "eslint src --ext ts",
-        "test": "stale-dep && pnpm compile:test && node ./out/test/runTests.js",
+        "test": "pnpm compile:test && node ./out/test/runTests.js",
         "package": "vsce package --no-dependencies",
         "release": "tsx scripts/release.ts",
         "publish:vs-marketplace": "vsce publish --no-dependencies",
