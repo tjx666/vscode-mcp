@@ -55,6 +55,7 @@ VSCode MCP provides the following tools through the MCP protocol:
 | **get_references**     | Get symbol reference locations                   | `uri`, `line`, `character`, `includeDeclaration?`                                            |
 | **get_hovers**         | Get hover information for multiple positions     | `positions` (array), `includeAllHovers?`                                                     |
 | **get_signature_help** | Get function signature help                      | `uri`, `line`, `character`                                                                   |
+| **get_commands**       | Get all available VSCode commands in workspace   | `include_internal?`, `filter?`, `category?`, `limit?`                                        |
 | **rename_symbol**      | Rename symbols across all files in workspace     | `uri`, `line`, `character`, `newName`                                                        |
 | **request_input**      | Request simple text input from user              | `prompt`, `placeholder?`, `title?`, `password?`, `validateInput?`                            |
 | **open_files**         | Open multiple files with optional editor display | `files` (array with `uri` and `showEditor?`)                                                 |

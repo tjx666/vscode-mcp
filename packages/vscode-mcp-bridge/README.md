@@ -8,7 +8,7 @@
 
 </div>
 
-check [VSCode MCP Repository](https://github.com/tjx666/vscode-mcp) for more details.
+check [VSCode MCP Repository](https://github.com/tjx666/vscode-mcp) for usage and more details.
 
 ## My extensions
 

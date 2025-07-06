@@ -21,6 +21,7 @@ const DESCRIPTION = `Request simple text input from the user through editor inpu
 
 **Parameter Examples:**
 - Request reason: prompt: "Why did you decline the previous request?", placeholder: "e.g., security concern"
+- Command feedback: prompt: "Why did you skip executing 'rm -rf node_modules'?", placeholder: "e.g., want to keep cache, risky command"
 - Missing info: prompt: "Please provide the screenshot path:", placeholder: "/path/to/image.png"
 - Error info: prompt: "Could you paste the error message?", placeholder: "Paste error here..."
 - Config value: prompt: "What's your preferred API endpoint?", placeholder: "https://api.example.com"
