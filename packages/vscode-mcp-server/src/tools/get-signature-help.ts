@@ -49,6 +49,26 @@ export function registerGetSignatureHelp(server: McpServer) {
       const dispatcher = createDispatcher(workspace_path);
       const result = await dispatcher.dispatch("getSignatureHelp", { uri, line, character });
       
+      // Check if result is null and provide helpful feedback
+      if (result === null) {
+        return {
+          content: [{
+            type: "text" as const,
+            text: `❌ No signature help available at ${uri}:${line}:${character}
+
+💡 **Troubleshooting Tips:**
+- Line and character numbers are **0-based** (first line is 0, first character is 0)
+- Position should be within a function call or at the opening parenthesis
+- Make sure you're at a function call site, not just on a function declaration
+- Verify the file URI is correct and the file exists
+- Ensure the language server extension is installed and running (e.g., rust-lang.rust for Rust), and the file is properly parsed
+
+📄 **Raw Result:**
+${JSON.stringify(result, null, 2)}`
+          }]
+        };
+      }
+      
       return {
         content: [{
           type: "text" as const,

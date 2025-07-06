@@ -76,7 +76,14 @@ ${filesList}`
         return {
           content: [{
             type: "text", 
-            text: `❌ Rename failed: ${result.error}`
+            text: `❌ Rename failed: ${result.error}
+
+💡 **Troubleshooting Tips:**
+- Line and character numbers are **0-based** (first line is 0, first character is 0)
+- Make sure the position(line, col) is exactly on a renameable symbol
+- Some symbols cannot be renamed (e.g., built-in types, external libraries)
+- Verify the file URI is correct and the file exists
+- Ensure the language server extension is installed and running (e.g., rust-lang.rust for Rust), and the file is properly parsed`
           }]
         };
       }

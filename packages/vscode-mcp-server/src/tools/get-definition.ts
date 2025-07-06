@@ -46,6 +46,25 @@ export function registerGetDefinition(server: McpServer) {
       const dispatcher = createDispatcher(workspace_path);
       const result = await dispatcher.dispatch("getDefinition", { uri, line, character });
       
+      // Check if result is empty and provide helpful feedback
+      if (Array.isArray(result) && result.length === 0) {
+        return {
+          content: [{
+            type: "text" as const,
+            text: `❌ No definition found at ${uri}:${line}:${character}
+
+💡 **Troubleshooting Tips:**
+- Line and character numbers are **0-based** (first line is 0, first character is 0)
+- Make sure the position(line, col) is exactly on a symbol (variable, function, class, etc.)
+- Verify the file URI is correct and the file exists
+- Ensure the language server extension is installed and running (e.g., rust-lang.rust for Rust), and the file is properly parsed
+
+📄 **Raw Result:**
+${JSON.stringify(result, null, 2)}`
+          }]
+        };
+      }
+      
       return {
         content: [{
           type: "text" as const,

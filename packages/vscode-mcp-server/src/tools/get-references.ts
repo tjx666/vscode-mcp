@@ -53,6 +53,27 @@ export function registerGetReferences(server: McpServer) {
         includeDeclaration 
       });
       
+      // Check if result is empty and provide helpful feedback
+      if (Array.isArray(result) && result.length === 0) {
+        return {
+          content: [{
+            type: "text" as const,
+            text: `❌ No references found at ${uri}:${line}:${character}
+
+💡 **Troubleshooting Tips:**
+- Line and character numbers are **0-based** (first line is 0, first character is 0)
+- Make sure the position(line, col) is exactly on a symbol (variable, function, class, etc.)
+- Try setting includeDeclaration: true to include the symbol definition itself
+- Verify the file URI is correct and the file exists
+- Ensure the language server extension is installed and running (e.g., rust-lang.rust for Rust), and the file is properly parsed
+- Some symbols may not have references if they're unused or only declared
+
+📄 **Raw Result:**
+${JSON.stringify(result, null, 2)}`
+          }]
+        };
+      }
+      
       return {
         content: [{
           type: "text" as const,

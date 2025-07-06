@@ -68,7 +68,9 @@ export function registerGetHovers(server: McpServer) {
           output += `   Error: ${error}\n\n`;
         } else if (hovers.length === 0) {
           output += `⚪ **Position ${index + 1}**: ${positionStr}\n`;
-          output += `   No hover information available\n\n`;
+          output += `   No hover information available\n`;
+          output += `   💡 **Tip:** Line and character numbers are **0-based** (first line is 0, first character is 0)\n`;
+          output += `   💡 **Tip:** Make sure the position(line, col) is exactly on a symbol\n\n`;
         } else {
           output += `✅ **Position ${index + 1}**: ${positionStr}\n`;
           output += `   Found ${hovers.length} hover(s)${includeAllHovers ? ' (all providers)' : ' (first provider only)'}\n\n`;
@@ -98,4 +100,4 @@ export function registerGetHovers(server: McpServer) {
       return formatToolCallError("Get Hover Information", error);
     }
   });
-} 
+}
