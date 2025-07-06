@@ -2,11 +2,12 @@
 
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
+import packageJson from "../package.json" with { type: "json" };
 import { createVSCodeMCPServer } from "./server.js";
 
-// Package info
-const PACKAGE_NAME = "vscode-mcp-server";
-const PACKAGE_VERSION = "1.0.0";
+// Package info from package.json
+const PACKAGE_NAME = Object.keys(packageJson.bin)[0]; // Get the command name from bin field
+const PACKAGE_VERSION = packageJson.version;
 
 /**
  * Handle command line arguments
