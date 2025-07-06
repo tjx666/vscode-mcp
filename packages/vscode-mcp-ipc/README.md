@@ -78,5 +78,11 @@ if (isConnected) {
 
 Socket 路径基于工作区路径的 MD5 哈希生成：
 
-- Linux/macOS: `/tmp/vscode-mcp-{hash}.sock`
-- Windows: `\\\\.\\pipe\\vscode-mcp-{hash}`
+```typescript
+function generateSocketPath(workspacePath: string): string {
+  const hash = crypto.createHash('md5').update(workspacePath).digest('hex').slice(0, 8);
+  return process.platform === 'win32'
+    ? `\\\\.\\pipe\\vscode-mcp-${hash}`
+    : path.join(os.tmpdir(), `vscode-mcp-${hash}.sock`);
+}
+```
