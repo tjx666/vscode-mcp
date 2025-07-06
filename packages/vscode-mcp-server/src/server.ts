@@ -9,6 +9,7 @@ import {
   registerGetReferences,
   registerGetSignatureHelp,
   registerHealthCheck,
+  registerHighlightCode,
   registerOpenDiff,
   registerOpenFiles,
   registerRenameSymbol,
@@ -25,6 +26,7 @@ export function createVSCodeMCPServer(name: string, version: string): McpServer 
 
   // Register all tools
   registerHealthCheck(server);
+  registerHighlightCode(server);
   registerGetDiagnostics(server);
   registerGetCommands(server);
   registerGetDefinition(server);

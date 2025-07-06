@@ -47,20 +47,21 @@ These commands run slowly in large projects, severely impacting AI development e
 
 VSCode MCP provides the following tools through the MCP protocol:
 
-| Tool                   | Description                                      | Parameters                                                                                   |
-| ---------------------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------- |
-| **health_check**       | Test connection and get extension status         | None                                                                                         |
-| **get_diagnostics**    | Get diagnostic information with Git integration  | `uris` (array, empty = all git modified files)                                               |
-| **get_definition**     | Get symbol definition locations                  | `uri`, `line`, `character`                                                                   |
-| **get_references**     | Get symbol reference locations                   | `uri`, `line`, `character`, `includeDeclaration?`                                            |
-| **get_hovers**         | Get hover information for multiple positions     | `positions` (array), `includeAllHovers?`                                                     |
-| **get_signature_help** | Get function signature help                      | `uri`, `line`, `character`                                                                   |
-| **get_commands**       | Get all available VSCode commands in workspace   | `include_internal?`, `filter?`, `category?`, `limit?`                                        |
-| **rename_symbol**      | Rename symbols across all files in workspace     | `uri`, `line`, `character`, `newName`                                                        |
-| **request_input**      | Request simple text input from user              | `prompt`, `placeholder?`, `title?`, `password?`, `validateInput?`                            |
-| **open_files**         | Open multiple files with optional editor display | `files` (array with `uri` and `showEditor?`)                                                 |
-| **open_diff**          | Open diff editor to compare files or text        | `before?`, `after?`, `beforeText?`, `afterText?`, `beforeLabel?`, `afterLabel?`, `language?` |
-| **execute_command**    | Execute VSCode commands with arguments           | `command`, `args?`                                                                           |
+| Tool                   | Description                                      | Parameters                                                                                    |
+| ---------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| **execute_command**    | Execute VSCode commands with arguments           | `command`, `args?`                                                                            |
+| **get_commands**       | Get all available VSCode commands in workspace   | `include_internal?`, `filter?`, `category?`, `limit?`                                         |
+| **get_definition**     | Get symbol definition locations                  | `uri`, `line`, `character`                                                                    |
+| **get_diagnostics**    | Get diagnostic information with Git integration  | `uris` (array, empty = all git modified files)                                                |
+| **get_hovers**         | Get hover information for multiple positions     | `positions` (array), `includeAllHovers?`                                                      |
+| **get_references**     | Get symbol reference locations                   | `uri`, `line`, `character`, `includeDeclaration?`                                             |
+| **get_signature_help** | Get function signature help                      | `uri`, `line`, `character`                                                                    |
+| **health_check**       | Test connection and get extension status         | None                                                                                          |
+| **highlight_code**     | Open file and highlight specific code sections   | `uri`, `ranges` (array with line numbers, messages, types, colors), `showEditor?`, `timeout?` |
+| **open_diff**          | Open diff editor to compare files or text        | `before?`, `after?`, `beforeText?`, `afterText?`, `beforeLabel?`, `afterLabel?`, `language?`  |
+| **open_files**         | Open multiple files with optional editor display | `files` (array with `uri` and `showEditor?`)                                                  |
+| **rename_symbol**      | Rename symbols across all files in workspace     | `uri`, `line`, `character`, `newName`                                                         |
+| **request_input**      | Request simple text input from user              | `prompt`, `placeholder?`, `title?`, `password?`, `validateInput?`                             |
 
 > **⚠️ Security Warning**: The `execute_command` tool can execute arbitrary VSCode commands and potentially trigger dangerous operations. Use with extreme caution and only with trusted AI models.
 

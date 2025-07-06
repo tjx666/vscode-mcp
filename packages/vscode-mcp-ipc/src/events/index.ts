@@ -7,6 +7,7 @@ import type { GetHoverPayload, GetHoverResult } from './get-hover.js';
 import type { GetReferencesPayload, GetReferencesResult } from './get-references.js';
 import type { GetSignatureHelpPayload, GetSignatureHelpResult } from './get-signature-help.js';
 import type { HealthCheckPayload, HealthCheckResult } from './health-check.js';
+import type { HighlightCodePayload, HighlightCodeResult } from './highlight-code.js';
 import type { OpenDiffPayload, OpenDiffResult } from './open-diff.js';
 import type { OpenFilesPayload, OpenFilesResult } from './open-file.js';
 import type { RenameSymbolPayload, RenameSymbolResult } from './rename-symbol.js';
@@ -22,6 +23,7 @@ export * from './get-hover.js';
 export * from './get-references.js';
 export * from './get-signature-help.js';
 export * from './health-check.js';
+export * from './highlight-code.js';
 export * from './open-diff.js';
 export * from './open-file.js';
 export * from './rename-symbol.js';
@@ -57,6 +59,12 @@ export interface EventMap {
   health: {
     params: HealthCheckPayload;
     result: HealthCheckResult;
+  };
+
+  /** Highlight code ranges */
+  highlightCode: {
+    params: HighlightCodePayload;
+    result: HighlightCodeResult;
   };
 
   /** LSP Methods */

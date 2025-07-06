@@ -15,6 +15,8 @@ import {
     GetSignatureHelpOutputSchema,
     HealthCheckInputSchema,
     HealthCheckOutputSchema,
+    HighlightCodeInputSchema,
+    HighlightCodeOutputSchema,
     OpenDiffInputSchema,
     OpenDiffOutputSchema,
     OpenFilesInputSchema,
@@ -22,8 +24,7 @@ import {
     RenameSymbolInputSchema,
     RenameSymbolOutputSchema,
     RequestInputInputSchema,
-    RequestInputOutputSchema
-} from '@vscode-mcp/vscode-mcp-ipc';
+    RequestInputOutputSchema} from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
 import { logger } from './logger';
@@ -35,7 +36,7 @@ getCurrentWorkspacePath,
     getReferences,
     getSignatureHelp,
     health,
-    openDiff,
+    highlightCode,    openDiff,
     openFiles,
     renameSymbol,
     requestInput} from './services';
@@ -68,6 +69,12 @@ export async function activate(context: vscode.ExtensionContext) {
             handler: health,
             payloadSchema: HealthCheckInputSchema,
             resultSchema: HealthCheckOutputSchema
+        });
+        
+        socketServer.register('highlightCode', {
+            handler: highlightCode,
+            payloadSchema: HighlightCodeInputSchema,
+            resultSchema: HighlightCodeOutputSchema
         });
         
         socketServer.register('getDiagnostics', {

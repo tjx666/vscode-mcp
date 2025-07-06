@@ -16,6 +16,7 @@ export { registerGetHovers } from "./get-hover.js";
 export { registerGetReferences } from "./get-references.js";
 export { registerGetSignatureHelp } from "./get-signature-help.js";
 export { registerHealthCheck } from "./health-check.js";
+export { registerHighlightCode } from "./highlight-code.js";
 export { registerOpenDiff } from "./open-diff.js";
 export { registerOpenFiles } from "./open-files.js";
 export { registerRenameSymbol } from "./rename-symbol.js";
