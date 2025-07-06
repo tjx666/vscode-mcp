@@ -13,10 +13,8 @@ const DESCRIPTION = `Find all reference locations for a symbol (variable, functi
 
 **AI Coding Agent Use Cases:**
 - Assess the impact of modifying or removing a symbol before making changes
-- Find all usage patterns of a function or variable for comprehensive understanding
-- Identify dependencies and relationships in complex codebases
-- Locate unused code or find opportunities for refactoring and cleanup
-- Understand how changes to APIs or interfaces will affect the entire codebase
+- Find all usage patterns and dependencies in complex codebases
+- ALWAYS prefer this over codebase_search, grep_search when you already know the exact symbol position
 
 **Parameter Examples:**
 - Find function usage: uri: 'file:///utils.ts', line: 15, character: 10, includeDeclaration: true

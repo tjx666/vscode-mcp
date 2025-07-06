@@ -13,9 +13,8 @@ const DESCRIPTION = `Navigate to the definition of a symbol (variable, function,
 
 **AI Coding Agent Use Cases:**
 - Find where a symbol is declared/defined
-- Understand the implementation of a function/class
-- Navigate through code dependencies before making changes
-- ALWAYS prefer this over manual file searching for precise symbol definitions
+- Understand the implementation of a function/class before making changes
+- ALWAYS prefer this over codebase_search, grep_search when you already know the exact symbol position
 
 **Parameter Examples:**
 - Jump to function: uri: 'file:///path/to/file.ts', line: 10, character: 15

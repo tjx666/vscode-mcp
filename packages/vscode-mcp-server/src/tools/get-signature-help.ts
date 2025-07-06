@@ -14,9 +14,7 @@ const DESCRIPTION = `Get detailed function signature information including param
 **AI Coding Agent Use Cases:**
 - Generate correct function calls with precise parameter types and order
 - Understand function overloads and choose the right signature for the context
-- Get real-time parameter help when writing complex API calls
-- Validate function usage patterns and argument types during code generation
-- Handle complex generic functions with multiple parameter constraints
+- ALWAYS prefer this over codebase_search, grep_search when you already know the exact function call position
 
 **Parameter Examples:**
 - Get function signature: uri: 'file:///api.ts', line: 25, character: 15 (at function call position)

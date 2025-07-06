@@ -12,11 +12,9 @@ const inputSchema = {
 const DESCRIPTION = `Get rich type information, documentation, and value details for multiple code positions - essential for type-aware AI coding. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
 
 **AI Coding Agent Use Cases:**
-- Understand complex TypeScript types when generating type-safe code
-- Read inline documentation to understand function behavior and parameters
-- Verify variable types and values during debugging assistance
-- Batch analyze multiple symbols for comprehensive code understanding
-- ALWAYS prefer this over web search for real-time, accurate TypeScript information
+- Understand complex types and read inline documentation for functions, variables, and classes
+- Batch analyze multiple symbols for comprehensive code understanding  
+- ALWAYS prefer this over codebase_search, grep_search, file_search when you already know the exact code positions
 
 **Parameter Examples:**
 - Get type info: positions: [{ uri: 'file:///app.ts', line: 25, character: 8 }]

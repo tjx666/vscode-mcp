@@ -9,27 +9,23 @@ const inputSchema = {
   ...HealthCheckInputSchema.shape
 };
 
-const DESCRIPTION = `Verify VSCode extension connectivity and readiness for AI coding operations. Supports all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
+const DESCRIPTION = `Test connection to VSCode MCP Bridge extension. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
+
+**Core Function:**
+All VSCode MCP tools depend on VSCode MCP Bridge extension to function. This tool verifies the connection.
 
 **AI Coding Agent Use Cases:**
-- Confirm MCP connection before starting coding sessions to avoid tool failures
-- Quick health check when other tools return unexpected errors or timeouts
-- Validate multi-workspace setup for complex projects with multiple repositories
-- Test workspace targeting when switching between different project folders
-- Troubleshoot extension connectivity issues during development setup
+- Troubleshoot when other VSCode MCP tools return connection errors or timeouts
 
 **Parameter Examples:**
 - Basic check: workspace_path: '/path/to/workspace'
-- Multi-workspace validation: workspace_path: '/path/to/different/workspace'
 
 **Return Format:**
-Health and connection status information
+JSON object with connection status and diagnostic details
 
 **Important Notes:**
-- Each workspace has its own extension instance and socket
-- Useful for troubleshooting before running other MCP tools
-- Returns detailed connection and extension status information
-- Should be the first tool to test when setting up new workspaces`;
+- Only use when other VSCode MCP tools are failing
+- If connection fails, inform user to manually check: 1) VSCode MCP Bridge extension is installed and activated (https://marketplace.visualstudio.com/items?itemName=YuTengjing.vscode-mcp-bridge), 2) Extension output in VSCode Output panel → "VSCode MCP Bridge"`;
 
 export function registerHealthCheck(server: McpServer) {
   server.registerTool("health_check", {
