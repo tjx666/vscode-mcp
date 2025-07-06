@@ -1,6 +1,6 @@
 {
     "name": "@vscode-mcp/vscode-mcp-server",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "type": "module",
     "description": "MCP Server that connects to VSCode Extension via Unix Socket",
     "main": "dist/index.js",
