@@ -1,5 +1,9 @@
-import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
+import * as os from 'os';
 
+import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
+import * as vscode from 'vscode';
+
+import packageJson from '../../package.json';
 import { getCurrentWorkspacePath } from './utils';
 
 /**
@@ -8,11 +12,31 @@ import { getCurrentWorkspacePath } from './utils';
 export const health = async (
     _payload: EventParams<'health'>
 ): Promise<EventResult<'health'>> => {
-    const workspacePath = getCurrentWorkspacePath();
-    
-    return {
-        status: 'ok',
-        version: '1.0.0',
-        workspace: workspacePath || 'No workspace'
-    };
+    try {
+        const workspacePath = getCurrentWorkspacePath();
+        
+        return {
+            status: 'ok',
+            extension_version: packageJson.version,
+            workspace: workspacePath || undefined,
+            timestamp: new Date().toISOString(),
+            system_info: {
+                platform: os.platform(),
+                node_version: process.version,
+                vscode_version: vscode.version
+            }
+        };
+    } catch (error) {
+        return {
+            status: 'error',
+            extension_version: packageJson.version,
+            timestamp: new Date().toISOString(),
+            error: `Health check failed: ${error instanceof Error ? error.message : String(error)}`,
+            system_info: {
+                platform: os.platform(),
+                node_version: process.version,
+                vscode_version: vscode.version
+            }
+        };
+    }
 }; 

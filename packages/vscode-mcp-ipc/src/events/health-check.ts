@@ -14,8 +14,15 @@ export const HealthCheckInputSchema = z.object({}).strict();
  */
 export const HealthCheckOutputSchema = z.object({
   status: z.enum(['ok', 'error']),
-  version: z.string(),
-  workspace: z.string().optional(),
+  extension_version: z.string().describe('VSCode MCP Bridge extension version'),
+  workspace: z.string().optional().describe('Current workspace path'),
+  timestamp: z.string().describe('Health check timestamp'),
+  error: z.string().optional().describe('Error message if status is error'),
+  system_info: z.object({
+    platform: z.string().describe('Operating system platform'),
+    node_version: z.string().describe('Node.js version'),
+    vscode_version: z.string().optional().describe('VSCode version if available'),
+  }).optional().describe('System information'),
 }).strict();
 
 /**

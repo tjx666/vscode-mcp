@@ -25,7 +25,7 @@ export function createVSCodeMCPServer(name: string, version: string): McpServer 
   });
 
   // Register all tools
-  registerHealthCheck(server);
+  registerHealthCheck(server, version);
   registerHighlightCode(server);
   registerGetDiagnostics(server);
   registerGetCommands(server);
