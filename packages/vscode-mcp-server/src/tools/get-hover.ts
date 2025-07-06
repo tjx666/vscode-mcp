@@ -27,6 +27,8 @@ const DESCRIPTION = `Get rich type information, documentation, and value details
 Detailed hover information with types, documentation, and value details
 
 **Important Notes:**
+- Files are automatically opened to ensure accurate LSP information
+- No need to position cursor at target location - just provide position parameters
 - Line and character numbers are zero-based
 - includeAllHovers: true provides comprehensive info but may be slower
 - Returns empty hovers array if no information available at position

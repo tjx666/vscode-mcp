@@ -9,10 +9,39 @@ const inputSchema = {
   ...RenameSymbolInputSchema.shape
 };
 
+const DESCRIPTION = `Rename a symbol (variable, function, class, etc.) at a specific position across all files. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
+
+**AI Coding Agent Use Cases:**
+- Refactor code with consistent naming across entire codebase during code improvements
+- Fix naming conflicts or improve code readability as part of code review
+- Implement naming convention changes across large codebases efficiently
+- Update API names and ensure all references are changed simultaneously
+- Rename symbols as part of refactoring operations guided by AI analysis
+
+**Parameter Examples:**
+- Rename variable: uri: 'file:///utils.ts', line: 10, character: 15, newName: 'processedData'
+- Rename function: uri: 'file:///api.ts', line: 25, character: 8, newName: 'handleUserRequest'
+- Rename class: uri: 'file:///models.ts', line: 5, character: 13, newName: 'UserModel'
+
+**Return Format:**
+- success: boolean indicating if rename was successful
+- symbolName: original symbol name that was renamed
+- modifiedFiles: array of files that were changed with change counts
+- totalChanges: total number of text changes made
+- error: detailed error message if rename failed
+
+**Important Notes:**
+- Files are automatically opened to ensure accurate LSP information
+- No need to position cursor at target location - just provide position parameters
+- Position must be exactly on a renameable symbol
+- Returns error if position is not on a valid symbol
+- Modifies files immediately - operation cannot be undone through this tool
+- Some symbols may not be renameable (e.g., built-in types, external libraries)`;
+
 export function registerRenameSymbol(server: McpServer) {
   server.registerTool("rename_symbol", {
     title: "⚠️ Rename Symbol",
-    description: "Rename a symbol (variable, function, class, etc.) at a specific position across all files. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).\n\n**AI Coding Agent Use Cases:**\n- Refactor code with consistent naming across entire codebase during code improvements\n- Fix naming conflicts or improve code readability as part of code review\n- Implement naming convention changes across large codebases efficiently\n- Update API names and ensure all references are changed simultaneously\n- Rename symbols as part of refactoring operations guided by AI analysis\n\n**Parameter Examples:**\n- Rename variable: uri: 'file:///utils.ts', line: 10, character: 15, newName: 'processedData'\n- Rename function: uri: 'file:///api.ts', line: 25, character: 8, newName: 'handleUserRequest'\n- Rename class: uri: 'file:///models.ts', line: 5, character: 13, newName: 'UserModel'\n\n**Return Format:**\n- success: boolean indicating if rename was successful\n- symbolName: original symbol name that was renamed\n- modifiedFiles: array of files that were changed with change counts\n- totalChanges: total number of text changes made\n- error: detailed error message if rename failed\n\n**Important Notes:**\n- Position must be exactly on a renameable symbol\n- Returns error if position is not on a valid symbol\n- Modifies files immediately - operation cannot be undone through this tool\n- Some symbols may not be renameable (e.g., built-in types, external libraries)",
+    description: DESCRIPTION,
     inputSchema,
     annotations: {
       title: "⚠️ Rename Symbol",

@@ -27,6 +27,8 @@ const DESCRIPTION = `Find all reference locations for a symbol (variable, functi
 Array of reference locations with file paths and exact positions
 
 **Important Notes:**
+- Files are automatically opened to ensure accurate LSP information
+- No need to position cursor at target location - just provide position parameters
 - Line and character numbers are zero-based
 - includeDeclaration: false excludes the symbol definition itself
 - Returns empty array if no references found`;

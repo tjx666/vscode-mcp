@@ -289,7 +289,7 @@ const dangerousToolAnnotations = {
 #### 建议结构
 
 ```typescript
-const description = `Brief functional description. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
+const DESCRIPTION = `Brief functional description. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
 
 **AI Coding Agent Use Cases:**
 - How AI agents can leverage this tool effectively
@@ -304,7 +304,10 @@ const description = `Brief functional description. Works with all VSCode-based e
 Brief description of returned data structure
 
 **Important Notes:**
-Key limitations or special behaviors`;
+- Files are automatically opened to ensure accurate LSP information (for LSP tools)
+- No need to position cursor at target location - just provide position parameters (for LSP tools)
+- Key limitations or special behaviors
+- Line and character numbers are zero-based (for position-based tools)`;
 ```
 
 #### 优化示例

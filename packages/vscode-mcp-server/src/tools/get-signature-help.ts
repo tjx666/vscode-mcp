@@ -27,6 +27,8 @@ const DESCRIPTION = `Get detailed function signature information including param
 Detailed signature information with parameter details and documentation
 
 **Important Notes:**
+- Files are automatically opened to ensure accurate LSP information
+- No need to position cursor at target location - just provide position parameters
 - Line and character numbers are zero-based
 - Position should be within a function call or at opening parenthesis
 - Returns null if no signature help available at position

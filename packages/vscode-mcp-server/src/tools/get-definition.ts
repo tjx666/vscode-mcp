@@ -25,6 +25,8 @@ const DESCRIPTION = `Navigate to the definition of a symbol (variable, function,
 Array of Location objects with file URI and exact position coordinates
 
 **Important Notes:**
+- Files are automatically opened to ensure accurate LSP information
+- No need to position cursor at target location - just provide position parameters
 - Line and character numbers are zero-based
 - Returns empty array if no definition found`;
 
