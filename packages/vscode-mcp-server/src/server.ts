@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 import {
   registerExecuteCommand,
+  registerGetCommands,
   registerGetDefinition,
   registerGetDiagnostics,
   registerGetHovers,
@@ -25,6 +26,7 @@ export function createVSCodeMCPServer(name: string, version: string): McpServer 
   // Register all tools
   registerHealthCheck(server);
   registerGetDiagnostics(server);
+  registerGetCommands(server);
   registerGetDefinition(server);
   registerGetReferences(server);
   registerGetHovers(server);

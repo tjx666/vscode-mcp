@@ -29,6 +29,8 @@
 - MCP Server 层调用 Extension 的服务
 - 质量优化确保符合 MCP 官方标准
 
+**重要提醒**: 每个开发阶段完成后，都必须进行 **编译和构建验证**，确保代码质量和依赖关系正确。
+
 ## 工具架构
 
 ### 三层架构
@@ -133,6 +135,13 @@ socketServer.register('yourTool', {
 });
 ```
 
+#### 2.3 编译验证
+
+```bash
+# 编译测试验证（Extension 层不需要构建，只需要验证编译）
+cd packages/vscode-mcp-bridge && npm run compile:test
+```
+
 ### 3. MCP Server 层：创建工具
 
 #### 3.1 创建工具文件
@@ -199,6 +208,13 @@ export function createVSCodeMCPServer(name: string, version: string): McpServer 
   registerYourTool(server);
   return server;
 }
+```
+
+#### 3.3 构建
+
+```bash
+# 构建 MCP Server 包（build 命令包含类型检查）
+cd packages/vscode-mcp-server && npm run build
 ```
 
 ## 质量标准
@@ -273,7 +289,7 @@ const dangerousToolAnnotations = {
 #### 建议结构
 
 ```typescript
-const description = `Brief functional description.
+const description = `Brief functional description. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
 
 **AI Coding Agent Use Cases:**
 - How AI agents can leverage this tool effectively
@@ -286,11 +302,6 @@ const description = `Brief functional description.
 
 **Return Format:** 
 Brief description of returned data structure
-
-**AI Coding Agent Benefits:**
-- Efficiency improvements for AI development
-- How it replaces slower traditional approaches
-- Integration advantages with AI workflows
 
 **Important Notes:**
 Key limitations or special behaviors`;
@@ -447,9 +458,10 @@ const inputSchema = {
 - [ ] 构建 IPC 包
 - [ ] 实现 Extension 服务逻辑
 - [ ] 在 Extension 中注册服务
-- [ ] 构建 Extension 包
+- [ ] Extension 层编译验证
 - [ ] 创建 MCP 工具实现（正确复用 IPC Schema）
 - [ ] 导出并注册 MCP 工具
+- [ ] MCP Server 层构建
 
 **质量优化:**
 
@@ -461,6 +473,9 @@ const inputSchema = {
 **验证测试:**
 
 - [ ] 编译检查所有包
+  - [ ] `cd packages/vscode-mcp-ipc && npm run build`
+  - [ ] `cd packages/vscode-mcp-bridge && npm run compile:test`
+  - [ ] `cd packages/vscode-mcp-server && npm run build`
 - [ ] 功能测试验证
 - [ ] 错误处理测试
 - [ ] LLM 使用效果验证
@@ -472,6 +487,7 @@ const inputSchema = {
 - [ ] 分析现有接口定义
 - [ ] 按顺序修改：IPC → Extension → MCP Server
 - [ ] 保持向后兼容性（如果需要）
+- [ ] 各层编译和构建验证
 
 **质量检查:**
 

@@ -1,6 +1,8 @@
 import { 
     ExecuteCommandInputSchema, 
     ExecuteCommandOutputSchema,
+    GetCommandsInputSchema,
+    GetCommandsOutputSchema,
     GetDefinitionInputSchema,
     GetDefinitionOutputSchema,
     GetDiagnosticsInputSchema,
@@ -25,7 +27,8 @@ import {
 import * as vscode from 'vscode';
 
 import { logger } from './logger';
-import {        executeCommand,getCurrentWorkspacePath,
+import {        executeCommand,    getCommands,
+getCurrentWorkspacePath,
     getDefinition,
     getDiagnostics,
     getHover,
@@ -71,6 +74,12 @@ export async function activate(context: vscode.ExtensionContext) {
             handler: getDiagnostics,
             payloadSchema: GetDiagnosticsInputSchema,
             resultSchema: GetDiagnosticsOutputSchema
+        });
+        
+        socketServer.register('getCommands', {
+            handler: getCommands,
+            payloadSchema: GetCommandsInputSchema,
+            resultSchema: GetCommandsOutputSchema
         });
         
         socketServer.register('getDefinition', {

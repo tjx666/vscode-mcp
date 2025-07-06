@@ -1,5 +1,6 @@
 // Export service functions
 export { executeCommand } from './execute-command';
+export { getCommands } from './get-commands';
 export { getDefinition } from './get-definition';
 export { getDiagnostics } from './get-diagnostics';
 export { getHover } from './get-hover';

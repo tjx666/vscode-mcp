@@ -43,6 +43,26 @@ function toJsonifiable(value: unknown): Jsonifiable {
 }
 
 /**
+ * Process arguments to convert them to appropriate VSCode types
+ */
+function processArguments(args: unknown[]): unknown[] {
+    return args.map(arg => {
+        // Convert URI strings to vscode.Uri objects
+        if (typeof arg === 'string' && (arg.startsWith('file://') || arg.startsWith('vscode://') || arg.startsWith('http://') || arg.startsWith('https://'))) {
+            try {
+                return vscode.Uri.parse(arg);
+            } catch {
+                // If parsing fails, return the original string
+                return arg;
+            }
+        }
+        
+        // Keep other arguments as-is
+        return arg;
+    });
+}
+
+/**
  * Handle execute command
  */
 export const executeCommand = async (
@@ -51,8 +71,11 @@ export const executeCommand = async (
     const { command, args } = payload;
     
     try {
+        // Process arguments to convert URI strings to vscode.Uri objects
+        const processedArgs = args ? processArguments(args) : [];
+        
         // Execute the VSCode command
-        const result = await vscode.commands.executeCommand(command, ...(args || []));
+        const result = await vscode.commands.executeCommand(command, ...processedArgs);
         
         return {
             result: toJsonifiable(result)

@@ -9,6 +9,7 @@ export { formatToolCallError } from "./utils.js";
 
 // 工具注册函数
 export { registerExecuteCommand } from "./execute-command.js"; 
+export { registerGetCommands } from "./get-commands.js";
 export { registerGetDefinition } from "./get-definition.js";
 export { registerGetDiagnostics } from "./get-diagnostics.js";
 export { registerGetHovers } from "./get-hover.js";

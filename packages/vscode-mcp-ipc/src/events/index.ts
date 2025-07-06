@@ -1,5 +1,6 @@
 // Import all event modules
 import type { ExecuteCommandPayload, ExecuteCommandResult } from './execute-command.js';
+import type { GetCommandsPayload, GetCommandsResult } from './get-commands.js';
 import type { GetDefinitionPayload, GetDefinitionResult } from './get-definition.js';
 import type { GetDiagnosticsPayload, GetDiagnosticsResult } from './get-diagnostics.js';
 import type { GetHoverPayload, GetHoverResult } from './get-hover.js';
@@ -14,6 +15,7 @@ import type { RequestInputPayload, RequestInputResult } from './request-input.js
 // Re-export all event types and schemas
 export * from './common.js';
 export * from './execute-command.js';
+export * from './get-commands.js';
 export * from './get-definition.js';
 export * from './get-diagnostics.js';
 export * from './get-hover.js';
@@ -81,6 +83,12 @@ export interface EventMap {
   getSignatureHelp: {
     params: GetSignatureHelpPayload;
     result: GetSignatureHelpResult;
+  };
+
+  /** Get VSCode commands */
+  getCommands: {
+    params: GetCommandsPayload;
+    result: GetCommandsResult;
   };
 
   /** Execute VSCode command */
