@@ -9,14 +9,14 @@ export const HighlightCodeBaseInputSchema = z
       startCharacter: z.number().optional().describe('Start character (0-based)'),
       endCharacter: z.number().optional().describe('End character (0-based)'),
       message: z.string().optional().describe('Optional explanation message'),
-      type: z.enum(['info', 'warning', 'error', 'success']).optional().default('info').describe('Highlight type'),
+
       backgroundColor: z.string().optional().describe('Custom background color for this range (e.g., "#ff0000", "rgba(255,0,0,0.3)")'),
       foregroundColor: z.string().optional().describe('Custom foreground color for this range (e.g., "#ffffff")')
     })).describe('Array of ranges to highlight'),
     showEditor: z.boolean().optional().default(true).describe('Whether to show the file in editor'),
     scrollToFirst: z.boolean().optional().default(true).describe('Whether to scroll to first highlight'),
     clearPrevious: z.boolean().optional().default(true).describe('Whether to clear previous highlights'),
-    timeout: z.number().optional().default(1500).describe('Auto-clear timeout in milliseconds (0 for permanent, default: 1500ms)')
+    timeout: z.number().optional().default(3000).describe('Auto-clear timeout in milliseconds (0 for permanent, default: 3000ms)')
   })
   .strict();
 

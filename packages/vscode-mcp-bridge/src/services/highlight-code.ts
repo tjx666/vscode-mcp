@@ -4,13 +4,14 @@ import * as vscode from 'vscode';
 // Store active decorations for cleanup
 const activeDecorations = new Map<string, vscode.TextEditorDecorationType[]>();
 
-// Predefined highlight styles for different types
-const highlightStyles = {
-  info: { backgroundColor: '#0ea5e9', color: '#ffffff' },      // Blue
-  warning: { backgroundColor: '#f59e0b', color: '#ffffff' },   // Orange
-  error: { backgroundColor: '#ef4444', color: '#ffffff' },     // Red
-  success: { backgroundColor: '#10b981', color: '#ffffff' }    // Green
-};
+/**
+ * Native VSCode highlight colors that adapt to the current theme
+ * Uses VSCode's built-in theme colors for consistent highlighting
+ */
+const getNativeHighlightStyle = () => ({
+  backgroundColor: new vscode.ThemeColor('editor.findMatchBackground'),
+  color: new vscode.ThemeColor('editor.findMatchForeground')
+});
 
 /**
  * Handle highlighting code ranges in files
@@ -54,8 +55,8 @@ export const highlightCode = async (
         const decorations: vscode.TextEditorDecorationType[] = [];
         const decorationRanges = new Map<vscode.TextEditorDecorationType, vscode.Range[]>();
 
-        // Group ranges by type for efficient decoration
-        const rangesByType = new Map<string, Array<{range: vscode.Range, message?: string, backgroundColor?: string, foregroundColor?: string}>>();
+        // Group ranges by custom colors for efficient decoration
+        const rangesByColor = new Map<string, Array<{range: vscode.Range, message?: string}>>();
         
         for (const rangeSpec of payload.ranges) {
             try {
@@ -75,58 +76,44 @@ export const highlightCode = async (
                 );
                 const range = new vscode.Range(startPos, endPos);
 
-                const type = rangeSpec.type ?? 'info';
-                if (!rangesByType.has(type)) {
-                    rangesByType.set(type, []);
+                // Use custom colors if provided, otherwise use native highlight colors
+                const nativeStyle = getNativeHighlightStyle();
+                const bgColor = rangeSpec.backgroundColor || nativeStyle.backgroundColor;
+                const fgColor = rangeSpec.foregroundColor || nativeStyle.color;
+                const colorKey = `${bgColor}-${fgColor}`;
+                
+                if (!rangesByColor.has(colorKey)) {
+                    rangesByColor.set(colorKey, []);
                 }
-                rangesByType.get(type)!.push({ range, message: rangeSpec.message, backgroundColor: rangeSpec.backgroundColor, foregroundColor: rangeSpec.foregroundColor });
+                rangesByColor.get(colorKey)!.push({ range, message: rangeSpec.message });
             } catch (error) {
                 console.warn(`Failed to create range for ${rangeSpec.startLine}:${rangeSpec.endLine}:`, error);
             }
         }
 
-        // Create decorations for each type
-        for (const [type, ranges] of rangesByType) {
-            const style = highlightStyles[type as keyof typeof highlightStyles] || highlightStyles.info;
+        // Create decorations for each color combination
+        for (const [colorKey, ranges] of rangesByColor) {
+            const [bgColor, fgColor] = colorKey.split('-');
             
-            // Group ranges by their custom colors to minimize decoration types
-            const colorGroups = new Map<string, Array<{range: vscode.Range, message?: string}>>();
-            
-            for (const { range, message, backgroundColor, foregroundColor } of ranges) {
-                const bgColor = backgroundColor || style.backgroundColor;
-                const fgColor = foregroundColor || style.color;
-                const colorKey = `${bgColor}-${fgColor}`;
-                
-                if (!colorGroups.has(colorKey)) {
-                    colorGroups.set(colorKey, []);
-                }
-                colorGroups.get(colorKey)!.push({ range, message });
-            }
-            
-            // Create decoration type for each color combination
-            for (const [colorKey, colorRanges] of colorGroups) {
-                const [bgColor, fgColor] = colorKey.split('-');
-                
-                const decorationType = vscode.window.createTextEditorDecorationType({
-                    backgroundColor: bgColor,
-                    color: fgColor,
-                    overviewRulerColor: bgColor,
-                    overviewRulerLane: vscode.OverviewRulerLane.Right,
-                    rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
-                });
+            const decorationType = vscode.window.createTextEditorDecorationType({
+                backgroundColor: bgColor,
+                color: fgColor,
+                overviewRulerColor: bgColor,
+                overviewRulerLane: vscode.OverviewRulerLane.Right,
+                rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
+            });
 
-                decorations.push(decorationType);
+            decorations.push(decorationType);
+            
+            // Apply decorations to editor if available
+            if (editor) {
+                const decorationOptions: vscode.DecorationOptions[] = ranges.map(({ range, message }) => ({
+                    range,
+                    hoverMessage: message ? new vscode.MarkdownString(message) : undefined
+                }));
                 
-                // Apply decorations to editor if available
-                if (editor) {
-                    const decorationOptions: vscode.DecorationOptions[] = colorRanges.map(({ range, message }) => ({
-                        range,
-                        hoverMessage: message ? new vscode.MarkdownString(message) : undefined
-                    }));
-                    
-                    editor.setDecorations(decorationType, decorationOptions);
-                    decorationRanges.set(decorationType, colorRanges.map(r => r.range));
-                }
+                editor.setDecorations(decorationType, decorationOptions);
+                decorationRanges.set(decorationType, ranges.map(r => r.range));
             }
         }
 
