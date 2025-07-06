@@ -16,6 +16,8 @@
   <a href="#license">License</a>
 </p>
 
+[![MCP Badge](https://lobehub.com/badge/mcp/tjx666-vscode-mcp)](https://lobehub.com/mcp/tjx666-vscode-mcp) ![CI](https://github.com/tjx666/vscode-mcp/actions/workflows/vscode-extension-ci.yml/badge.svg) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](http://makeapullrequest.com) [![Github Open Issues](https://img.shields.io/github/issues/tjx666/vscode-mcp)](https://github.com/tjx666/vscode-mcp/issues) [![LICENSE](https://img.shields.io/badge/license-Anti%20996-blue.svg?style=flat-square)](https://github.com/996icu/996.ICU/blob/master/LICENSE)
+
 ## Overview
 
 VSCode MCP is a comprehensive monorepo solution that enables MCP (Model Context Protocol) clients to access rich VSCode context information in real-time. This project bridges the gap between AI assistants and your development environment, providing accurate code analysis, diagnostics, and intelligent code navigation.

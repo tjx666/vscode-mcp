@@ -71,7 +71,12 @@ export function registerHealthCheck(server: McpServer, serverVersion: string) {
       
       if (!versionMatch) {
         statusMessage += `\n⚠️  Warning: Version mismatch detected!\n`;
-        statusMessage += `   This may cause compatibility issues. Please ensure both components are updated to the same version.`;
+        statusMessage += `   This may cause compatibility issues. Please update both components to the same version:\n\n`;
+        statusMessage += `   📦 Update MCP Server:\n`;
+        statusMessage += `   npx @vscode-mcp/vscode-mcp-server@latest --version\n\n`;
+        statusMessage += `   🔌 Update VSCode Extension:\n`;
+        statusMessage += `   Please update the "VSCode MCP Bridge" extension (YuTengjing.vscode-mcp-bridge) to the latest version in VSCode Extensions marketplace\n\n`;
+        statusMessage += `   🔄 Important: After updating both components, please restart your editor to ensure the changes take effect.`;
       }
       
       return {
