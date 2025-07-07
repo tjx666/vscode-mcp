@@ -133,6 +133,15 @@ Go to `Cursor Settings` -> `Tools & Integrations` -> `New MCP Server`. Name to y
 }
 ```
 
+##### 📚 Recommended: Use Cursor Rule for Better AI Coding
+
+**Highly Recommended**: Read and adjust following cursor rule, add it as cursor user rule or project rule:
+
+- **English Version**: Copy content from **[rule.md](./rule.md)**
+- **中文版本**: Copy content from **[rule_zh_CN.md](./rule_zh_CN.md)**
+
+AI assistants will automatically follow these proven strategies for more efficient VSCode MCP tool usage.
+
 <details>
 <summary><strong>Install in VS Code</strong></summary>
 
