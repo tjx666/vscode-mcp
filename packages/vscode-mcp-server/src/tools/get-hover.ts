@@ -9,16 +9,17 @@ const inputSchema = {
   ...GetHoverInputSchema.shape
 };
 
-const DESCRIPTION = `Get rich type information, documentation, and value details for multiple code positions - essential for type-aware AI coding. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
+const DESCRIPTION = `Get rich type information, documentation, and value details for a code position - essential for type-aware AI coding. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
 
 **AI Coding Agent Use Cases:**
 - Understand complex types and read inline documentation for functions, variables, and classes
-- Batch analyze multiple symbols for comprehensive code understanding  
-- ALWAYS prefer this over codebase_search, grep_search, file_search when you already know the exact code positions
+- Get precise type information before making code modifications
+- Analyze symbol details without manual code inspection
+- Prefer this over codebase_search, grep_search when you already know the exact code position
 
 **Parameter Examples:**
 - Get type info: positions: [{ uri: 'file:///app.ts', line: 25, character: 8 }]
-- Batch analysis: positions: [{ uri: 'file:///utils.js', line: 10, character: 5 }, { uri: 'file:///api.ts', line: 15, character: 12 }]
+- Multiple positions: positions: [{ uri: 'file:///utils.js', line: 10, character: 5 }, { uri: 'file:///api.ts', line: 15, character: 12 }]
 - Comprehensive info: includeAllHovers: true
 
 **Return Format:**

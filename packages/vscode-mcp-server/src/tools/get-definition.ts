@@ -9,25 +9,30 @@ const inputSchema = {
   ...GetDefinitionInputSchema.shape
 };
 
-const DESCRIPTION = `Navigate to the definition of a symbol (variable, function, class, etc.) at a specific position. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
+const DESCRIPTION = `Get definition location information for a symbol (variable, function, class, etc.) at a specific position. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
 
 **AI Coding Agent Use Cases:**
-- Find where a symbol is declared/defined
-- Understand the implementation of a function/class before making changes
-- ALWAYS prefer this over codebase_search, grep_search when you already know the exact symbol position
+- Retrieve definition location data to understand where symbols are declared
+- Get precise file paths and positions for symbols before code analysis
+- Obtain LSP-based definition information for accurate code understanding
+- Prefer this over codebase_search, grep_search when you already know the exact symbol position
 
 **Parameter Examples:**
-- Jump to function: uri: 'file:///path/to/file.ts', line: 10, character: 15
-- Find class: uri: 'file:///component.tsx', line: 25, character: 8
+- Get function definition: uri: 'file:///path/to/file.ts', line: 10, character: 15
+- Get class definition: uri: 'file:///component.tsx', line: 25, character: 8
 
 **Return Format:**
-Array of Location objects with file URI and exact position coordinates
+Array of Location objects, each containing:
+- uri: File path where the symbol is defined
+- range: Exact position coordinates (line/character numbers)
+- Returns empty array if no definition found
 
 **Important Notes:**
 - Files are automatically opened to ensure accurate LSP information
 - No need to position cursor at target location - just provide position parameters
 - Line and character numbers are zero-based
-- Returns empty array if no definition found`;
+- Position must be exactly on a symbol (variable, function, class, etc.)
+- Some symbols may not have definitions (e.g., built-in types, external libraries)`;
 
 export function registerGetDefinition(server: McpServer) {
   server.registerTool("get_definition", {

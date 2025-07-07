@@ -12,7 +12,7 @@ const inputSchema = {
 const DESCRIPTION = `Open a file and highlight specific code sections with visual decorations - essential when AI finds code for users. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
 
 **AI Coding Agent Use Cases:**
-- When user asks "find the authentication logic", open the file and highlight the relevant functions
+- When user asks "find the authentication logic", highlight the relevant functions
 - When explaining how a feature works, show the exact code sections visually
 - ALWAYS prefer this over just telling users "check lines 10-15 in utils.ts" - visual highlighting is much better
 
@@ -35,6 +35,13 @@ const DESCRIPTION = `Open a file and highlight specific code sections with visua
 
 **Return Format:**
 Success status with highlight count and file opening confirmation
+
+**Best Practices:**
+- **ALWAYS read the target file completely first** using read_file before highlighting
+- Analyze the full code structure to determine precise line ranges for highlighting
+- Use codebase_search or grep_search to locate relevant code sections first
+- Combine multiple related code sections into logical highlighting groups
+- Provide meaningful messages for each highlighted range to explain their purpose
 
 **Important Notes:**
 - Line and character numbers are zero-based
