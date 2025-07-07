@@ -9,8 +9,9 @@ const activeDecorations = new Map<string, vscode.TextEditorDecorationType[]>();
  * Uses VSCode's built-in theme colors for consistent highlighting
  */
 const getNativeHighlightStyle = () => ({
-  backgroundColor: new vscode.ThemeColor('editor.findMatchBackground'),
-  color: new vscode.ThemeColor('editor.findMatchForeground')
+  backgroundColor: new vscode.ThemeColor('editor.findMatchHighlightBackground'),
+  // Don't override text color - let it use the default editor text color
+  color: undefined
 });
 
 /**
@@ -53,10 +54,9 @@ export const highlightCode = async (
 
         // Create new decorations
         const decorations: vscode.TextEditorDecorationType[] = [];
-        const decorationRanges = new Map<vscode.TextEditorDecorationType, vscode.Range[]>();
 
-        // Group ranges by custom colors for efficient decoration
-        const rangesByColor = new Map<string, Array<{range: vscode.Range, message?: string}>>();
+        // Group ranges by decoration type for efficient decoration
+        const rangesByDecorationType = new Map<string, Array<{range: vscode.Range, message?: string, bgColor: string | vscode.ThemeColor, fgColor?: string | vscode.ThemeColor}>>();
         
         for (const rangeSpec of payload.ranges) {
             try {
@@ -79,29 +79,39 @@ export const highlightCode = async (
                 // Use custom colors if provided, otherwise use native highlight colors
                 const nativeStyle = getNativeHighlightStyle();
                 const bgColor = rangeSpec.backgroundColor || nativeStyle.backgroundColor;
-                const fgColor = rangeSpec.foregroundColor || nativeStyle.color;
-                const colorKey = `${bgColor}-${fgColor}`;
+                const fgColor = rangeSpec.foregroundColor; // Don't use nativeStyle.color which is undefined
                 
-                if (!rangesByColor.has(colorKey)) {
-                    rangesByColor.set(colorKey, []);
+                // Create a key that properly handles both string and ThemeColor
+                const colorKey = rangeSpec.backgroundColor || rangeSpec.foregroundColor ? 
+                    `custom-${rangeSpec.backgroundColor}-${rangeSpec.foregroundColor}` : 
+                    'native';
+                
+                if (!rangesByDecorationType.has(colorKey)) {
+                    rangesByDecorationType.set(colorKey, []);
                 }
-                rangesByColor.get(colorKey)!.push({ range, message: rangeSpec.message });
+                rangesByDecorationType.get(colorKey)!.push({ range, message: rangeSpec.message, bgColor, fgColor });
             } catch (error) {
                 console.warn(`Failed to create range for ${rangeSpec.startLine}:${rangeSpec.endLine}:`, error);
             }
         }
 
         // Create decorations for each color combination
-        for (const [colorKey, ranges] of rangesByColor) {
-            const [bgColor, fgColor] = colorKey.split('-');
+        for (const [_, ranges] of rangesByDecorationType) {
+            const firstRange = ranges[0];
             
-            const decorationType = vscode.window.createTextEditorDecorationType({
-                backgroundColor: bgColor,
-                color: fgColor,
-                overviewRulerColor: bgColor,
+            // Only set color if we have a foreground color
+            const decorationOptions: vscode.DecorationRenderOptions = {
+                backgroundColor: firstRange.bgColor,
+                overviewRulerColor: firstRange.bgColor,
                 overviewRulerLane: vscode.OverviewRulerLane.Right,
-                rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
-            });
+                rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
+            };
+            
+            if (firstRange.fgColor) {
+                decorationOptions.color = firstRange.fgColor;
+            }
+            
+            const decorationType = vscode.window.createTextEditorDecorationType(decorationOptions);
 
             decorations.push(decorationType);
             
@@ -113,7 +123,6 @@ export const highlightCode = async (
                 }));
                 
                 editor.setDecorations(decorationType, decorationOptions);
-                decorationRanges.set(decorationType, ranges.map(r => r.range));
             }
         }
 
