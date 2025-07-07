@@ -1,4 +1,5 @@
 // Export service functions
+export { callAgent } from './call-agent/index.js';
 export { executeCommand } from './execute-command';
 export { getCommands } from './get-commands';
 export { getDefinition } from './get-definition';

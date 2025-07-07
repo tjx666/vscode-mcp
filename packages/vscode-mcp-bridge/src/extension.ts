@@ -1,4 +1,6 @@
 import { 
+    CallAgentInputSchema,
+    CallAgentOutputSchema,
     ExecuteCommandInputSchema, 
     ExecuteCommandOutputSchema,
     GetCommandsInputSchema,
@@ -28,7 +30,10 @@ import {
 import * as vscode from 'vscode';
 
 import { logger } from './logger';
-import {        executeCommand,    getCommands,
+import {
+    callAgent,
+    executeCommand,
+    getCommands,
 getCurrentWorkspacePath,
     getDefinition,
     getDiagnostics,
@@ -36,7 +41,8 @@ getCurrentWorkspacePath,
     getReferences,
     getSignatureHelp,
     health,
-    highlightCode,    openDiff,
+    highlightCode,
+    openDiff,
     openFiles,
     renameSymbol,
     requestInput} from './services';
@@ -65,6 +71,12 @@ export async function activate(context: vscode.ExtensionContext) {
         socketServer = new SocketServer(workspacePath);
         
         // Register all services with schema validation
+        socketServer.register('callAgent', {
+            handler: callAgent,
+            payloadSchema: CallAgentInputSchema,
+            resultSchema: CallAgentOutputSchema
+        });
+        
         socketServer.register('health', {
             handler: health,
             payloadSchema: HealthCheckInputSchema,

@@ -37,6 +37,7 @@ These commands run slowly in large projects, severely impacting AI development e
 - **Get fast diagnostics** (`get-diagnostics`) - Replace time-consuming type checking and lint commands
 - **Access real-time type information** (`get-hover`) - Get accurate type definitions without compilation
 - **Navigate code efficiently** (`get-definition`, `get-references`) - Understand code structure and dependencies
+- **Call IDE AI agents** (`call-agent`) - Integrate with built-in AI assistants like Cursor Composer, GitHub Copilot, and others
 
 ### Core Advantages
 
@@ -44,6 +45,7 @@ These commands run slowly in large projects, severely impacting AI development e
 2. **Accuracy**: Precise analysis based on language servers, more reliable than static analysis
 3. **Efficiency**: Significantly reduce AI coding agent wait times
 4. **Integration**: Deep integration with VSCode ecosystem, supporting multiple languages and extensions
+5. **AI Collaboration**: Enable AI agents to work together by calling IDE-native AI assistants (Cursor Composer, GitHub Copilot, etc.)
 
 ## Available Tools
 
@@ -51,6 +53,7 @@ VSCode MCP provides the following tools through the MCP protocol:
 
 | Tool                   | Description                                      | Parameters                                                                                    |
 | ---------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| **call_agent**         | Call IDE's AI agent with prompts and context     | `prompt`, `files?`, `images?`, `model?`, `mode?`, `ide_type?`                                 |
 | **execute_command**    | Execute VSCode commands with arguments           | `command`, `args?`                                                                            |
 | **get_commands**       | Get all available VSCode commands in workspace   | `include_internal?`, `filter?`, `category?`, `limit?`                                         |
 | **get_definition**     | Get symbol definition locations                  | `uri`, `line`, `character`                                                                    |
@@ -66,6 +69,32 @@ VSCode MCP provides the following tools through the MCP protocol:
 | **request_input**      | Request simple text input from user              | `prompt`, `placeholder?`, `title?`, `password?`, `validateInput?`                             |
 
 > **⚠️ Security Warning**: The `execute_command` tool can execute arbitrary VSCode commands and potentially trigger dangerous operations. Use with extreme caution and only with trusted AI models.
+
+### AI Agent Integration
+
+The `call_agent` tool enables seamless integration between external AI assistants and IDE-native AI agents. This creates a powerful collaborative AI ecosystem where different AI agents can work together on complex coding tasks.
+
+**Supported IDEs:**
+
+- **Cursor**: Integrates with Cursor Composer for advanced code generation
+- **VSCode**: Supports GitHub Copilot, Cline, Continue, and other popular extensions
+- **Windsurf**: Integrates with Windsurf's native AI capabilities
+- **Trae**: Supports Trae's AI assistant features
+
+**Supported AI Agents:**
+
+- **Cursor Composer**: Advanced code generation and refactoring
+- **GitHub Copilot**: Code completion and chat assistance
+- **Cline**: Interactive coding assistant with file management
+- **Continue**: Open-source coding assistant
+- **Roocode & Kilocode**: Specialized coding tools
+
+**Key Features:**
+
+- **Auto-detection**: Automatically detects your IDE and available AI extensions
+- **Flexible Input**: Supports text prompts, file attachments, and image inputs
+- **Smart Routing**: Chooses the best available AI agent based on capability and priority
+- **Cross-platform**: Works across different operating systems and IDE configurations
 
 All tools require the `workspace_path` parameter to target specific VSCode instances.
 

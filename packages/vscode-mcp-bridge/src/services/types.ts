@@ -20,4 +20,4 @@ export {
 export type ServiceHandler<T extends EventName = EventName> = (
     id: string,
     params: EventParams<T>
-) => Promise<BaseResponse>; 
+  ) => Promise<BaseResponse>; 

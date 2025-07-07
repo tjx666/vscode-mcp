@@ -1,4 +1,5 @@
 // Import all event modules
+import type { CallAgentPayload, CallAgentResult } from './call-agent.js';
 import type { ExecuteCommandPayload, ExecuteCommandResult } from './execute-command.js';
 import type { GetCommandsPayload, GetCommandsResult } from './get-commands.js';
 import type { GetDefinitionPayload, GetDefinitionResult } from './get-definition.js';
@@ -14,6 +15,7 @@ import type { RenameSymbolPayload, RenameSymbolResult } from './rename-symbol.js
 import type { RequestInputPayload, RequestInputResult } from './request-input.js';
 
 // Re-export all event types and schemas
+export * from './call-agent.js';
 export * from './common.js';
 export * from './execute-command.js';
 export * from './get-commands.js';
@@ -55,6 +57,12 @@ export interface BaseResponse {
  * Event definitions for MCP Server -> VSCode Extension communication
  */
 export interface EventMap {
+  /** Call IDE agent with prompt */
+  callAgent: {
+    params: CallAgentPayload;
+    result: CallAgentResult;
+  };
+
   /** Health check */
   health: {
     params: HealthCheckPayload;
