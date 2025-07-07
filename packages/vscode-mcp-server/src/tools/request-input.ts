@@ -31,6 +31,7 @@ const DESCRIPTION = `Request simple text input from the user through editor inpu
 - Error info: prompt: "Could you paste the error message?", placeholder: "Paste error here..."
 - Config value: prompt: "What's your preferred API endpoint?", placeholder: "https://api.example.com"
 - Password: prompt: "Enter your database password:", password: true
+- **Request help after failed attempts**: prompt: "I've tried multiple approaches to fix this issue but none worked. Could you provide some hints or suggest a different approach?", placeholder: "e.g., specific error details, alternative solution, missing context"
 
 **Return Format:**
 - userInput: string (user's input text) or undefined if cancelled
