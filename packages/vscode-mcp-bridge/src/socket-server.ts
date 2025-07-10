@@ -113,7 +113,10 @@ export class SocketServer {
                 try {
                     registration.resultSchema.parse(result);
                 } catch (validationError) {
-                    logger.error(`Result validation failed for ${method}: ${validationError}`);
+                    // Log the actual result value that failed validation
+                    logger.error(`Result validation failed for ${method}:`);
+                    logger.error(`Actual result: ${JSON.stringify(result, null, 2)}`);
+                    logger.error(`Validation error: ${validationError}`);
                     return {
                         id,
                         error: {

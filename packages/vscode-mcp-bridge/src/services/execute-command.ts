@@ -5,6 +5,11 @@ import * as vscode from 'vscode';
  * Check if a value is JSON serializable
  */
 function isJsonifiable(value: unknown): value is Jsonifiable {
+    // undefined is not JSON serializable (it gets omitted in objects, converted to null in arrays)
+    if (value === undefined) {
+        return false;
+    }
+    
     try {
         JSON.stringify(value);
         return true;
