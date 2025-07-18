@@ -114,6 +114,30 @@ Or search for "VSCode MCP Bridge" in the VSCode Extensions marketplace.
 
 #### Install in Cursor ✅ Tested
 
+##### ⚠️ Gemini 2.5 Pro Compatibility Note
+
+The `execute_command` tool is currently not compatible with Gemini 2.5 Pro in Cursor due to potential security restrictions. If you plan to use Gemini 2.5 Pro, it is **highly recommended** to disable this tool to prevent any issues.
+
+You can disable it by adding a command-line argument to the MCP server configuration in Cursor's settings.
+
+1. Go to `Cursor Settings` -> `Tools & Integrations`.
+2. Find your `vscode-mcp` server configuration and click `Edit`.
+3. In the `args` array, add the following argument: `"--disable-tools=execute_command"`
+4. Your final config should look similar to this:
+
+```json
+{
+  "mcpServers": {
+    "vscode-mcp": {
+      "command": "npx",
+      "args": ["@vscode-mcp/vscode-mcp-server@latest", "--disable-tools=execute_command"]
+    }
+  }
+}
+```
+
+This will prevent the `execute_command` tool from being registered with the server, ensuring compatibility with Gemini 2.5 Pro.
+
 ##### Click the button to install
 
 [![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=vscode-mcp&config=eyJjb21tYW5kIjoibnB4IEB2c2NvZGUtbWNwL3ZzY29kZS1tY3Atc2VydmVyQGxhdGVzdCJ9)
