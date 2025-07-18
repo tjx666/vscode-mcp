@@ -98,7 +98,7 @@ export const getDiagnostics = async (
                         end: { line: diag.range.end.line, character: diag.range.end.character }
                     },
                     message: diag.message,
-                    severity: diag.severity as 1 | 2 | 3 | 4,
+                    severity: diag.severity ,
                     source: diag.source,
                     code: typeof diag.code === 'object' ? diag.code.value : diag.code
                 }))

@@ -12,7 +12,7 @@ import { RangeSchema } from './common.js';
 const DiagnosticSchema = z.object({
   range: RangeSchema,
   message: z.string(),
-  severity: z.number().int().min(1).max(4).optional(),
+  severity: z.number().int().min(0).max(3).optional(),
   source: z.string().optional(),
   code: z.union([z.string(), z.number()]).optional(),
 }).strict();

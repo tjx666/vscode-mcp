@@ -24,12 +24,12 @@ const DESCRIPTION = `Get real-time diagnostic information (errors, warnings, hin
 - Single file verification: uris: ['file:///components/Button.tsx']
 
 **Return Format:**
-Structured diagnostic results with severity levels, positions, and detailed error messages
+Structured diagnostic results with severity levels, positions, and detailed error messages.
+Severity levels: 0=ERROR, 1=WARNING, 2=INFO, 3=HINT (matches VSCode DiagnosticSeverity enum)
 
 **Important Notes:**
 - Files are automatically opened to ensure accurate LSP diagnostics
 - Empty uris array triggers Git integration to find all modified files
-- Severity levels: 1=ERROR, 2=WARNING, 3=INFO, 4=HINT
 - Line and character numbers are zero-based`;
 
 export function registerGetDiagnostics(server: McpServer) {
@@ -69,8 +69,8 @@ export function registerGetDiagnostics(server: McpServer) {
         }
         
         const diagnosticsList = file.diagnostics.map(diag => {
-          const severityMap: Record<number, string> = { 1: "ERROR", 2: "WARNING", 3: "INFO", 4: "HINT" };
-          const severity = severityMap[diag.severity || 1] || "ERROR";
+          const severityMap: Record<number, string> = { 0: "ERROR", 1: "WARNING", 2: "INFO", 3: "HINT" };
+          const severity = severityMap[diag.severity ?? 0] || "ERROR";
           const range = `${diag.range.start.line}:${diag.range.start.character}`;
           const source = diag.source ? `[${diag.source}] ` : "";
           const code = diag.code ? `(${diag.code}) ` : "";
