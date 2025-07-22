@@ -76,11 +76,20 @@ export const getDiagnostics = async (
     payload: EventParams<'getDiagnostics'>
 ): Promise<EventResult<'getDiagnostics'>> => {
     let targetUris = payload.uris;
+    const { sources, severities } = payload;
     
     // If empty array is provided, get all git modified files
     if (targetUris.length === 0) {
         targetUris = await getModifiedFiles();
     }
+    
+    // Severity mapping from VSCode number to string
+    const severityNumberToString = {
+        0: 'error',
+        1: 'warning',
+        2: 'info',
+        3: 'hint'
+    } as const;
     
     const files = await Promise.all(
         targetUris.map(async (uriString: string) => {
@@ -88,17 +97,30 @@ export const getDiagnostics = async (
             await ensureFileIsOpen(uriString);
             
             const uri = vscode.Uri.parse(uriString);
-            const diagnostics = vscode.languages.getDiagnostics(uri);
+            const allDiagnostics = vscode.languages.getDiagnostics(uri);
+            
+            // Filter diagnostics based on sources and severities
+            const filteredDiagnostics = allDiagnostics.filter(diag => {
+                // Filter by source (empty array means include all sources)
+                const sourceMatches = sources.length === 0 || 
+                    (diag.source ? sources.some(s => diag.source!.toLowerCase().includes(s.toLowerCase())) : false);
+                
+                // Filter by severity (empty array means include all severities) 
+                const diagSeverityString = severityNumberToString[diag.severity];
+                const severityMatches = severities.length === 0 || severities.includes(diagSeverityString);
+                
+                return sourceMatches && severityMatches;
+            });
             
             return {
                 uri: uriString,
-                diagnostics: diagnostics.map(diag => ({
+                diagnostics: filteredDiagnostics.map(diag => ({
                     range: {
                         start: { line: diag.range.start.line, character: diag.range.start.character },
                         end: { line: diag.range.end.line, character: diag.range.end.character }
                     },
                     message: diag.message,
-                    severity: diag.severity ,
+                    severity: severityNumberToString[diag.severity],
                     source: diag.source,
                     code: typeof diag.code === 'object' ? diag.code.value : diag.code
                 }))

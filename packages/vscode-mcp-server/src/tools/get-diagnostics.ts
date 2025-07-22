@@ -22,6 +22,9 @@ const DESCRIPTION = `Get real-time diagnostic information (errors, warnings, hin
 - Check modified files: uris: [] (auto-detects git changes, much faster than npm run build)
 - Validate specific files: uris: ['file:///src/app.ts', 'file:///src/utils.js']
 - Single file verification: uris: ['file:///components/Button.tsx']
+- Filter ESLint errors only: sources: ['eslint'], severities: ['error']
+- TypeScript warnings only: sources: ['ts', 'typescript'], severities: ['warning']
+- All diagnostics: sources: [], severities: []
 
 **Return Format:**
 Structured diagnostic results with severity levels, positions, and detailed error messages.
@@ -30,7 +33,8 @@ Severity levels: 0=ERROR, 1=WARNING, 2=INFO, 3=HINT (matches VSCode DiagnosticSe
 **Important Notes:**
 - Files are automatically opened to ensure accurate LSP diagnostics
 - Empty uris array triggers Git integration to find all modified files
-- Line and character numbers are zero-based`;
+- Line and character numbers are zero-based
+- Source filtering uses case-insensitive partial matching`;
 
 export function registerGetDiagnostics(server: McpServer) {
   server.registerTool("get_diagnostics", {
@@ -44,11 +48,11 @@ export function registerGetDiagnostics(server: McpServer) {
       idempotentHint: false,
       openWorldHint: false
     }
-  }, async ({ workspace_path, uris }) => {
+  }, async ({ workspace_path, uris, sources, severities }) => {
     const dispatcher = createDispatcher(workspace_path);
     
     try {
-      const result = await dispatcher.dispatch("getDiagnostics", { uris });
+      const result = await dispatcher.dispatch("getDiagnostics", { uris, sources, severities });
       
       // Handle case where no files were found
       if (result.files.length === 0) {
@@ -69,8 +73,7 @@ export function registerGetDiagnostics(server: McpServer) {
         }
         
         const diagnosticsList = file.diagnostics.map(diag => {
-          const severityMap: Record<number, string> = { 0: "ERROR", 1: "WARNING", 2: "INFO", 3: "HINT" };
-          const severity = severityMap[diag.severity ?? 0] || "ERROR";
+          const severity = diag.severity.toUpperCase();
           const range = `${diag.range.start.line}:${diag.range.start.character}`;
           const source = diag.source ? `[${diag.source}] ` : "";
           const code = diag.code ? `(${diag.code}) ` : "";

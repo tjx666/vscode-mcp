@@ -12,7 +12,7 @@ import { RangeSchema } from './common.js';
 const DiagnosticSchema = z.object({
   range: RangeSchema,
   message: z.string(),
-  severity: z.number().int().min(0).max(3).optional(),
+  severity: z.enum(['error', 'warning', 'info', 'hint']),
   source: z.string().optional(),
   code: z.union([z.string(), z.number()]).optional(),
 }).strict();
@@ -30,6 +30,8 @@ const FileDiagnosticSchema = z.object({
  */
 export const GetDiagnosticsInputSchema = z.object({
   uris: z.array(z.string()).describe('Array of file URIs to get diagnostics for. If empty array is provided, will get diagnostics for all git modified files (staged and unstaged) in the workspace.'),
+  sources: z.array(z.string()).optional().default(['eslint', 'ts']).describe('Array of diagnostic sources to include (e.g., "eslint", "ts", "typescript"). If empty array provided, includes all sources.'),
+  severities: z.array(z.enum(['error', 'warning', 'info', 'hint'])).optional().default(['warning', 'error']).describe('Array of severity levels to include. Supported values: "error", "warning", "info", "hint".'),
 }).strict();
 
 /**
