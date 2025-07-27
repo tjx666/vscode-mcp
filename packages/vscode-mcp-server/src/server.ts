@@ -11,6 +11,7 @@ import {
   registerGetSignatureHelp,
   registerHealthCheck,
   registerHighlightCode,
+  registerListWorkspaces,
   registerOpenDiff,
   registerOpenFiles,
   registerRenameSymbol,
@@ -40,6 +41,7 @@ export function createVSCodeMCPServer(name: string, version: string): McpServer 
   registerOpenFiles(server);
   registerRenameSymbol(server);
   registerRequestInput(server);
+  registerListWorkspaces(server);
 
   return server;
 } 

@@ -19,6 +19,8 @@ import {
     HealthCheckOutputSchema,
     HighlightCodeInputSchema,
     HighlightCodeOutputSchema,
+    ListWorkspacesInputSchema,
+    ListWorkspacesOutputSchema,
     OpenDiffInputSchema,
     OpenDiffOutputSchema,
     OpenFilesInputSchema,
@@ -42,6 +44,7 @@ getCurrentWorkspacePath,
     getSignatureHelp,
     health,
     highlightCode,
+    listWorkspaces,
     openDiff,
     openFiles,
     renameSymbol,
@@ -153,6 +156,12 @@ export async function activate(context: vscode.ExtensionContext) {
             handler: renameSymbol,
             payloadSchema: RenameSymbolInputSchema,
             resultSchema: RenameSymbolOutputSchema
+        });
+        
+        socketServer.register('listWorkspaces', {
+            handler: listWorkspaces,
+            payloadSchema: ListWorkspacesInputSchema,
+            resultSchema: ListWorkspacesOutputSchema
         });
         
         // Start socket server

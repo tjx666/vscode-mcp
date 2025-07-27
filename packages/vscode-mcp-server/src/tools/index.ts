@@ -18,6 +18,7 @@ export { registerGetReferences } from "./get-references.js";
 export { registerGetSignatureHelp } from "./get-signature-help.js";
 export { registerHealthCheck } from "./health-check.js";
 export { registerHighlightCode } from "./highlight-code.js";
+export { registerListWorkspaces } from "./list-workspaces.js";
 export { registerOpenDiff } from "./open-diff.js";
 export { registerOpenFiles } from "./open-files.js";
 export { registerRenameSymbol } from "./rename-symbol.js";

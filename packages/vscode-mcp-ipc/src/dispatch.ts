@@ -9,7 +9,7 @@ import type { BaseRequest, BaseResponse, EventName, EventParams, EventResult } f
 /**
  * Get application data directory for storing socket files
  */
-function getAppDataDir(): string {
+export function getAppDataDir(): string {
   const appName = 'YuTengjing.vscode-mcp';
   const homeDir = homedir();
   
@@ -202,4 +202,22 @@ export function createDispatcher(
   requestTimeout?: number,
 ): EventDispatcher {
   return new EventDispatcher(workspacePath, requestTimeout);
-} 
+}
+
+/**
+ * Workspace info returned by discovery
+ */
+export interface WorkspaceInfo {
+  workspace_path: string;
+  workspace_name?: string;
+  workspace_type?: 'single-folder' | 'multi-folder' | 'workspace-file';
+  folders?: string[];
+  status: 'active' | 'available' | 'error';
+  extension_version?: string;
+  vscode_version?: string;
+  socket_path?: string;
+  error?: string;
+  last_seen?: string;
+}
+
+ 
