@@ -66,12 +66,10 @@ export function registerGetDiagnostics(server: McpServer) {
         };
       }
       
-      // Format output for better readability
-      const output = result.files.map(file => {
-        if (file.diagnostics.length === 0) {
-          return `✅ ${file.uri}\n   No diagnostics found`;
-        }
-        
+      // Filter out files with no diagnostics and format output
+      const filesWithDiagnostics = result.files.filter(file => file.diagnostics.length > 0);
+      
+      const output = filesWithDiagnostics.map(file => {
         const diagnosticsList = file.diagnostics.map(diag => {
           const severity = diag.severity.toUpperCase();
           const range = `${diag.range.start.line}:${diag.range.start.character}`;
@@ -81,12 +79,23 @@ export function registerGetDiagnostics(server: McpServer) {
           return `   ${severity} at ${range}: ${source}${code}${diag.message}`;
         }).join('\n');
         
-        return `🔍 ${file.uri}\n   Found ${file.diagnostics.length} diagnostic(s):\n${diagnosticsList}`;
+        return `❌ ${file.uri}\n   Found ${file.diagnostics.length} diagnostic(s):\n${diagnosticsList}`;
       }).join('\n\n');
       
-      const summary = uris.length === 0 
-        ? `🔍 Diagnostics for all git modified files (${result.files.length} files):\n\n${output}`
-        : output;
+      // Create summary based on diagnostic results
+      let summary: string;
+      
+      if (filesWithDiagnostics.length === 0) {
+        summary = uris.length === 0 
+          ? `✅ All git modified files (${result.files.length} files) are clean - no diagnostics found!`
+          : `✅ All checked files are clean - no diagnostics found!`;
+      } else {
+        const header = uris.length === 0
+          ? `⚠️ Found diagnostics in ${filesWithDiagnostics.length} of ${result.files.length} git modified files:`
+          : `⚠️ Found diagnostics in ${filesWithDiagnostics.length} file(s):`;
+        
+        summary = `${header}\n\n${output}`;
+      }
       
       return {
         content: [{
