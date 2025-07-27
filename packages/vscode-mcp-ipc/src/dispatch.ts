@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync } from 'node:fs';
 import { Socket } from 'node:net';
-import { homedir } from 'node:os';
+import { homedir, tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import type { BaseRequest, BaseResponse, EventName, EventParams, EventResult } from './events/index.js';
@@ -54,6 +54,27 @@ export function getSocketPath(workspacePath: string): string {
 }
 
 /**
+ * Get legacy application data directory (using tmpdir)
+ */
+export function getLegacyAppDataDir(): string {
+  if (process.platform === 'win32') {
+    return ''; // Windows uses named pipes, no directory
+  }
+  return tmpdir();
+}
+
+/**
+ * Generate legacy socket path (for backward compatibility)
+ */
+function getLegacySocketPath(workspacePath: string): string {
+  const hash = createHash('md5').update(workspacePath).digest('hex').slice(0, 8);
+
+  return process.platform === 'win32'
+    ? `\\\\.\\pipe\\vscode-mcp-${hash}`
+    : join(tmpdir(), `vscode-mcp-${hash}.sock`);
+}
+
+/**
  * Generate unique request ID
  */
 function generateRequestId(): string {
@@ -66,11 +87,13 @@ function generateRequestId(): string {
 export class EventDispatcher {
   private workspacePath: string;
   private socketPath: string;
+  private legacySocketPath: string;
   private requestTimeout: number;
 
   constructor(workspacePath: string, requestTimeout: number = 30000) {
     this.workspacePath = workspacePath;
     this.socketPath = getSocketPath(workspacePath);
+    this.legacySocketPath = getLegacySocketPath(workspacePath);
     this.requestTimeout = requestTimeout;
   }
 
@@ -80,6 +103,47 @@ export class EventDispatcher {
   async dispatch<T extends EventName>(
     eventName: T,
     params: EventParams<T>,
+  ): Promise<EventResult<T>> {
+    // Try new socket path first
+    try {
+      return await this.tryConnect(eventName, params, this.socketPath);
+    } catch (newPathError) {
+      // If new path fails, try legacy path
+      try {
+        const result = await this.tryConnect(eventName, params, this.legacySocketPath);
+        
+        // If legacy path works, show upgrade warning
+        console.warn(
+          `⚠️  Connected using legacy socket path. Please upgrade your VSCode MCP Bridge extension to the latest version.\n` +
+          `   Extension: YuTengjing.vscode-mcp-bridge\n` +
+          `   Current connection: ${this.legacySocketPath}\n` +
+          `   Expected new path: ${this.socketPath}\n` +
+          `   Workspace: ${this.workspacePath}`
+        );
+        
+        return result;
+      } catch (legacyPathError) {
+        // Both paths failed, throw more detailed error
+        throw new Error(
+          `Failed to connect to VSCode extension at both locations:\n` +
+          `  New path: ${this.socketPath} - ${(newPathError as Error).message}\n` +
+          `  Legacy path: ${this.legacySocketPath} - ${(legacyPathError as Error).message}\n\n` +
+          `Please ensure:\n` +
+          `  1. VSCode MCP Bridge extension is installed and activated\n` +
+          `  2. A workspace is open in VSCode\n` +
+          `  3. Extension is updated to the latest version`
+        );
+      }
+    }
+  }
+
+  /**
+   * Try to connect to a specific socket path
+   */
+  private async tryConnect<T extends EventName>(
+    eventName: T,
+    params: EventParams<T>,
+    socketPath: string,
   ): Promise<EventResult<T>> {
     return new Promise((resolve, reject) => {
       const socket = new Socket();
@@ -145,7 +209,7 @@ export class EventDispatcher {
         clearTimeout(timeoutId);
         reject(
           new Error(
-            `Failed to connect to VSCode extension at ${this.socketPath}: ${error.message}`,
+            `Failed to connect to VSCode extension at ${socketPath}: ${error.message}`,
           ),
         );
       });
@@ -163,7 +227,7 @@ export class EventDispatcher {
       });
 
       // Connect to socket
-      socket.connect(this.socketPath);
+      socket.connect(socketPath);
     });
   }
 

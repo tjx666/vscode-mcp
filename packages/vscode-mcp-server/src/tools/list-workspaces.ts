@@ -1,8 +1,8 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { ListWorkspacesInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 
-import { formatToolCallError } from "./utils.js";
 import { discoverAvailableWorkspaces } from "../utils/workspace-discovery.js";
+import { formatToolCallError } from "./utils.js";
 
 // MCP tools don't have workspace_path parameter for list_workspaces
 // since it discovers all workspaces
@@ -51,30 +51,30 @@ export function registerListWorkspaces(server: McpServer) {
   }, async (params) => {
     try {
       // Directly call the discovery function
-      const workspaces = await discoverAvailableWorkspaces({
+      const result = await discoverAvailableWorkspaces({
         cleanZombieSockets: params.clean_zombie_sockets,
         includeDetails: params.include_details,
         testConnection: params.test_connection
       });
       
+      const workspaces = result.workspaces;
+      const hasLegacyWorkspaces = result.hasLegacyWorkspaces;
+      
       // Calculate summary statistics
       const activeCount = workspaces.filter(w => w.status === 'active').length;
       const availableCount = workspaces.filter(w => w.status === 'available').length;
       
-      const result = {
-        workspaces,
-        summary: {
-          total: workspaces.length,
-          active: activeCount,
-          available: availableCount,
-          cleaned: 0 // We can't track exact cleaned count from the current implementation
-        }
+      const summary = {
+        total: workspaces.length,
+        active: activeCount,
+        available: availableCount,
+        cleaned: 0 // We can't track exact cleaned count from the current implementation
       };
       
       // Format the response for display
       let response = "🔍 Available VSCode Workspaces:\n\n";
       
-      if (result.workspaces.length === 0) {
+      if (workspaces.length === 0) {
         response += "No active VSCode workspaces found.\n\n";
         response += "💡 Tips:\n";
         response += "- Make sure VSCode/Cursor/Windsurf is running\n";
@@ -82,9 +82,9 @@ export function registerListWorkspaces(server: McpServer) {
         response += "- Check the extension output panel for any errors\n";
       } else {
         // Group workspaces by status
-        const activeWorkspaces = result.workspaces.filter(w => w.status === 'active');
-        const availableWorkspaces = result.workspaces.filter(w => w.status === 'available');
-        const errorWorkspaces = result.workspaces.filter(w => w.status === 'error');
+        const activeWorkspaces = workspaces.filter(w => w.status === 'active');
+        const availableWorkspaces = workspaces.filter(w => w.status === 'available');
+        const errorWorkspaces = workspaces.filter(w => w.status === 'error');
         
         // Show active workspaces first
         if (activeWorkspaces.length > 0) {
@@ -129,7 +129,7 @@ export function registerListWorkspaces(server: McpServer) {
         // Show error workspaces
         if (errorWorkspaces.length > 0) {
           response += "\n❌ Workspaces with errors:\n";
-          errorWorkspaces.forEach((workspace) => {
+          errorWorkspaces.forEach(workspace => {
             response += `\n- ${workspace.workspace_path}\n`;
             if (workspace.error) {
               response += `  Error: ${workspace.error}\n`;
@@ -140,17 +140,26 @@ export function registerListWorkspaces(server: McpServer) {
       
       // Add summary
       response += `\n📊 Summary:\n`;
-      response += `- Total workspaces: ${result.summary.total}\n`;
-      response += `- Active: ${result.summary.active}\n`;
-      if (result.summary.available > 0) {
-        response += `- Available (untested): ${result.summary.available}\n`;
+      response += `- Total workspaces: ${summary.total}\n`;
+      response += `- Active: ${summary.active}\n`;
+      if (summary.available > 0) {
+        response += `- Available (untested): ${summary.available}\n`;
       }
-      if (result.summary.cleaned > 0) {
-        response += `- Zombie sockets cleaned: ${result.summary.cleaned}\n`;
+      if (summary.cleaned > 0) {
+        response += `- Zombie sockets cleaned: ${summary.cleaned}\n`;
+      }
+      
+      // Add legacy workspace warning
+      if (hasLegacyWorkspaces) {
+        response += `\n⚠️  Legacy Socket Paths Detected:\n`;
+        response += `   These workspaces are using the old socket path format.\n`;
+        response += `   Please upgrade your VSCode MCP Bridge extension to the latest version:\n`;
+        response += `   Extension: YuTengjing.vscode-mcp-bridge\n`;
+        response += `   Marketplace: https://marketplace.visualstudio.com/items?itemName=YuTengjing.vscode-mcp-bridge\n`;
       }
       
       // Add usage hint
-      if (result.workspaces.length > 0) {
+      if (workspaces.length > 0) {
         response += `\n💡 To use a workspace with other MCP tools, copy the workspace_path parameter from above.`;
       }
       

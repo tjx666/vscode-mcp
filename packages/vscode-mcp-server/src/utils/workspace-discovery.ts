@@ -1,7 +1,8 @@
 import { access, constants, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { createDispatcher, EventDispatcher, getAppDataDir, type WorkspaceInfo } from '@vscode-mcp/vscode-mcp-ipc';
+import type {WorkspaceInfo} from '@vscode-mcp/vscode-mcp-ipc';
+import { EventDispatcher, getAppDataDir, getLegacyAppDataDir } from '@vscode-mcp/vscode-mcp-ipc';
 
 /**
  * Extract workspace path from socket file name
@@ -15,23 +16,9 @@ function extractWorkspaceFromSocketName(socketFileName: string): string {
 }
 
 /**
- * Discover all available workspaces
+ * Discover available workspaces in a directory
  */
-export async function discoverAvailableWorkspaces(options: {
-  cleanZombieSockets?: boolean;
-  testConnection?: boolean;
-  includeDetails?: boolean;
-} = {}): Promise<WorkspaceInfo[]> {
-  const {
-    cleanZombieSockets = true,
-    testConnection = true,
-    includeDetails = false
-  } = options;
-  
-  const appDir = getAppDataDir();
-  let socketFiles: string[] = [];
-  
-  // Check if app directory exists
+async function discoverInDirectory(appDir: string, isLegacy: boolean = false): Promise<string[]> {
   try {
     await access(appDir, constants.F_OK);
   } catch {
@@ -39,14 +26,49 @@ export async function discoverAvailableWorkspaces(options: {
   }
   
   try {
-    // Read all socket files
     const files = await readdir(appDir);
-    socketFiles = files
+    return files
       .filter((f: string) => f.startsWith('vscode-mcp-') && f.endsWith('.sock'))
       .map((f: string) => join(appDir, f));
   } catch (error) {
-    console.error('Failed to read socket directory:', error);
+    if (!isLegacy) {
+      console.error('Failed to read socket directory:', error);
+    }
     return [];
+  }
+}
+
+/**
+ * Discover all available workspaces
+ */
+export async function discoverAvailableWorkspaces(options: {
+  cleanZombieSockets?: boolean;
+  testConnection?: boolean;
+  includeDetails?: boolean;
+} = {}): Promise<{workspaces: WorkspaceInfo[], hasLegacyWorkspaces: boolean}> {
+  const {
+    cleanZombieSockets = true,
+    testConnection = true,
+    includeDetails = false
+  } = options;
+  
+  // Try new app directory first
+  const appDir = getAppDataDir();
+  let socketFiles = await discoverInDirectory(appDir, false);
+  
+  // If no sockets found in new directory, try legacy directory
+  let hasLegacyWorkspaces = false;
+  if (socketFiles.length === 0) {
+    const legacyAppDir = getLegacyAppDataDir();
+    if (legacyAppDir) {
+      const legacySocketFiles = await discoverInDirectory(legacyAppDir, true);
+      if (legacySocketFiles.length > 0) {
+        console.warn(`⚠️  Found workspaces using legacy socket paths in: ${legacyAppDir}`);
+        console.warn(`   Please upgrade VSCode MCP Bridge extension to use new path: ${appDir}`);
+        socketFiles = legacySocketFiles;
+        hasLegacyWorkspaces = true;
+      }
+    }
   }
   
   // Process all sockets in parallel for better performance
@@ -110,5 +132,10 @@ export async function discoverAvailableWorkspaces(options: {
   const results = await Promise.all(promises);
   
   // Filter out null results (cleaned or inactive sockets)
-  return results.filter((result): result is WorkspaceInfo => result !== null);
+  const workspaces = results.filter((result): result is WorkspaceInfo => result !== null);
+  
+  return {
+    workspaces,
+    hasLegacyWorkspaces
+  };
 }
