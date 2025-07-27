@@ -10,7 +10,7 @@ import { ensureFileIsOpen } from './utils.js';
 const execAsync = promisify(exec);
 
 /**
- * Get all git modified files in the workspace (staged and unstaged)
+ * Get all git modified files in the workspace (staged, unstaged, and untracked)
  */
 async function getModifiedFiles(): Promise<string[]> {
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
@@ -32,6 +32,11 @@ async function getModifiedFiles(): Promise<string[]> {
             cwd: workspaceRoot
         });
 
+        // Get untracked files (new files not yet added to git)
+        const { stdout: untrackedFiles } = await execAsync('git ls-files --others --exclude-standard', {
+            cwd: workspaceRoot
+        });
+
         // Combine and process file paths
         const allFiles = new Set<string>();
         
@@ -47,6 +52,15 @@ async function getModifiedFiles(): Promise<string[]> {
         // Process staged files
         if (stagedFiles.trim()) {
             stagedFiles.trim().split('\n').forEach(filePath => {
+                if (filePath.trim()) {
+                    allFiles.add(filePath.trim());
+                }
+            });
+        }
+
+        // Process untracked files
+        if (untrackedFiles.trim()) {
+            untrackedFiles.trim().split('\n').forEach(filePath => {
                 if (filePath.trim()) {
                     allFiles.add(filePath.trim());
                 }
