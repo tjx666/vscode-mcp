@@ -63,6 +63,9 @@ export function registerHealthCheck(server: McpServer, serverVersion: string) {
         if (result.system_info.vscode_version) {
           statusMessage += `  • VSCode: ${result.system_info.vscode_version}\n`;
         }
+        if (result.system_info.ide_type) {
+          statusMessage += `  • IDE Type: ${result.system_info.ide_type}\n`;
+        }
       }
       
       if (result.error) {
