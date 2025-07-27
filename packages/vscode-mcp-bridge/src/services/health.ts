@@ -4,6 +4,7 @@ import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
 import packageJson from '../../package.json';
+import { detectIdeType } from './call-agent/ide-detection';
 import { getCurrentWorkspacePath } from './utils';
 
 /**
@@ -14,6 +15,7 @@ export const health = async (
 ): Promise<EventResult<'health'>> => {
     try {
         const workspacePath = getCurrentWorkspacePath();
+        const ideType = await detectIdeType();
         
         return {
             status: 'ok',
@@ -23,7 +25,8 @@ export const health = async (
             system_info: {
                 platform: os.platform(),
                 node_version: process.version,
-                vscode_version: vscode.version
+                vscode_version: vscode.version,
+                ide_type: ideType
             }
         };
     } catch (error) {
@@ -35,7 +38,8 @@ export const health = async (
             system_info: {
                 platform: os.platform(),
                 node_version: process.version,
-                vscode_version: vscode.version
+                vscode_version: vscode.version,
+                ide_type: 'unknown'
             }
         };
     }

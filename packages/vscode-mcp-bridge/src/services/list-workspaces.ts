@@ -2,6 +2,9 @@ import type { EventParams, EventResult, WorkspaceInfo } from '@vscode-mcp/vscode
 import { ListWorkspacesInputSchema } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
+import packageJson from '../../package.json';
+import { detectIdeType } from './call-agent/ide-detection';
+
 /**
  * Get workspace type
  */
@@ -89,6 +92,9 @@ export const listWorkspaces = async (
             };
         }
         
+        // Get IDE type
+        const ideType = await detectIdeType();
+        
         // Create workspace info for the current workspace
         const currentWorkspace: WorkspaceInfo = {
             workspace_path: currentWorkspacePath,
@@ -96,6 +102,9 @@ export const listWorkspaces = async (
             workspace_type: getWorkspaceType(),
             folders: getWorkspaceFolders(),
             status: 'active',
+            extension_version: packageJson.version,
+            vscode_version: vscode.version,
+            ide_type: ideType,
             // Additional info is not available in extension context without importing server logic
         };
         
