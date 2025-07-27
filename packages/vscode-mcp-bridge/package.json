@@ -82,7 +82,7 @@
         "@types/mocha": "^10.0.7",
         "@types/vscode": "1.99.1",
         "@vscode/test-electron": "^2.4.1",
-        "@vscode/vsce": "^3.0.0",
+        "@vscode/vsce": "^3.6.0",
         "esbuild": "~0.25.5",
         "esbuild-visualizer": "^0.7.0",
         "glob": "^11.0.0",

@@ -157,51 +157,6 @@ Go to `Cursor Settings` -> `Tools & Integrations` -> `New MCP Server`. Name to y
 }
 ```
 
-##### 📚 Recommended: Use Cursor Rule for Better AI Coding
-
-**Highly Recommended**: Read and adjust following cursor rule, add it as cursor user rule or project rule:
-
-- **English Version**: Copy content from **[rule.md](./rule.md)**
-- **中文版本**: Copy content from **[rule_zh_CN.md](./rule_zh_CN.md)**
-
-AI assistants will automatically follow these proven strategies for more efficient VSCode MCP tool usage.
-
-<details>
-<summary><strong>Install in VS Code</strong></summary>
-
-[Install in VS Code](https://insiders.vscode.dev/redirect?url=vscode%3Amcp%2Finstall%3F%257B%2522name%2522%253A%2522vscode-mcp%2522%252C%2522command%2522%253A%2522npx%2522%252C%2522args%2522%253A%255B%2522%2540vscode-mcp%252Fvscode-mcp-server%2540latest%2522%255D%257D)
-
-[Install in VS Code Insiders](https://insiders.vscode.dev/redirect?url=vscode-insiders%3Amcp%2Finstall%3F%257B%2522name%2522%253A%2522vscode-mcp%2522%252C%2522command%2522%253A%2522npx%2522%252C%2522args%2522%253A%255B%2522%2540vscode-mcp%252Fvscode-mcp-server%2540latest%2522%255D%257D)
-
-You can also install the VSCode MCP server using the VS Code CLI:
-
-```bash
-# For VS Code
-code --add-mcp '{"name":"vscode-mcp","command":"npx","args":["@vscode-mcp/vscode-mcp-server@latest"]}'
-```
-
-After installation, the VSCode MCP server will be available for use with your GitHub Copilot agent in VS Code.
-
-</details>
-
-<details>
-<summary><strong>Install in Windsurf</strong></summary>
-
-Follow Windsurf MCP [documentation](https://docs.windsurf.com/windsurf/cascade/mcp). Use following configuration:
-
-```json
-{
-  "mcpServers": {
-    "vscode-mcp": {
-      "command": "npx",
-      "args": ["@vscode-mcp/vscode-mcp-server@latest"]
-    }
-  }
-}
-```
-
-</details>
-
 ## Architecture
 
 VSCode MCP follows a modular architecture with three main components communicating through Unix sockets:
