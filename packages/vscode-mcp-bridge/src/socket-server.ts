@@ -1,10 +1,8 @@
-import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as net from 'net';
-import * as os from 'os';
-import * as path from 'path';
 
 import type { BaseRequest, BaseResponse, EventName } from '@vscode-mcp/vscode-mcp-ipc';
+import { getSocketPath } from '@vscode-mcp/vscode-mcp-ipc';
 import { z } from 'zod';
 
 import { logger } from './logger';
@@ -39,18 +37,8 @@ export class SocketServer {
     private socketPath: string | null = null;
     private services: Map<string, ServiceRegistration> = new Map();
 
-    constructor(private workspacePath: string) {
-        this.socketPath = this.generateSocketPath(workspacePath);
-    }
-
-    /**
-     * Generate Unix socket path based on workspace path
-     */
-    private generateSocketPath(workspacePath: string): string {
-        const hash = crypto.createHash('md5').update(workspacePath).digest('hex').slice(0, 8);
-        return process.platform === 'win32'
-            ? `\\\\.\\pipe\\vscode-mcp-${hash}`
-            : path.join(os.tmpdir(), `vscode-mcp-${hash}.sock`);
+    constructor(workspacePath: string) {
+        this.socketPath = getSocketPath(workspacePath);
     }
 
     /**
@@ -201,13 +189,17 @@ export class SocketServer {
             throw new Error('Socket server is already running');
         }
 
-        // Clean up existing socket file if it exists
-        if (this.socketPath && fs.existsSync(this.socketPath)) {
+        // Clean up existing socket file if it exists (Unix-like systems only)
+        if (this.socketPath && process.platform !== 'win32' && fs.existsSync(this.socketPath)) {
             try {
                 fs.unlinkSync(this.socketPath);
                 logger.info('Removed existing socket file');
             } catch (error) {
                 logger.error(`Error removing existing socket file: ${error}`);
+                // If the file is in use by another process, fail fast
+                if ((error as NodeJS.ErrnoException).code === 'EBUSY' || (error as NodeJS.ErrnoException).code === 'EADDRINUSE') {
+                    throw new Error('Socket is already in use by another VSCode instance');
+                }
             }
         }
 
@@ -252,7 +244,7 @@ export class SocketServer {
             logger.info('Socket server closed');
         }
         
-        if (this.socketPath && fs.existsSync(this.socketPath)) {
+        if (this.socketPath && process.platform !== 'win32' && fs.existsSync(this.socketPath)) {
             try {
                 fs.unlinkSync(this.socketPath);
                 logger.info(`Socket file removed: ${this.socketPath}`);

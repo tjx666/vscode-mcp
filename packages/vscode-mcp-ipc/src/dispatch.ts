@@ -1,9 +1,35 @@
 import { createHash } from 'node:crypto';
+import { existsSync, mkdirSync } from 'node:fs';
 import { Socket } from 'node:net';
-import { tmpdir } from 'node:os';
+import { homedir } from 'node:os';
 import { join } from 'node:path';
 
 import type { BaseRequest, BaseResponse, EventName, EventParams, EventResult } from './events/index.js';
+
+/**
+ * Get application data directory for storing socket files
+ */
+function getAppDataDir(): string {
+  const appName = 'YuTengjing.vscode-mcp';
+  const homeDir = homedir();
+  
+  switch (process.platform) {
+    case 'darwin':
+      // macOS: Use Application Support directory
+      return join(homeDir, 'Library', 'Application Support', appName);
+      
+    case 'win32':
+      // Windows: Using named pipes, no directory needed
+      return '';
+      
+    default: {
+      // Linux and other Unix-like: Follow XDG Base Directory spec
+      const linuxAppName = appName.toLowerCase().replaceAll('.', '-');
+      const xdgData = process.env.XDG_DATA_HOME || join(homeDir, '.local', 'share');
+      return join(xdgData, linuxAppName);
+    }
+  }
+}
 
 /**
  * Generate socket path based on workspace path
@@ -11,9 +37,20 @@ import type { BaseRequest, BaseResponse, EventName, EventParams, EventResult } f
 export function getSocketPath(workspacePath: string): string {
   const hash = createHash('md5').update(workspacePath).digest('hex').slice(0, 8);
 
-  return process.platform === 'win32'
-    ? `\\\\.\\pipe\\vscode-mcp-${hash}`
-    : join(tmpdir(), `vscode-mcp-${hash}.sock`);
+  if (process.platform === 'win32') {
+    // Windows: Use named pipes
+    return `\\\\.\\pipe\\vscode-mcp-${hash}`;
+  }
+
+  // Unix-like systems: Use socket files in app data directory
+  const appDir = getAppDataDir();
+  
+  // Ensure directory exists
+  if (!existsSync(appDir)) {
+    mkdirSync(appDir, { recursive: true, mode: 0o700 });
+  }
+  
+  return join(appDir, `vscode-mcp-${hash}.sock`);
 }
 
 /**
