@@ -19,7 +19,7 @@ export const ListWorkspacesInputSchema = z.object({
 /**
  * Workspace info schema
  */
-const WorkspaceInfoSchema = z.object({
+export const WorkspaceInfoSchema = z.object({
   workspace_path: z.string().describe('Workspace path or identifier'),
   workspace_name: z.string().optional().describe('Workspace friendly name'),
   workspace_type: z.enum(['single-folder', 'multi-folder', 'workspace-file']).optional()
@@ -32,6 +32,8 @@ const WorkspaceInfoSchema = z.object({
     .describe('VSCode MCP Bridge extension version'),
   vscode_version: z.string().optional()
     .describe('VSCode version'),
+  ide_type: z.string().optional()
+    .describe('IDE type (vscode, cursor, windsurf, trae, unknown)'),
   socket_path: z.string().optional()
     .describe('Socket file path (for debugging)'),
   error: z.string().optional()
@@ -63,3 +65,8 @@ export type ListWorkspacesPayload = z.infer<typeof ListWorkspacesInputSchema>;
  * List workspaces result (output data)
  */
 export type ListWorkspacesResult = z.infer<typeof ListWorkspacesOutputSchema>;
+
+/**
+ * Workspace info type
+ */
+export type WorkspaceInfo = z.infer<typeof WorkspaceInfoSchema>;

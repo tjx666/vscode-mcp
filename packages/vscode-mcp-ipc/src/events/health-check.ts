@@ -22,6 +22,7 @@ export const HealthCheckOutputSchema = z.object({
     platform: z.string().describe('Operating system platform'),
     node_version: z.string().describe('Node.js version'),
     vscode_version: z.string().optional().describe('VSCode version if available'),
+    ide_type: z.string().optional().describe('IDE type (vscode, cursor, windsurf, trae, unknown)'),
   }).optional().describe('System information'),
 }).strict();
 
