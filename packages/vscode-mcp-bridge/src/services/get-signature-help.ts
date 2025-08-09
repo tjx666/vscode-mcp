@@ -1,6 +1,7 @@
 import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
+import { resolveSymbolPosition } from './resolve-symbol-position.js';
 import { ensureFileIsOpen } from './utils.js';
 
 /**
@@ -13,7 +14,9 @@ export const getSignatureHelp = async (
     await ensureFileIsOpen(payload.uri);
     
     const uri = vscode.Uri.parse(payload.uri);
-    const position = new vscode.Position(payload.line, payload.character);
+    
+    // Resolve symbol to position - try to find function call position
+    const position = await resolveSymbolPosition(uri, payload.symbol, payload.codeSnippet);
     
     // Execute signature help provider
     const signatureHelp = await vscode.commands.executeCommand<vscode.SignatureHelp>(

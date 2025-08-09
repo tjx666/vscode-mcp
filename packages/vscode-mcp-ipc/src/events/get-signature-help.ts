@@ -35,8 +35,8 @@ const SignatureHelpSchema = z.object({
  */
 export const GetSignatureHelpInputSchema = z.object({
   uri: z.string().describe('File URI'),
-  line: z.number().describe('Line number (0-based)'),
-  character: z.number().describe('Character position (0-based)'),
+  symbol: z.string().describe('Function name to get signature help for'),
+  codeSnippet: z.string().optional().describe('Optional code snippet to precisely locate the function call when multiple occurrences exist'),
 }).strict();
 
 /**

@@ -9,17 +9,18 @@ const inputSchema = {
   ...GetDefinitionInputSchema.shape
 };
 
-const DESCRIPTION = `Get definition location information for a symbol (variable, function, class, etc.) at a specific position. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
+const DESCRIPTION = `Get definition location information for a symbol (variable, function, class, etc.) by name. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
 
 **AI Coding Agent Use Cases:**
 - Retrieve definition location data to understand where symbols are declared
 - Get precise file paths and positions for symbols before code analysis
 - Obtain LSP-based definition information for accurate code understanding
-- Prefer this over codebase_search, grep_search when you already know the exact symbol position
+- ALWAYS prefer this over codebase_search, grep_search when you know the symbol name
 
 **Parameter Examples:**
-- Get function definition: uri: 'file:///path/to/file.ts', line: 10, character: 15
-- Get class definition: uri: 'file:///component.tsx', line: 25, character: 8
+- Get function definition: uri: 'file:///utils.ts', symbol: 'processData'
+- Get class definition: uri: 'file:///models.ts', symbol: 'UserModel'  
+- Precise location: uri: 'file:///config.ts', symbol: 'config', codeSnippet: 'export const config'
 
 **Return Format:**
 Array of Location objects, each containing:
@@ -29,9 +30,8 @@ Array of Location objects, each containing:
 
 **Important Notes:**
 - Files are automatically opened to ensure accurate LSP information
-- No need to position cursor at target location - just provide position parameters
-- Line and character numbers are zero-based
-- Position must be exactly on a symbol (variable, function, class, etc.)
+- Uses smart text search to locate the symbol definition first
+- codeSnippet helps precisely locate the symbol when multiple occurrences exist
 - Some symbols may not have definitions (e.g., built-in types, external libraries)`;
 
 export function registerGetDefinition(server: McpServer) {
@@ -46,23 +46,24 @@ export function registerGetDefinition(server: McpServer) {
       idempotentHint: true,
       openWorldHint: false
     }
-  }, async ({ workspace_path, uri, line, character }) => {
+  }, async ({ workspace_path, uri, symbol, codeSnippet }) => {
     try {
       const dispatcher = createDispatcher(workspace_path);
-      const result = await dispatcher.dispatch("getDefinition", { uri, line, character });
+      const result = await dispatcher.dispatch("getDefinition", { uri, symbol, codeSnippet });
       
       // Check if result is empty and provide helpful feedback
       if (Array.isArray(result) && result.length === 0) {
         return {
           content: [{
             type: "text" as const,
-            text: `❌ No definition found at ${uri}:${line}:${character}
+            text: `❌ No definition found for symbol "${symbol}" in ${uri}
 
 💡 **Troubleshooting Tips:**
-- Line and character numbers are **0-based** (first line is 0, first character is 0)
-- Make sure the position(line, col) is exactly on a symbol (variable, function, class, etc.)
+- Make sure the symbol name is spelled correctly
+- Try providing a codeSnippet if there are multiple symbols with the same name
 - Verify the file URI is correct and the file exists
-- Ensure the language server extension is installed and running (e.g., rust-lang.rust for Rust), and the file is properly parsed
+- Ensure the language server extension is installed and running
+- Some symbols may not have definitions (e.g., built-in types, external libraries)
 
 📄 **Raw Result:**
 ${JSON.stringify(result, null, 2)}`

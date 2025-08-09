@@ -1,6 +1,7 @@
 import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
+import { resolveSymbolPosition } from './resolve-symbol-position.js';
 import { ensureFileIsOpen } from './utils.js';
 
 /**
@@ -8,16 +9,18 @@ import { ensureFileIsOpen } from './utils.js';
  */
 async function getHoverForPosition(
     uri: string,
-    line: number,
-    character: number,
+    symbol: string,
+    codeSnippet: string | undefined,
     includeAllHovers: boolean = false
-): Promise<{ position: { uri: string; line: number; character: number }; hovers: any[]; error?: string }> {
+): Promise<{ position: { uri: string; symbol: string; codeSnippet?: string }; hovers: any[]; error?: string }> {
     try {
         // Ensure file is open to get accurate hover information
         await ensureFileIsOpen(uri);
         
         const vscodeUri = vscode.Uri.parse(uri);
-        const position = new vscode.Position(line, character);
+        
+        // Resolve symbol to position
+        const position = await resolveSymbolPosition(vscodeUri, symbol, codeSnippet);
         
         // Execute hover provider
         const hovers = await vscode.commands.executeCommand<vscode.Hover[]>(
@@ -28,7 +31,7 @@ async function getHoverForPosition(
         
         if (!hovers || hovers.length === 0) {
             return {
-                position: { uri, line, character },
+                position: { uri, symbol, codeSnippet },
                 hovers: []
             };
         }
@@ -51,14 +54,14 @@ async function getHoverForPosition(
         }));
         
         return {
-            position: { uri, line, character },
+            position: { uri, symbol, codeSnippet },
             hovers: processedHovers
         };
     } catch (error) {
         return {
-            position: { uri, line, character },
+            position: { uri, symbol, codeSnippet },
             hovers: [],
-            error: `Failed to get hover for ${uri}:${line}:${character}: ${error}`
+            error: `Failed to get hover for symbol "${symbol}" in ${uri}: ${error}`
         };
     }
 }
@@ -74,7 +77,7 @@ export const getHover = async (
     // Process all positions in parallel
     const results = await Promise.all(
         positions.map(pos => 
-            getHoverForPosition(pos.uri, pos.line, pos.character, includeAllHovers)
+            getHoverForPosition(pos.uri, pos.symbol, pos.codeSnippet, includeAllHovers)
         )
     );
     

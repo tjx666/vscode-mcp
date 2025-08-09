@@ -3,8 +3,8 @@ import { z } from 'zod';
 export const RenameSymbolInputSchema = z
   .object({
     uri: z.string().describe('File URI'),
-    line: z.number().describe('Line number (0-based)'),
-    character: z.number().describe('Character position (0-based)'),
+    symbol: z.string().describe('Symbol name to rename'),
+    codeSnippet: z.string().optional().describe('Optional code snippet to precisely locate the symbol when multiple occurrences exist'),
     newName: z.string().describe('New symbol name'),
   })
   .strict();

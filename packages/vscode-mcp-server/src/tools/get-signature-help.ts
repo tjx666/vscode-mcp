@@ -14,21 +14,20 @@ const DESCRIPTION = `Get detailed function signature information including param
 **AI Coding Agent Use Cases:**
 - Generate correct function calls with precise parameter types and order
 - Understand function overloads and choose the right signature for the context
-- ALWAYS prefer this over codebase_search, grep_search when you already know the exact function call position
+- ALWAYS prefer this over codebase_search, grep_search when you know the function name
 
 **Parameter Examples:**
-- Get function signature: uri: 'file:///api.ts', line: 25, character: 15 (at function call position)
-- Check method parameters: uri: 'file:///utils.js', line: 10, character: 8
-- Analyze overloaded functions: uri: 'file:///types.ts', line: 30, character: 12
+- Get function signature: uri: 'file:///api.ts', symbol: 'fetchUserData'
+- Check method parameters: uri: 'file:///utils.js', symbol: 'processData'
+- Precise location: uri: 'file:///app.ts', symbol: 'handleRequest', codeSnippet: 'await handleRequest('
 
 **Return Format:**
 Detailed signature information with parameter details and documentation
 
 **Important Notes:**
 - Files are automatically opened to ensure accurate LSP information
-- No need to position cursor at target location - just provide position parameters
-- Line and character numbers are zero-based
-- Position should be within a function call or at opening parenthesis
+- Uses smart text search to locate function calls
+- codeSnippet helps precisely locate the function call when multiple occurrences exist
 - Returns null if no signature help available at position
 - May include multiple signatures for overloaded functions`;
 
@@ -44,24 +43,24 @@ export function registerGetSignatureHelp(server: McpServer) {
       idempotentHint: true,
       openWorldHint: false
     }
-  }, async ({ workspace_path, uri, line, character }) => {
+  }, async ({ workspace_path, uri, symbol, codeSnippet }) => {
     try {
       const dispatcher = createDispatcher(workspace_path);
-      const result = await dispatcher.dispatch("getSignatureHelp", { uri, line, character });
+      const result = await dispatcher.dispatch("getSignatureHelp", { uri, symbol, codeSnippet });
       
       // Check if result is null and provide helpful feedback
-      if (result === null) {
+      if (result === null || result.signatureHelp === null) {
         return {
           content: [{
             type: "text" as const,
-            text: `❌ No signature help available at ${uri}:${line}:${character}
+            text: `❌ No signature help available for function "${symbol}" in ${uri}
 
 💡 **Troubleshooting Tips:**
-- Line and character numbers are **0-based** (first line is 0, first character is 0)
-- Position should be within a function call or at the opening parenthesis
-- Make sure you're at a function call site, not just on a function declaration
+- Make sure the symbol name is a function or method name
+- Try providing a codeSnippet that includes the opening parenthesis (e.g., 'functionName(')
+- Make sure you're looking for a function call site, not just a function declaration
 - Verify the file URI is correct and the file exists
-- Ensure the language server extension is installed and running (e.g., rust-lang.rust for Rust), and the file is properly parsed
+- Ensure the language server extension is installed and running
 
 📄 **Raw Result:**
 ${JSON.stringify(result, null, 2)}`

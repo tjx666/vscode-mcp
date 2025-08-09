@@ -9,17 +9,18 @@ const inputSchema = {
   ...GetHoverInputSchema.shape
 };
 
-const DESCRIPTION = `Get rich type information, documentation, and value details for a code position - essential for type-aware AI coding. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
+const DESCRIPTION = `Get rich type information, documentation, and value details for symbols - essential for type-aware AI coding. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
 
 **AI Coding Agent Use Cases:**
 - Understand complex types and read inline documentation for functions, variables, and classes
 - Get precise type information before making code modifications
 - Analyze symbol details without manual code inspection
-- Prefer this over codebase_search, grep_search when you already know the exact code position
+- ALWAYS prefer this over codebase_search, grep_search when you know the symbol name
 
 **Parameter Examples:**
-- Get type info: positions: [{ uri: 'file:///app.ts', line: 25, character: 8 }]
-- Multiple positions: positions: [{ uri: 'file:///utils.js', line: 10, character: 5 }, { uri: 'file:///api.ts', line: 15, character: 12 }]
+- Get type info: positions: [{ uri: 'file:///app.ts', symbol: 'getUserData' }]
+- Multiple symbols: positions: [{ uri: 'file:///utils.js', symbol: 'API_URL' }, { uri: 'file:///api.ts', symbol: 'fetchData' }]
+- Precise location: positions: [{ uri: 'file:///config.ts', symbol: 'config', codeSnippet: 'export const config' }]
 - Comprehensive info: includeAllHovers: true
 
 **Return Format:**
@@ -27,10 +28,10 @@ Detailed hover information with types, documentation, and value details
 
 **Important Notes:**
 - Files are automatically opened to ensure accurate LSP information
-- No need to position cursor at target location - just provide position parameters
-- Line and character numbers are zero-based
+- Uses smart text search to locate symbols first
+- codeSnippet helps precisely locate the symbol when multiple occurrences exist
 - includeAllHovers: true provides comprehensive info but may be slower
-- Returns empty hovers array if no information available at position
+- Returns empty hovers array if symbol not found or no information available
 - Hover contents may include markdown formatting`;
 
 export function registerGetHovers(server: McpServer) {
@@ -62,7 +63,7 @@ export function registerGetHovers(server: McpServer) {
       // Display results for each position
       result.results.forEach((posResult, index) => {
         const { position, hovers, error } = posResult;
-        const positionStr = `${position.uri}:${position.line}:${position.character}`;
+        const positionStr = `${position.uri} (symbol: "${position.symbol}"${position.codeSnippet ? `, snippet: "${position.codeSnippet}"` : ''})`;
         
         if (error) {
           output += `❌ **Position ${index + 1}**: ${positionStr}\n`;
@@ -70,8 +71,8 @@ export function registerGetHovers(server: McpServer) {
         } else if (hovers.length === 0) {
           output += `⚪ **Position ${index + 1}**: ${positionStr}\n`;
           output += `   No hover information available\n`;
-          output += `   💡 **Tip:** Line and character numbers are **0-based** (first line is 0, first character is 0)\n`;
-          output += `   💡 **Tip:** Make sure the position(line, col) is exactly on a symbol\n\n`;
+          output += `   💡 **Tip:** Make sure the symbol name is spelled correctly\n`;
+          output += `   💡 **Tip:** Try providing a codeSnippet if there are multiple symbols with the same name\n\n`;
         } else {
           output += `✅ **Position ${index + 1}**: ${positionStr}\n`;
           output += `   Found ${hovers.length} hover(s)${includeAllHovers ? ' (all providers)' : ' (first provider only)'}\n\n`;

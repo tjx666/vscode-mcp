@@ -9,7 +9,7 @@ const inputSchema = {
   ...RenameSymbolInputSchema.shape
 };
 
-const DESCRIPTION = `Rename a symbol (variable, function, class, etc.) at a specific position across all files. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
+const DESCRIPTION = `Rename a symbol (variable, function, class, etc.) by name across all files. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
 
 **AI Coding Agent Use Cases:**
 - Refactor code with consistent naming across entire codebase during code improvements
@@ -17,9 +17,9 @@ const DESCRIPTION = `Rename a symbol (variable, function, class, etc.) at a spec
 - ALWAYS prefer this over multiple edit_file calls - much more efficient and accurate for symbol renaming
 
 **Parameter Examples:**
-- Rename variable: uri: 'file:///utils.ts', line: 10, character: 15, newName: 'processedData'
-- Rename function: uri: 'file:///api.ts', line: 25, character: 8, newName: 'handleUserRequest'
-- Rename class: uri: 'file:///models.ts', line: 5, character: 13, newName: 'UserModel'
+- Rename variable: uri: 'file:///utils.ts', symbol: 'userData', newName: 'processedData'
+- Rename function: uri: 'file:///api.ts', symbol: 'handleRequest', newName: 'handleUserRequest'
+- Precise location: uri: 'file:///models.ts', symbol: 'User', codeSnippet: 'class User', newName: 'UserModel'
 
 **Return Format:**
 - success: boolean indicating if rename was successful
@@ -30,9 +30,8 @@ const DESCRIPTION = `Rename a symbol (variable, function, class, etc.) at a spec
 
 **Important Notes:**
 - Files are automatically opened to ensure accurate LSP information
-- No need to position cursor at target location - just provide position parameters
-- Position must be exactly on a renameable symbol
-- Returns error if position is not on a valid symbol
+- Uses smart text search to locate the symbol first
+- codeSnippet helps precisely locate the symbol when multiple occurrences exist
 - Modifies files immediately - operation cannot be undone through this tool
 - Some symbols may not be renameable (e.g., built-in types, external libraries)`;
 
@@ -48,11 +47,11 @@ export function registerRenameSymbol(server: McpServer) {
       idempotentHint: false,
       openWorldHint: false
     }
-  }, async ({ workspace_path, uri, line, character, newName }) => {
+  }, async ({ workspace_path, uri, symbol, codeSnippet, newName }) => {
     const dispatcher = createDispatcher(workspace_path);
     
     try {
-      const result = await dispatcher.dispatch("renameSymbol", { uri, line, character, newName });
+      const result = await dispatcher.dispatch("renameSymbol", { uri, symbol, codeSnippet, newName });
       
       if (result.success) {
         const filesList = result.modifiedFiles
@@ -79,11 +78,11 @@ ${filesList}`
             text: `❌ Rename failed: ${result.error}
 
 💡 **Troubleshooting Tips:**
-- Line and character numbers are **0-based** (first line is 0, first character is 0)
-- Make sure the position(line, col) is exactly on a renameable symbol
+- Make sure the symbol name is spelled correctly
+- Try providing a codeSnippet if there are multiple symbols with the same name
 - Some symbols cannot be renamed (e.g., built-in types, external libraries)
 - Verify the file URI is correct and the file exists
-- Ensure the language server extension is installed and running (e.g., rust-lang.rust for Rust), and the file is properly parsed`
+- Ensure the language server extension is installed and running`
           }]
         };
       }

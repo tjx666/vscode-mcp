@@ -2,38 +2,20 @@ import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
 import { logger } from '../logger.js';
+import { resolveSymbolPosition } from './resolve-symbol-position.js';
 
 export const renameSymbol = async (
   payload: EventParams<'renameSymbol'>,
 ): Promise<EventResult<'renameSymbol'>> => {
-  logger.info(`Renaming symbol at ${payload.uri}:${payload.line}:${payload.character} to "${payload.newName}"`);
+  logger.info(`Renaming symbol "${payload.symbol}" in ${payload.uri} to "${payload.newName}"`);
 
   try {
-    // 1. Parse URI and validate
+    // 1. Parse URI and resolve symbol to position
     const uri = vscode.Uri.parse(payload.uri);
-    const position = new vscode.Position(payload.line, payload.character);
+    const position = await resolveSymbolPosition(uri, payload.symbol, payload.codeSnippet);
 
-    // 2. Validate the document exists and position is valid
+    // 2. Validate the document exists 
     const document = await vscode.workspace.openTextDocument(uri);
-    
-    if (position.line >= document.lineCount) {
-      return {
-        success: false,
-        modifiedFiles: [],
-        totalChanges: 0,
-        error: `Line ${payload.line} is out of range (document has ${document.lineCount} lines)`,
-      };
-    }
-
-    const line = document.lineAt(position.line);
-    if (position.character >= line.text.length) {
-      return {
-        success: false,
-        modifiedFiles: [],
-        totalChanges: 0,
-        error: `Character ${payload.character} is out of range (line has ${line.text.length} characters)`,
-      };
-    }
 
     // 3. Validate new name
     if (!payload.newName.trim()) {
@@ -58,7 +40,7 @@ export const renameSymbol = async (
         success: false,
         modifiedFiles: [],
         totalChanges: 0,
-        error: 'Position is not renameable (no symbol found)',
+        error: `Symbol "${payload.symbol}" is not renameable (no symbol found at resolved position)`,
       };
     }
 
