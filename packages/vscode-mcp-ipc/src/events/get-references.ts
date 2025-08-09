@@ -11,8 +11,8 @@ import { LocationSchema } from './common.js';
  */
 export const GetReferencesInputSchema = z.object({
   uri: z.string().describe('File URI'),
-  line: z.number().describe('Line number (0-based)'),
-  character: z.number().describe('Character position (0-based)'),
+  symbol: z.string().describe('Symbol name to find references for'),
+  codeSnippet: z.string().optional().describe('Optional code snippet to precisely locate the symbol when multiple occurrences exist'),
   includeDeclaration: z.boolean().optional().describe('Whether to include the declaration in the results'),
 }).strict();
 

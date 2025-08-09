@@ -14,22 +14,22 @@ const DESCRIPTION = `Find all reference locations for a symbol (variable, functi
 **AI Coding Agent Use Cases:**
 - Assess the impact of modifying or removing a symbol before making changes
 - Find all usage patterns and dependencies in complex codebases
-- ALWAYS prefer this over codebase_search, grep_search when you already know the exact symbol position
+- ALWAYS prefer this over codebase_search, grep_search when you know the symbol name
 
 **Parameter Examples:**
-- Find function usage: uri: 'file:///utils.ts', line: 15, character: 10, includeDeclaration: true
-- Check variable references: uri: 'file:///config.js', line: 8, character: 5
-- Exclude declaration: includeDeclaration: false
+- Find function references: uri: 'file:///utils.ts', symbol: 'getUserName', includeDeclaration: true
+- Check variable usage: uri: 'file:///config.js', symbol: 'API_URL'
+- Precise location: uri: 'file:///app.ts', symbol: 'config', codeSnippet: 'import { config } from'
 
 **Return Format:**
 Array of reference locations with file paths and exact positions
 
 **Important Notes:**
 - Files are automatically opened to ensure accurate LSP information
-- No need to position cursor at target location - just provide position parameters
-- Line and character numbers are zero-based
+- Uses smart text search to locate the symbol definition first
+- codeSnippet helps precisely locate the symbol when multiple occurrences exist
 - includeDeclaration: false excludes the symbol definition itself
-- Returns empty array if no references found`;
+- Returns empty array if symbol not found or no references exist`;
 
 export function registerGetReferences(server: McpServer) {
   server.registerTool("get_references", {
@@ -43,13 +43,13 @@ export function registerGetReferences(server: McpServer) {
       idempotentHint: true,
       openWorldHint: false
     }
-  }, async ({ workspace_path, uri, line, character, includeDeclaration }) => {
+  }, async ({ workspace_path, uri, symbol, codeSnippet, includeDeclaration }) => {
     try {
       const dispatcher = createDispatcher(workspace_path);
       const result = await dispatcher.dispatch("getReferences", { 
         uri, 
-        line, 
-        character, 
+        symbol, 
+        codeSnippet,
         includeDeclaration 
       });
       
@@ -58,14 +58,14 @@ export function registerGetReferences(server: McpServer) {
         return {
           content: [{
             type: "text" as const,
-            text: `❌ No references found at ${uri}:${line}:${character}
+            text: `❌ No references found for symbol "${symbol}" in ${uri}
 
 💡 **Troubleshooting Tips:**
-- Line and character numbers are **0-based** (first line is 0, first character is 0)
-- Make sure the position(line, col) is exactly on a symbol (variable, function, class, etc.)
+- Make sure the symbol name is spelled correctly
+- Try providing a codeSnippet if there are multiple symbols with the same name
 - Try setting includeDeclaration: true to include the symbol definition itself
 - Verify the file URI is correct and the file exists
-- Ensure the language server extension is installed and running (e.g., rust-lang.rust for Rust), and the file is properly parsed
+- Ensure the language server extension is installed and running
 - Some symbols may not have references if they're unused or only declared
 
 📄 **Raw Result:**
