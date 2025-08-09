@@ -4,12 +4,12 @@
 
 import { z } from 'zod';
 
-import { LocationSchema, SymbolContextSchema } from './common.js';
+import { LocationSchema, SymbolLocatorSchema } from './common.js';
 
 /**
  * Get definition input schema
  */
-export const GetDefinitionInputSchema = SymbolContextSchema;
+export const GetDefinitionInputSchema = SymbolLocatorSchema;
 
 /**
  * Get definition output schema

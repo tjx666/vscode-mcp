@@ -4,7 +4,7 @@
 
 import { z } from 'zod';
 
-import { SymbolContextSchema } from './common.js';
+import { SymbolLocatorSchema } from './common.js';
 
 /**
  * Parameter information schema
@@ -35,7 +35,7 @@ const SignatureHelpSchema = z.object({
 /**
  * Get signature help input schema
  */
-export const GetSignatureHelpInputSchema = SymbolContextSchema;
+export const GetSignatureHelpInputSchema = SymbolLocatorSchema;
 
 /**
  * Get signature help output schema

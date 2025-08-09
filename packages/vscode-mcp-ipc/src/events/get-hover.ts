@@ -4,12 +4,12 @@
 
 import { z } from 'zod';
 
-import { RangeSchema, SymbolContextSchema } from './common.js';
+import { RangeSchema, SymbolLocatorSchema } from './common.js';
 
 /**
- * Hover position schema - alias for symbol context
+ * Hover position schema - alias for symbol locator
  */
-const HoverPositionSchema = SymbolContextSchema;
+const HoverPositionSchema = SymbolLocatorSchema;
 
 /**
  * Hover schema
