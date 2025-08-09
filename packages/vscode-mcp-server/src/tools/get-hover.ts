@@ -15,7 +15,6 @@ const DESCRIPTION = `Get rich type information, documentation, and value details
 - Understand complex types and read inline documentation for functions, variables, and classes
 - Get precise type information before making code modifications
 - Analyze symbol details without manual code inspection
-- ALWAYS prefer this over codebase_search, grep_search when you know the symbol name
 
 **Parameter Examples:**
 - Get type info: positions: [{ uri: 'file:///app.ts', symbol: 'getUserData' }]

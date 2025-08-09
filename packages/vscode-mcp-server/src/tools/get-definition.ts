@@ -12,10 +12,7 @@ const inputSchema = {
 const DESCRIPTION = `Get definition location information for a symbol (variable, function, class, etc.) by name. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
 
 **AI Coding Agent Use Cases:**
-- Retrieve definition location data to understand where symbols are declared
-- Get precise file paths and positions for symbols before code analysis
 - Obtain LSP-based definition information for accurate code understanding
-- ALWAYS prefer this over codebase_search, grep_search when you know the symbol name
 
 **Parameter Examples:**
 - Get function definition: uri: 'file:///utils.ts', symbol: 'processData'

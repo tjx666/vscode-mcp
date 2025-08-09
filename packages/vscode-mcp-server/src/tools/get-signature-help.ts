@@ -14,7 +14,6 @@ const DESCRIPTION = `Get detailed function signature information including param
 **AI Coding Agent Use Cases:**
 - Generate correct function calls with precise parameter types and order
 - Understand function overloads and choose the right signature for the context
-- ALWAYS prefer this over codebase_search, grep_search when you know the function name
 
 **Parameter Examples:**
 - Get function signature: uri: 'file:///api.ts', symbol: 'fetchUserData'

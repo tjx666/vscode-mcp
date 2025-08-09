@@ -14,7 +14,7 @@ const DESCRIPTION = `Rename a symbol (variable, function, class, etc.) by name a
 **AI Coding Agent Use Cases:**
 - Refactor code with consistent naming across entire codebase during code improvements
 - Fix naming conflicts or improve code readability as part of code review
-- ALWAYS prefer this over multiple edit_file calls - much more efficient and accurate for symbol renaming
+- ALWAYS prefer this over multiple call builtin edit file tools  - much more efficient and accurate for symbol renaming
 
 **Parameter Examples:**
 - Rename variable: uri: 'file:///utils.ts', symbol: 'userData', newName: 'processedData'
