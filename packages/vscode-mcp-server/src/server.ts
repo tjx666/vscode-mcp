@@ -15,7 +15,7 @@ import {
   registerOpenDiff,
   registerOpenFiles,
   registerRenameSymbol,
-  registerRequestInput} from "./tools/index.js";
+} from "./tools/index.js";
 
 /**
  * Create and configure the VSCode MCP Server
@@ -40,7 +40,6 @@ export function createVSCodeMCPServer(name: string, version: string): McpServer 
   registerOpenDiff(server);
   registerOpenFiles(server);
   registerRenameSymbol(server);
-  registerRequestInput(server);
   registerListWorkspaces(server);
 
   return server;

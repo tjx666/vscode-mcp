@@ -13,7 +13,6 @@ export { listWorkspaces } from './list-workspaces';
 export { openDiff } from './open-diff';
 export { openFiles } from './open-files';
 export { renameSymbol } from './rename-symbol';
-export { requestInput } from './request-input';
 
 // Export utilities
 export { getCurrentWorkspacePath } from './utils'; 

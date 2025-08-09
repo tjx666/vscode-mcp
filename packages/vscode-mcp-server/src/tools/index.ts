@@ -22,4 +22,3 @@ export { registerListWorkspaces } from "./list-workspaces.js";
 export { registerOpenDiff } from "./open-diff.js";
 export { registerOpenFiles } from "./open-files.js";
 export { registerRenameSymbol } from "./rename-symbol.js";
-export { registerRequestInput } from "./request-input.js";

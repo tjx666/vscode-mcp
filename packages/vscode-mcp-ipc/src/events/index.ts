@@ -13,7 +13,6 @@ import type { ListWorkspacesPayload, ListWorkspacesResult } from './list-workspa
 import type { OpenDiffPayload, OpenDiffResult } from './open-diff.js';
 import type { OpenFilesPayload, OpenFilesResult } from './open-file.js';
 import type { RenameSymbolPayload, RenameSymbolResult } from './rename-symbol.js';
-import type { RequestInputPayload, RequestInputResult } from './request-input.js';
 
 // Re-export all event types and schemas
 export * from './call-agent.js';
@@ -31,7 +30,6 @@ export * from './list-workspaces.js';
 export * from './open-diff.js';
 export * from './open-file.js';
 export * from './rename-symbol.js';
-export * from './request-input.js';
 
 /**
  * Base request structure
@@ -133,11 +131,6 @@ export interface EventMap {
     result: RenameSymbolResult;
   };
 
-  /** Request user input */
-  requestInput: {
-    params: RequestInputPayload;
-    result: RequestInputResult;
-  };
 
   /** List available workspaces */
   listWorkspaces: {
