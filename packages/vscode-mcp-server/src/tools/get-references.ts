@@ -43,18 +43,19 @@ export function registerGetReferences(server: McpServer) {
       idempotentHint: true,
       openWorldHint: false
     }
-  }, async ({ workspace_path, uri, symbol, codeSnippet, includeDeclaration }) => {
+  }, async ({ workspace_path, uri, symbol, codeSnippet, includeDeclaration, usageCodeLineRange }) => {
     try {
       const dispatcher = createDispatcher(workspace_path);
       const result = await dispatcher.dispatch("getReferences", { 
         uri, 
         symbol, 
         codeSnippet,
-        includeDeclaration 
+        includeDeclaration,
+        usageCodeLineRange
       });
       
       // Check if result is empty and provide helpful feedback
-      if (Array.isArray(result) && result.length === 0) {
+      if (result.locations && result.locations.length === 0) {
         return {
           content: [{
             type: "text" as const,

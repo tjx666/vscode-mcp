@@ -1,0 +1,20 @@
+{
+    "permissions": {
+        "allow": [
+            "Bash(bun run:*)",
+            "Bash(find:*)",
+            "Bash(git add:*)",
+            "Bash(git commit:*)",
+            "Bash(npm run build:*)",
+            "Bash(npm run:*)",
+            "Bash(npx tsc:*)",
+            "Bash(pnpm compile:test:*)",
+            "mcp__grep__searchGitHub",
+            "mcp__vscode-mcp__get_diagnostics",
+            "mcp__vscode-mcp__health_check",
+            "mcp__zen__chat",
+            "WebFetch(domain:github.com)"
+        ],
+        "deny": []
+    }
+}

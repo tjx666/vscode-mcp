@@ -26,6 +26,7 @@ export const RangeSchema = z.object({
 export const LocationSchema = z.object({
   uri: z.string(),
   range: RangeSchema,
+  usageCode: z.string().optional().describe('Usage context code around the reference location (included based on usageCodeLineRange parameter)'),
 }).strict();
 
 /**
