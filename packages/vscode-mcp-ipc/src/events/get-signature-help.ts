@@ -4,6 +4,8 @@
 
 import { z } from 'zod';
 
+import { SymbolContextSchema } from './common.js';
+
 /**
  * Parameter information schema
  */
@@ -33,11 +35,7 @@ const SignatureHelpSchema = z.object({
 /**
  * Get signature help input schema
  */
-export const GetSignatureHelpInputSchema = z.object({
-  uri: z.string().describe('File URI'),
-  symbol: z.string().describe('Function name to get signature help for'),
-  codeSnippet: z.string().optional().describe('Optional code snippet to precisely locate the function call when multiple occurrences exist'),
-}).strict();
+export const GetSignatureHelpInputSchema = SymbolContextSchema;
 
 /**
  * Get signature help output schema

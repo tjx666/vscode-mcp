@@ -4,16 +4,12 @@
 
 import { z } from 'zod';
 
-import { RangeSchema } from './common.js';
+import { RangeSchema, SymbolContextSchema } from './common.js';
 
 /**
- * Hover position schema
+ * Hover position schema - alias for symbol context
  */
-const HoverPositionSchema = z.object({
-  uri: z.string().describe('File URI'),
-  symbol: z.string().describe('Symbol name to get hover information for'),
-  codeSnippet: z.string().optional().describe('Optional code snippet to precisely locate the symbol when multiple occurrences exist'),
-}).strict();
+const HoverPositionSchema = SymbolContextSchema;
 
 /**
  * Hover schema

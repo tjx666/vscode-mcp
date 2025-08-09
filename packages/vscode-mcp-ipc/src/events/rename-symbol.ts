@@ -1,13 +1,10 @@
 import { z } from 'zod';
 
-export const RenameSymbolInputSchema = z
-  .object({
-    uri: z.string().describe('File URI'),
-    symbol: z.string().describe('Symbol name to rename'),
-    codeSnippet: z.string().optional().describe('Optional code snippet to precisely locate the symbol when multiple occurrences exist'),
-    newName: z.string().describe('New symbol name'),
-  })
-  .strict();
+import { SymbolContextSchema } from './common.js';
+
+export const RenameSymbolInputSchema = SymbolContextSchema.extend({
+  newName: z.string().describe('New symbol name'),
+});
 
 export const RenameSymbolOutputSchema = z
   .object({

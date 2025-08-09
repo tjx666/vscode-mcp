@@ -4,16 +4,12 @@
 
 import { z } from 'zod';
 
-import { LocationSchema } from './common.js';
+import { LocationSchema, SymbolContextSchema } from './common.js';
 
 /**
  * Get definition input schema
  */
-export const GetDefinitionInputSchema = z.object({
-  uri: z.string().describe('File URI'),
-  symbol: z.string().describe('Symbol name to find definition for'),
-  codeSnippet: z.string().optional().describe('Optional code snippet to precisely locate the symbol when multiple occurrences exist'),
-}).strict();
+export const GetDefinitionInputSchema = SymbolContextSchema;
 
 /**
  * Get definition output schema
