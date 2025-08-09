@@ -1,6 +1,6 @@
 {
     "name": "@vscode-mcp/vscode-mcp-ipc",
-    "version": "0.7.2",
+    "version": "1.0.0",
     "type": "module",
     "description": "IPC communication layer between MCP Server and VSCode extension",
     "main": "dist/index.js",
