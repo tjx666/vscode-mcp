@@ -30,6 +30,7 @@ import {
 } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
+import { sleepCommand } from './commands/sleep';
 import { logger } from './logger';
 import {
     callAgent,
@@ -164,6 +165,12 @@ export async function activate(context: vscode.ExtensionContext) {
         logger.info(`Socket server started successfully at: ${socketServer.getSocketPath()}`);
         logger.info(`Registered ${socketServer.getServicesCount()} services`);
         
+        // Register VSCode commands
+        const sleepCommandDisposable = vscode.commands.registerCommand('vscode-mcp-bridge.sleep', async (duration: number) => {
+            await sleepCommand(duration);
+        });
+        context.subscriptions.push(sleepCommandDisposable);
+
         // Register cleanup on extension deactivation
         context.subscriptions.push({
             dispose: () => {

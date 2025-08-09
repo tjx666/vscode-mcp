@@ -57,7 +57,14 @@
                     "description": "Enable logging for VSCode MCP Bridge operations"
                 }
             }
-        }
+        },
+        "commands": [
+            {
+                "command": "vscode-mcp-bridge.sleep",
+                "title": "Sleep",
+                "category": "VSCode MCP Bridge"
+            }
+        ]
     },
     "scripts": {
         "vscode:prepublish": "pnpm esbuild:base --minify",
