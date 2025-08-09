@@ -51,22 +51,22 @@ These commands run slowly in large projects, severely impacting AI development e
 
 VSCode MCP provides the following tools through the MCP protocol:
 
-| Tool                   | Description                                      | Parameters                                                                                    |
-| ---------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| **call_agent**         | Call IDE's AI agent with prompts and context     | `prompt`, `files?`, `images?`, `model?`, `mode?`, `ide_type?`                                 |
-| **execute_command**    | Execute VSCode commands with arguments           | `command`, `args?`                                                                            |
-| **get_commands**       | Get all available VSCode commands in workspace   | `include_internal?`, `filter?`, `category?`, `limit?`                                         |
-| **get_definition**     | Get symbol definition locations                  | `uri`, `line`, `character`                                                                    |
-| **get_diagnostics**    | Get diagnostic information with Git integration  | `uris` (array, empty = all git modified files)                                                |
-| **get_hovers**         | Get hover information for multiple positions     | `positions` (array), `includeAllHovers?`                                                      |
-| **get_references**     | Get symbol reference locations                   | `uri`, `line`, `character`, `includeDeclaration?`                                             |
-| **get_signature_help** | Get function signature help                      | `uri`, `line`, `character`                                                                    |
-| **health_check**       | Test connection and get extension status         | None                                                                                          |
-| **highlight_code**     | Open file and highlight specific code sections   | `uri`, `ranges` (array with line numbers, messages, types, colors), `showEditor?`, `timeout?` |
-| **open_diff**          | Open diff editor to compare files or text        | `before?`, `after?`, `beforeText?`, `afterText?`, `beforeLabel?`, `afterLabel?`, `language?`  |
-| **open_files**         | Open multiple files with optional editor display | `files` (array with `uri` and `showEditor?`)                                                  |
-| **rename_symbol**      | Rename symbols across all files in workspace     | `uri`, `line`, `character`, `newName`                                                         |
-| **request_input**      | Request simple text input from user              | `prompt`, `placeholder?`, `title?`, `password?`, `validateInput?`                             |
+| Tool                   | Description                                        | Parameters                                                                                                     |
+| ---------------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **call_agent**         | Call IDE's AI agent with prompts and context       | `workspace_path`, `prompt`, `files?`, `images?`, `model?`, `mode?`, `ide_type?`                                |
+| **execute_command**    | ⚠️ Execute VSCode commands with arguments          | `workspace_path`, `command`, `args?`                                                                           |
+| **get_commands**       | Get all available VSCode commands in workspace     | `workspace_path`, `include_internal?`, `filter?`, `category?`, `limit?`                                        |
+| **get_definition**     | Get symbol definition locations                    | `workspace_path`, `uri`, `symbol`, `codeSnippet?`                                                              |
+| **get_diagnostics**    | Get real-time diagnostics, replace slow tsc/eslint | `workspace_path`, `uris?`, `sources?`, `severities?`                                                           |
+| **get_hovers**         | Get symbol type information and documentation      | `workspace_path`, `positions`, `includeAllHovers?`                                                             |
+| **get_references**     | Find symbol references with usage context code     | `workspace_path`, `uri`, `symbol`, `codeSnippet?`, `includeDeclaration?`, `usageCodeLineRange?`                |
+| **get_signature_help** | Get function signature and parameter information   | `workspace_path`, `uri`, `symbol`, `codeSnippet?`                                                              |
+| **health_check**       | Test connection to VSCode MCP Bridge extension     | `workspace_path`                                                                                               |
+| **highlight_code**     | Open file and highlight specific code sections     | `workspace_path`, `uri`, `ranges`, `showEditor?`, `scrollToFirst?`, `clearPrevious?`, `timeout?`               |
+| **list_workspaces**    | List all available VSCode workspaces               | `clean_zombie_sockets?`, `include_details?`, `test_connection?`                                                |
+| **open_diff**          | Open diff editor to compare files or text          | `workspace_path`, `before?`, `after?`, `beforeText?`, `afterText?`, `beforeLabel?`, `afterLabel?`, `language?` |
+| **open_files**         | Open multiple files with optional editor display   | `workspace_path`, `files` (array with `uri` and `showEditor?`)                                                 |
+| **rename_symbol**      | ⚠️ Rename symbols across all files in workspace    | `workspace_path`, `uri`, `symbol`, `codeSnippet?`, `newName`                                                   |
 
 > **⚠️ Security Warning**: The `execute_command` tool can execute arbitrary VSCode commands and potentially trigger dangerous operations. Use with extreme caution and only with trusted AI models.
 
@@ -112,7 +112,17 @@ Or search for "VSCode MCP Bridge" in the VSCode Extensions marketplace.
 
 ### Step 2: Install MCP Server
 
-#### Install in Cursor ✅ Tested
+#### Claude Code
+
+Claude Code (claude.ai/code) provides built-in MCP support. Simply run:
+
+```bash
+claude mcp add vscode-mcp -- npx -y @vscode-mcp/vscode-mcp-server@latest
+```
+
+This command will automatically configure the MCP server in your Claude Code environment.
+
+#### Cursor
 
 ##### ⚠️ Gemini 2.5 Pro Compatibility Note
 
