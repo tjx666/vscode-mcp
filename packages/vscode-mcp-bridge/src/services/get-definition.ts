@@ -15,8 +15,8 @@ export const getDefinition = async (
     const uri = vscode.Uri.parse(payload.uri);
     const position = new vscode.Position(payload.line, payload.character);
     
-    // Execute definition provider
-    const definitions = await vscode.commands.executeCommand<vscode.Location[]>(
+    // Execute definition provider - can return Location or LocationLink
+    const definitions = await vscode.commands.executeCommand<Array<vscode.Location | vscode.LocationLink>>(
         'vscode.executeDefinitionProvider',
         uri,
         position
@@ -27,12 +27,18 @@ export const getDefinition = async (
     }
     
     return {
-        locations: definitions.map(def => ({
-            uri: def.uri.toString(),
-            range: {
-                start: { line: def.range.start.line, character: def.range.start.character },
-                end: { line: def.range.end.line, character: def.range.end.character }
-            }
-        }))
+        locations: definitions.map(def => {
+            const isLocationLink = 'targetUri' in def;
+            const uri = isLocationLink ? def.targetUri : def.uri;
+            const range = isLocationLink ? def.targetRange : def.range;
+            
+            return {
+                uri: uri.toString(),
+                range: {
+                    start: { line: range.start.line, character: range.start.character },
+                    end: { line: range.end.line, character: range.end.character }
+                }
+            };
+        })
     };
 }; 
