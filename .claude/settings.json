@@ -12,6 +12,7 @@
             "mcp__ide",
             "mcp__vscode-mcp",
             "mcp__zen",
+            "WebFetch(domain:code.visualstudio.com)",
             "WebFetch(domain:github.com)"
         ],
         "deny": []

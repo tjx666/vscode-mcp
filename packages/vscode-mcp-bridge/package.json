@@ -79,8 +79,7 @@
             {
                 "command": "vscode-mcp-bridge.tempEditToTerminal",
                 "key": "cmd+k cmd+e",
-                "mac": "cmd+k cmd+e",
-                "when": "editorTextFocus"
+                "mac": "cmd+k cmd+e"
             }
         ]
     },
