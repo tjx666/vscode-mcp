@@ -19,30 +19,38 @@ export async function copyOpenedFilesPathCommand(options: CopyOpenedFilesPathOpt
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
     const workspaceRoot = workspaceFolder?.uri.fsPath;
     
-    // Get all opened text documents and process paths
-    const openedFiles = vscode.workspace.textDocuments
-        .filter(({ uri }) => uri.scheme === 'file') // Only file URIs, exclude untitled etc.
-        .map(({ uri }) => {
-            const filePath = uri.fsPath;
-            
-            // If no workspace or file is outside workspace, use absolute path
-            if (!workspaceRoot) {
-                return filePath;
+    // Get all visible tabs from all tab groups
+    const visibleFiles: string[] = [];
+    
+    for (const tabGroup of vscode.window.tabGroups.all) {
+        for (const tab of tabGroup.tabs) {
+            if (tab.input instanceof vscode.TabInputText) {
+                const uri = tab.input.uri;
+                if (uri.scheme === 'file') {
+                    const filePath = uri.fsPath;
+                    
+                    // If no workspace or file is outside workspace, use absolute path
+                    if (!workspaceRoot) {
+                        visibleFiles.push(filePath);
+                    } else {
+                        const relativePath = path.relative(workspaceRoot, filePath);
+                        
+                        // If relative path starts with '..', file is outside workspace, use absolute path
+                        visibleFiles.push(relativePath.startsWith('..') ? filePath : relativePath);
+                    }
+                }
             }
-            
-            const relativePath = path.relative(workspaceRoot, filePath);
-            
-            // If relative path starts with '..', file is outside workspace, use absolute path
-            return relativePath.startsWith('..') ? filePath : relativePath;
-        })
-        .sort(); // Sort paths alphabetically
+        }
+    }
+    
+    const openedFiles = [...new Set(visibleFiles)].sort(); // Remove duplicates and sort
     
     if (openedFiles.length === 0) {
         return;
     }
     
-    // Format paths as text (one per line)
-    const pathsText = openedFiles.join('\n');
+    // Format paths as text with single quotes (one per line)
+    const pathsText = openedFiles.map(file => `'${file}'`).join('\n');
     
     if (isSendToActiveTerminal) {
         // Send to active terminal

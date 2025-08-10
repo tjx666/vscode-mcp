@@ -24,10 +24,21 @@ const inputSchema = {
 
 const DESCRIPTION = `Get comprehensive LSP information for a symbol - unified access to all language server features. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
 
+**🚀 Key Advantages over Manual File Search:**
+- **Comprehensive info in one call**: No need to manually search multiple files - gets definition, type info, implementations, and documentation instantly
+- **Precise symbol resolution**: Handles overloaded functions, generic types, and complex inheritance without manual disambiguation
+- **Cross-file navigation**: Automatically finds symbols across imports, modules, and dependencies without knowing file structure
+- **Type-aware search**: Resolves actual types considering generics, union types, and type inference - not just text matching
+
 **AI Coding Agent Use Cases:**
-- Get complete symbol context (definition, type, hover info, signatures) in one call
-- Analyze symbol semantics and relationships efficiently  
-- Understand code structure and dependencies comprehensively
+- **Check if function returns Promise**: Use hover info to see if return type contains Promise<T>
+- **Understand API parameter types**: Get hover info and signature help for function parameters and expected types
+- **Find interface/type definitions**: Use type_definition to locate where types are defined for better understanding
+- **Trace function implementations**: Use definition + implementation to find where functions are defined and implemented
+- **Validate function signatures**: Use signature help to understand required parameters, optional parameters, and overloads
+- **Understand generic constraints**: Use hover info to see generic type parameters and their constraints
+- **Check enum values**: Use definition to find enum declarations and their possible values
+- **Navigate to source declarations**: Use definition to jump from usage sites to original declarations
 
 **Parameter Examples:**
 - Get all info: uri: 'file:///app.ts', symbol: 'getUserData', codeSnippet: 'async function getUserData('
@@ -35,11 +46,11 @@ const DESCRIPTION = `Get comprehensive LSP information for a symbol - unified ac
 - Interface analysis: uri: 'file:///types.ts', symbol: 'UserModel', infoType: 'type_definition'
 
 **Info Types Available:**
-- **definition**: Where the symbol is defined
-- **type_definition**: Where the symbol's type is defined
-- **implementation**: All implementations of interfaces/abstract classes
 - **hover**: Rich type information and documentation
 - **signature_help**: Function parameters and overloads
+- **type_definition**: Where the symbol's type is defined
+- **definition**: Where the symbol is defined
+- **implementation**: All implementations of interfaces/abstract classes
 - **all**: Returns all available information (default)
 
 **Return Format:**
@@ -83,33 +94,6 @@ export function registerGetSymbolLSPInfo(server: McpServer) {
       
       const sections: string[] = [];
       
-      // Definition results
-      if (result.definition && result.definition.length > 0) {
-        sections.push(`**📋 Definition** (${result.definition.length} locations):\n${result.definition.map(def => 
-            formatLocationInfo(def)
-          ).join('\n')}`);
-      } else if (result.definition) {
-        sections.push(`**📋 Definition**: No definitions found`);
-      }
-      
-      // Type Definition results
-      if (result.type_definition && result.type_definition.length > 0) {
-        sections.push(`**🏷️ Type Definition** (${result.type_definition.length} locations):\n${result.type_definition.map(def => 
-            formatLocationInfo(def)
-          ).join('\n')}`);
-      } else if (result.type_definition) {
-        sections.push(`**🏷️ Type Definition**: No type definitions found`);
-      }
-      
-      // Implementation results
-      if (result.implementation && result.implementation.length > 0) {
-        sections.push(`**⚙️ Implementation** (${result.implementation.length} locations):\n${result.implementation.map(impl => 
-            formatLocationInfo(impl)
-          ).join('\n')}`);
-      } else if (result.implementation) {
-        sections.push(`**⚙️ Implementation**: No implementations found`);
-      }
-      
       // Hover results
       if (result.hover && result.hover.length > 0) {
         sections.push(`**💡 Hover Information** (${result.hover.length} entries):`);
@@ -140,6 +124,33 @@ export function registerGetSymbolLSPInfo(server: McpServer) {
         });
       } else if (result.signature_help === null && (infoType === 'signature_help' || infoType === 'all')) {
         sections.push(`**✍️ Signature Help**: No signature help available`);
+      }
+      
+      // Type Definition results
+      if (result.type_definition && result.type_definition.length > 0) {
+        sections.push(`**🏷️ Type Definition** (${result.type_definition.length} locations):\n${result.type_definition.map(def => 
+            formatLocationInfo(def)
+          ).join('\n')}`);
+      } else if (result.type_definition) {
+        sections.push(`**🏷️ Type Definition**: No type definitions found`);
+      }
+      
+      // Definition results
+      if (result.definition && result.definition.length > 0) {
+        sections.push(`**📋 Definition** (${result.definition.length} locations):\n${result.definition.map(def => 
+            formatLocationInfo(def)
+          ).join('\n')}`);
+      } else if (result.definition) {
+        sections.push(`**📋 Definition**: No definitions found`);
+      }
+      
+      // Implementation results
+      if (result.implementation && result.implementation.length > 0) {
+        sections.push(`**⚙️ Implementation** (${result.implementation.length} locations):\n${result.implementation.map(impl => 
+            formatLocationInfo(impl)
+          ).join('\n')}`);
+      } else if (result.implementation) {
+        sections.push(`**⚙️ Implementation**: No implementations found`);
       }
       
       if (sections.length === 0) {

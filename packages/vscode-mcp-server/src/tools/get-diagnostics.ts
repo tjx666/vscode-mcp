@@ -13,7 +13,7 @@ const DESCRIPTION = `Get real-time diagnostic information (errors, warnings, hin
 
 **AI Coding Agent Use Cases:**
 - Replace slow 'tsc --noEmit' and 'eslint .' commands with instant LSP diagnostics
-- Validate code changes immediately after generation without running full builds
+- Validate code changes immediately after Edit file without running full builds
 - Auto-check all git modified files to catch issues across entire changesets
 - Get precise error locations and messages for targeted code fixes
 - Monitor code health during iterative AI-assisted development

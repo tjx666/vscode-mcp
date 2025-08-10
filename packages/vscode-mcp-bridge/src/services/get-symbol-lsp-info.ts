@@ -41,7 +41,7 @@ export const getSymbolLSPInfo = async (
     // Determine which info types to retrieve
     const shouldRetrieveAll = infoType === 'all';
     const typesToRetrieve = shouldRetrieveAll 
-        ? ['definition', 'type_definition', 'implementation', 'hover', 'signature_help'] as LSPInfoType[]
+        ? ['hover', 'signature_help', 'type_definition', 'definition', 'implementation'] as LSPInfoType[]
         : [infoType] as LSPInfoType[];
     
     // Ensure file is open to get accurate LSP information
@@ -74,63 +74,6 @@ export const getSymbolLSPInfo = async (
     // Execute all LSP providers in parallel for better performance
     const tasks: Array<Promise<void>> = [];
     
-    // Definition Provider
-    if (typesToRetrieve.includes('definition')) {
-        tasks.push(
-            (async () => {
-                try {
-                    const definitions = await vscode.commands.executeCommand<Array<vscode.Location | vscode.LocationLink>>(
-                        'vscode.executeDefinitionProvider',
-                        vscodeUri,
-                        position
-                    );
-                    const locations = definitions?.map(convertLocationToStandard) || [];
-                    result.definition = await addUsageCodeToLocations(locations);
-                } catch {
-                    result.definition = [];
-                }
-            })()
-        );
-    }
-    
-    // Type Definition Provider
-    if (typesToRetrieve.includes('type_definition')) {
-        tasks.push(
-            (async () => {
-                try {
-                    const definitions = await vscode.commands.executeCommand<Array<vscode.Location | vscode.LocationLink>>(
-                        'vscode.executeTypeDefinitionProvider',
-                        vscodeUri,
-                        position
-                    );
-                    const locations = definitions?.map(convertLocationToStandard) || [];
-                    result.type_definition = await addUsageCodeToLocations(locations);
-                } catch {
-                    result.type_definition = [];
-                }
-            })()
-        );
-    }
-    
-    // Implementation Provider
-    if (typesToRetrieve.includes('implementation')) {
-        tasks.push(
-            (async () => {
-                try {
-                    const implementations = await vscode.commands.executeCommand<Array<vscode.Location | vscode.LocationLink>>(
-                        'vscode.executeImplementationProvider',
-                        vscodeUri,
-                        position
-                    );
-                    const locations = implementations?.map(convertLocationToStandard) || [];
-                    result.implementation = await addUsageCodeToLocations(locations);
-                } catch {
-                    result.implementation = [];
-                }
-            })()
-        );
-    }
-    
     // Hover Provider
     if (typesToRetrieve.includes('hover')) {
         tasks.push(
@@ -141,23 +84,25 @@ export const getSymbolLSPInfo = async (
                         vscodeUri,
                         position
                     );
-                    result.hover = hovers?.map(hover => ({
-                        contents: hover.contents.map(content => {
-                            if (typeof content === 'string') {
-                                return content;
-                            } else if (content instanceof vscode.MarkdownString) {
-                                return content.value;
-                            } else {
-                                return content.toString();
-                            }
-                        }),
-                        range: hover.range ? {
-                            start: { line: hover.range.start.line, character: hover.range.start.character },
-                            end: { line: hover.range.end.line, character: hover.range.end.character }
-                        } : undefined
-                    })) || [];
-                } catch {
-                    result.hover = [];
+                    if (hovers && hovers.length > 0) {
+                        result.hover = hovers.map(hover => ({
+                            contents: hover.contents.map(content => {
+                                if (typeof content === 'string') {
+                                    return content;
+                                } else if (content instanceof vscode.MarkdownString) {
+                                    return content.value;
+                                } else {
+                                    return content.toString();
+                                }
+                            }),
+                            range: hover.range ? {
+                                start: { line: hover.range.start.line, character: hover.range.start.character },
+                                end: { line: hover.range.end.line, character: hover.range.end.character }
+                            } : undefined
+                        }));
+                    }
+                } catch (error) {
+                    result.hover = [{ contents: [`Error getting hover info: ${error}`] }];
                 }
             })()
         );
@@ -173,28 +118,112 @@ export const getSymbolLSPInfo = async (
                         vscodeUri,
                         position
                     );
-                    result.signature_help = signatureHelp ? {
-                        signatures: signatureHelp.signatures.map(sig => ({
-                            label: sig.label,
-                            documentation: sig.documentation instanceof vscode.MarkdownString 
-                                ? sig.documentation.value 
-                                : typeof sig.documentation === 'string' 
-                                    ? sig.documentation 
-                                    : undefined,
-                            parameters: sig.parameters?.map(param => ({
-                                label: typeof param.label === 'string' ? param.label : param.label.join(''),
-                                documentation: param.documentation instanceof vscode.MarkdownString 
-                                    ? param.documentation.value 
-                                    : typeof param.documentation === 'string' 
-                                        ? param.documentation 
-                                        : undefined
-                            }))
-                        })),
-                        activeSignature: signatureHelp.activeSignature,
-                        activeParameter: signatureHelp.activeParameter
-                    } : null;
-                } catch {
-                    result.signature_help = null;
+                    if (signatureHelp) {
+                        result.signature_help = {
+                            signatures: signatureHelp.signatures.map(sig => ({
+                                label: sig.label,
+                                documentation: sig.documentation instanceof vscode.MarkdownString 
+                                    ? sig.documentation.value 
+                                    : typeof sig.documentation === 'string' 
+                                        ? sig.documentation 
+                                        : undefined,
+                                parameters: sig.parameters?.map(param => ({
+                                    label: typeof param.label === 'string' ? param.label : param.label.join(''),
+                                    documentation: param.documentation instanceof vscode.MarkdownString 
+                                        ? param.documentation.value 
+                                        : typeof param.documentation === 'string' 
+                                            ? param.documentation 
+                                            : undefined
+                                }))
+                            })),
+                            activeSignature: signatureHelp.activeSignature,
+                            activeParameter: signatureHelp.activeParameter
+                        };
+                    }
+                } catch (error) {
+                    result.signature_help = {
+                        signatures: [{
+                            label: `Error getting signature help: ${error}`,
+                            parameters: []
+                        }],
+                        activeSignature: 0,
+                        activeParameter: 0
+                    };
+                }
+            })()
+        );
+    }
+    
+    // Type Definition Provider
+    if (typesToRetrieve.includes('type_definition')) {
+        tasks.push(
+            (async () => {
+                try {
+                    const definitions = await vscode.commands.executeCommand<Array<vscode.Location | vscode.LocationLink>>(
+                        'vscode.executeTypeDefinitionProvider',
+                        vscodeUri,
+                        position
+                    );
+                    if (definitions && definitions.length > 0) {
+                        const locations = definitions.map(convertLocationToStandard);
+                        result.type_definition = await addUsageCodeToLocations(locations);
+                    }
+                } catch (error) {
+                    result.type_definition = [{
+                        uri: `error://type-definition`,
+                        range: { start: { line: 0, character: 0 }, end: { line: 0, character: 0 } },
+                        usageCode: `Error getting type definition: ${error}`
+                    }];
+                }
+            })()
+        );
+    }
+    
+    // Definition Provider
+    if (typesToRetrieve.includes('definition')) {
+        tasks.push(
+            (async () => {
+                try {
+                    const definitions = await vscode.commands.executeCommand<Array<vscode.Location | vscode.LocationLink>>(
+                        'vscode.executeDefinitionProvider',
+                        vscodeUri,
+                        position
+                    );
+                    if (definitions && definitions.length > 0) {
+                        const locations = definitions.map(convertLocationToStandard);
+                        result.definition = await addUsageCodeToLocations(locations);
+                    }
+                } catch (error) {
+                    result.definition = [{
+                        uri: `error://definition`,
+                        range: { start: { line: 0, character: 0 }, end: { line: 0, character: 0 } },
+                        usageCode: `Error getting definition: ${error}`
+                    }];
+                }
+            })()
+        );
+    }
+    
+    // Implementation Provider
+    if (typesToRetrieve.includes('implementation')) {
+        tasks.push(
+            (async () => {
+                try {
+                    const implementations = await vscode.commands.executeCommand<Array<vscode.Location | vscode.LocationLink>>(
+                        'vscode.executeImplementationProvider',
+                        vscodeUri,
+                        position
+                    );
+                    if (implementations && implementations.length > 0) {
+                        const locations = implementations.map(convertLocationToStandard);
+                        result.implementation = await addUsageCodeToLocations(locations);
+                    }
+                } catch (error) {
+                    result.implementation = [{
+                        uri: `error://implementation`,
+                        range: { start: { line: 0, character: 0 }, end: { line: 0, character: 0 } },
+                        usageCode: `Error getting implementation: ${error}`
+                    }];
                 }
             })()
         );

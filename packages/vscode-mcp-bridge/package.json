@@ -68,18 +68,6 @@
                 "command": "vscode-mcp-bridge.copyOpenedFilesPath",
                 "title": "Copy Opened Files Path",
                 "category": "VSCode MCP Bridge"
-            },
-            {
-                "command": "vscode-mcp-bridge.tempEditToTerminal",
-                "title": "Temp Edit to Terminal",
-                "category": "VSCode MCP Bridge"
-            }
-        ],
-        "keybindings": [
-            {
-                "command": "vscode-mcp-bridge.tempEditToTerminal",
-                "key": "cmd+k cmd+e",
-                "mac": "cmd+k cmd+e"
             }
         ]
     },
