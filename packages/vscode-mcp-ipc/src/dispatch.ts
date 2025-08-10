@@ -108,7 +108,16 @@ export class EventDispatcher {
     try {
       return await this.tryConnect(eventName, params, this.socketPath);
     } catch (newPathError) {
-      // If new path fails, try legacy path
+      // Check if this is a connection error or business error
+      const isConnectionError = this.isConnectionError(newPathError as Error);
+      
+      if (!isConnectionError) {
+        // This is a business error (e.g., file not found, invalid params), not connection issue
+        // Don't retry, let outer layer handle it
+        throw newPathError;
+      }
+      
+      // This is a connection error, try legacy path
       try {
         const result = await this.tryConnect(eventName, params, this.legacySocketPath);
         
@@ -123,7 +132,14 @@ export class EventDispatcher {
         
         return result;
       } catch (legacyPathError) {
-        // Both paths failed, throw more detailed error
+        const isLegacyConnectionError = this.isConnectionError(legacyPathError as Error);
+        
+        if (!isLegacyConnectionError) {
+          // Legacy path connected but returned business error, throw it
+          throw legacyPathError;
+        }
+        
+        // Both paths failed with connection errors
         throw new Error(
           `Failed to connect to VSCode extension at both locations:\n` +
           `  New path: ${this.socketPath} - ${(newPathError as Error).message}\n` +
@@ -135,6 +151,14 @@ export class EventDispatcher {
         );
       }
     }
+  }
+
+  /**
+   * Check if error is a connection error (vs business logic error from VSCode extension)
+   */
+  private isConnectionError(error: Error): boolean {
+    const { message } = error;
+    return message.includes('connect ENOENT') && message.includes('.sock');
   }
 
   /**
