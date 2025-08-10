@@ -2,11 +2,9 @@
 import type { CallAgentPayload, CallAgentResult } from './call-agent.js';
 import type { ExecuteCommandPayload, ExecuteCommandResult } from './execute-command.js';
 import type { GetCommandsPayload, GetCommandsResult } from './get-commands.js';
-import type { GetDefinitionPayload, GetDefinitionResult } from './get-definition.js';
 import type { GetDiagnosticsPayload, GetDiagnosticsResult } from './get-diagnostics.js';
-import type { GetHoverPayload, GetHoverResult } from './get-hover.js';
 import type { GetReferencesPayload, GetReferencesResult } from './get-references.js';
-import type { GetSignatureHelpPayload, GetSignatureHelpResult } from './get-signature-help.js';
+import type { GetSymbolLSPInfoPayload, GetSymbolLSPInfoResult } from './get-symbol-lsp-info.js';
 import type { HealthCheckPayload, HealthCheckResult } from './health-check.js';
 import type { HighlightCodePayload, HighlightCodeResult } from './highlight-code.js';
 import type { ListWorkspacesPayload, ListWorkspacesResult } from './list-workspaces.js';
@@ -19,11 +17,9 @@ export * from './call-agent.js';
 export * from './common.js';
 export * from './execute-command.js';
 export * from './get-commands.js';
-export * from './get-definition.js';
 export * from './get-diagnostics.js';
-export * from './get-hover.js';
 export * from './get-references.js';
-export * from './get-signature-help.js';
+export * from './get-symbol-lsp-info.js';
 export * from './health-check.js';
 export * from './highlight-code.js';
 export * from './list-workspaces.js';
@@ -81,24 +77,14 @@ export interface EventMap {
     result: GetDiagnosticsResult;
   };
 
-  getDefinition: {
-    params: GetDefinitionPayload;
-    result: GetDefinitionResult;
+  getSymbolLSPInfo: {
+    params: GetSymbolLSPInfoPayload;
+    result: GetSymbolLSPInfoResult;
   };
 
   getReferences: {
     params: GetReferencesPayload;
     result: GetReferencesResult;
-  };
-
-  getHover: {
-    params: GetHoverPayload;
-    result: GetHoverResult;
-  };
-
-  getSignatureHelp: {
-    params: GetSignatureHelpPayload;
-    result: GetSignatureHelpResult;
   };
 
   /** Get VSCode commands */

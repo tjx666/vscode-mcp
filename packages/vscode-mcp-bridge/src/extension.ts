@@ -5,16 +5,12 @@ import {
     ExecuteCommandOutputSchema,
     GetCommandsInputSchema,
     GetCommandsOutputSchema,
-    GetDefinitionInputSchema,
-    GetDefinitionOutputSchema,
     GetDiagnosticsInputSchema,
     GetDiagnosticsOutputSchema,
-    GetHoverInputSchema,
-    GetHoverOutputSchema,
     GetReferencesInputSchema,
     GetReferencesOutputSchema,
-    GetSignatureHelpInputSchema,
-    GetSignatureHelpOutputSchema,
+    GetSymbolLSPInfoInputSchema,
+    GetSymbolLSPInfoOutputSchema,
     HealthCheckInputSchema,
     HealthCheckOutputSchema,
     HighlightCodeInputSchema,
@@ -37,11 +33,9 @@ import {
     executeCommand,
     getCommands,
 getCurrentWorkspacePath,
-    getDefinition,
     getDiagnostics,
-    getHover,
     getReferences,
-    getSignatureHelp,
+    getSymbolLSPInfo,
     health,
     highlightCode,
     listWorkspaces,
@@ -98,34 +92,22 @@ export async function activate(context: vscode.ExtensionContext) {
             resultSchema: GetDiagnosticsOutputSchema
         });
         
+        socketServer.register('getSymbolLSPInfo', {
+            handler: getSymbolLSPInfo,
+            payloadSchema: GetSymbolLSPInfoInputSchema,
+            resultSchema: GetSymbolLSPInfoOutputSchema
+        });
+        
         socketServer.register('getCommands', {
             handler: getCommands,
             payloadSchema: GetCommandsInputSchema,
             resultSchema: GetCommandsOutputSchema
         });
         
-        socketServer.register('getDefinition', {
-            handler: getDefinition,
-            payloadSchema: GetDefinitionInputSchema,
-            resultSchema: GetDefinitionOutputSchema
-        });
-        
         socketServer.register('getReferences', {
             handler: getReferences,
             payloadSchema: GetReferencesInputSchema,
             resultSchema: GetReferencesOutputSchema
-        });
-        
-        socketServer.register('getHover', {
-            handler: getHover,
-            payloadSchema: GetHoverInputSchema,
-            resultSchema: GetHoverOutputSchema
-        });
-        
-        socketServer.register('getSignatureHelp', {
-            handler: getSignatureHelp,
-            payloadSchema: GetSignatureHelpInputSchema,
-            resultSchema: GetSignatureHelpOutputSchema
         });
         
         socketServer.register('executeCommand', {

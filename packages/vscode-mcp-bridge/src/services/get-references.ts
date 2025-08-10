@@ -3,6 +3,7 @@ import * as vscode from 'vscode';
 
 import { resolveSymbolPosition } from './resolve-symbol-position.js';
 import { ensureFileIsOpen } from './utils.js';
+import { getUsageCode } from '../utils/usage-code.js';
 
 /**
  * Handle get references
@@ -55,31 +56,4 @@ export const getReferences = async (
     return { locations };
 };
 
-/**
- * Get usage code around a reference location
- */
-async function getUsageCode(uri: vscode.Uri, range: vscode.Range, lineRange: number): Promise<string | undefined> {
-    try {
-        const document = await vscode.workspace.openTextDocument(uri);
-        
-        if (lineRange === 0) {
-            // Only return the reference line
-            return document.lineAt(range.start.line).text;
-        }
-        
-        // Calculate start and end lines with boundaries
-        const startLine = Math.max(0, range.start.line - lineRange);
-        const endLine = Math.min(document.lineCount - 1, range.start.line + lineRange);
-        
-        // Get the range of lines
-        const lines: string[] = [];
-        for (let i = startLine; i <= endLine; i++) {
-            lines.push(document.lineAt(i).text);
-        }
-        
-        return lines.join('\n');
-    } catch {
-        // If we can't read the file, return undefined (no usage code)
-        return undefined;
-    }
-} 
+ 

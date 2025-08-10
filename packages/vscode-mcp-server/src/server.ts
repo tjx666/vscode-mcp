@@ -4,11 +4,9 @@ import {
   registerCallAgent,
   registerExecuteCommand,
   registerGetCommands,
-  registerGetDefinition,
   registerGetDiagnostics,
-  registerGetHovers,
   registerGetReferences,
-  registerGetSignatureHelp,
+  registerGetSymbolLSPInfo,
   registerHealthCheck,
   registerHighlightCode,
   registerListWorkspaces,
@@ -31,11 +29,9 @@ export function createVSCodeMCPServer(name: string, version: string): McpServer 
   registerHealthCheck(server, version);
   registerHighlightCode(server);
   registerGetDiagnostics(server);
+  registerGetSymbolLSPInfo(server);
   registerGetCommands(server);
-  registerGetDefinition(server);
   registerGetReferences(server);
-  registerGetHovers(server);
-  registerGetSignatureHelp(server);
   registerExecuteCommand(server);
   registerOpenDiff(server);
   registerOpenFiles(server);
