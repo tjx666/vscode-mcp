@@ -24,6 +24,7 @@ This tool can execute arbitrary VSCode commands and potentially modify files, se
 - Trigger intelligent refactoring operations: 'editor.action.rename'
 - Run build tasks and scripts: 'workbench.action.tasks.runTask'
 - Save all modified files after bulk operations: 'workbench.action.files.saveAll'
+- Auto-fix code issues: 'editor.action.fixAll' - Apply all available auto-fixes in current file
 - Common daily troubleshooting commands:
   - 'typescript.reloadProjects' - Reload TypeScript projects
   - 'typescript.restartTsServer' - Restart TypeScript language server
