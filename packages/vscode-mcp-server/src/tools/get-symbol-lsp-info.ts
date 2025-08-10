@@ -37,7 +37,6 @@ const DESCRIPTION = `Get comprehensive LSP information for a symbol - unified ac
 **Info Types Available:**
 - **definition**: Where the symbol is defined
 - **type_definition**: Where the symbol's type is defined
-- **declaration**: Where the symbol is declared (may differ from definition)
 - **implementation**: All implementations of interfaces/abstract classes
 - **hover**: Rich type information and documentation
 - **signature_help**: Function parameters and overloads
@@ -100,15 +99,6 @@ export function registerGetSymbolLSPInfo(server: McpServer) {
           ).join('\n')}`);
       } else if (result.type_definition) {
         sections.push(`**🏷️ Type Definition**: No type definitions found`);
-      }
-      
-      // Declaration results
-      if (result.declaration && result.declaration.length > 0) {
-        sections.push(`**📜 Declaration** (${result.declaration.length} locations):\n${result.declaration.map(decl => 
-            formatLocationInfo(decl)
-          ).join('\n')}`);
-      } else if (result.declaration) {
-        sections.push(`**📜 Declaration**: No declarations found`);
       }
       
       // Implementation results

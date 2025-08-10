@@ -35,8 +35,8 @@ Traditional AI coding agents often need to execute time-consuming commands when 
 These commands run slowly in large projects, severely impacting AI development efficiency. VSCode MCP Bridge provides real-time LSP (Language Server Protocol) information, allowing AI agents to:
 
 - **Get fast diagnostics** (`get-diagnostics`) - Replace time-consuming type checking and lint commands
-- **Access real-time type information** (`get-hover`) - Get accurate type definitions without compilation
-- **Navigate code efficiently** (`get-definition`, `get-references`) - Understand code structure and dependencies
+- **Access comprehensive LSP information** (`get-symbol-lsp-info`) - Get definition, hover, signatures, and type info in one call
+- **Navigate code efficiently** (`get-references`) - Understand code structure and dependencies with usage context
 - **Call IDE AI agents** (`call-agent`) - Integrate with built-in AI assistants like Cursor Composer, GitHub Copilot, and others
 
 ### Core Advantages
@@ -56,11 +56,9 @@ VSCode MCP provides the following tools through the MCP protocol:
 | **call_agent**         | Call IDE's AI agent with prompts and context       | `workspace_path`, `prompt`, `files?`, `images?`, `model?`, `mode?`, `ide_type?`                                |
 | **execute_command**    | ⚠️ Execute VSCode commands with arguments          | `workspace_path`, `command`, `args?`                                                                           |
 | **get_commands**       | Get all available VSCode commands in workspace     | `workspace_path`, `include_internal?`, `filter?`, `category?`, `limit?`                                        |
-| **get_definition**     | Get symbol definition locations                    | `workspace_path`, `uri`, `symbol`, `codeSnippet?`                                                              |
+| **get_symbol_lsp_info** | Get comprehensive LSP info (definition, hover, signatures, etc.) | `workspace_path`, `uri`, `symbol`, `codeSnippet?`, `infoType?` |
 | **get_diagnostics**    | Get real-time diagnostics, replace slow tsc/eslint | `workspace_path`, `uris?`, `sources?`, `severities?`                                                           |
-| **get_hovers**         | Get symbol type information and documentation      | `workspace_path`, `positions`, `includeAllHovers?`                                                             |
 | **get_references**     | Find symbol references with usage context code     | `workspace_path`, `uri`, `symbol`, `codeSnippet?`, `includeDeclaration?`, `usageCodeLineRange?`                |
-| **get_signature_help** | Get function signature and parameter information   | `workspace_path`, `uri`, `symbol`, `codeSnippet?`                                                              |
 | **health_check**       | Test connection to VSCode MCP Bridge extension     | `workspace_path`                                                                                               |
 | **highlight_code**     | Open file and highlight specific code sections     | `workspace_path`, `uri`, `ranges`, `showEditor?`, `scrollToFirst?`, `clearPrevious?`, `timeout?`               |
 | **list_workspaces**    | List all available VSCode workspaces               | `clean_zombie_sockets?`, `include_details?`, `test_connection?`                                                |

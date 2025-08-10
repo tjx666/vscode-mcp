@@ -12,8 +12,7 @@ import { LocationSchema, RangeSchema, SymbolLocatorSchema } from './common.js';
  */
 export const LSPInfoTypeSchema = z.enum([
   'definition',
-  'type_definition', 
-  'declaration',
+  'type_definition',
   'implementation',
   'hover',
   'signature_help',
@@ -66,8 +65,7 @@ export const GetSymbolLSPInfoInputSchema = SymbolLocatorSchema.extend({
  */
 export const GetSymbolLSPInfoOutputSchema = z.object({
   definition: z.array(LocationSchema).optional().describe('Symbol definition locations'),
-  type_definition: z.array(LocationSchema).optional().describe('Symbol type definition locations'), 
-  declaration: z.array(LocationSchema).optional().describe('Symbol declaration locations'),
+  type_definition: z.array(LocationSchema).optional().describe('Symbol type definition locations'),
   implementation: z.array(LocationSchema).optional().describe('Symbol implementation locations'),
   hover: z.array(HoverSchema).optional().describe('Hover information for the symbol'),
   signature_help: SignatureHelpSchema.nullable().optional().describe('Function signature help information'),

@@ -41,7 +41,7 @@ export const getSymbolLSPInfo = async (
     // Determine which info types to retrieve
     const shouldRetrieveAll = infoType === 'all';
     const typesToRetrieve = shouldRetrieveAll 
-        ? ['definition', 'type_definition', 'declaration', 'implementation', 'hover', 'signature_help'] as LSPInfoType[]
+        ? ['definition', 'type_definition', 'implementation', 'hover', 'signature_help'] as LSPInfoType[]
         : [infoType] as LSPInfoType[];
     
     // Ensure file is open to get accurate LSP information
@@ -107,25 +107,6 @@ export const getSymbolLSPInfo = async (
                     result.type_definition = await addUsageCodeToLocations(locations);
                 } catch {
                     result.type_definition = [];
-                }
-            })()
-        );
-    }
-    
-    // Declaration Provider
-    if (typesToRetrieve.includes('declaration')) {
-        tasks.push(
-            (async () => {
-                try {
-                    const declarations = await vscode.commands.executeCommand<Array<vscode.Location | vscode.LocationLink>>(
-                        'vscode.executeDeclarationProvider',
-                        vscodeUri,
-                        position
-                    );
-                    const locations = declarations?.map(convertLocationToStandard) || [];
-                    result.declaration = await addUsageCodeToLocations(locations);
-                } catch {
-                    result.declaration = [];
                 }
             })()
         );
