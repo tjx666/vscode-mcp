@@ -5,6 +5,7 @@ import { promisify } from 'util';
 import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
+import { logger } from '../logger.js';
 import { ensureFileIsOpen } from './utils.js';
 
 const execAsync = promisify(exec);
@@ -15,10 +16,12 @@ const execAsync = promisify(exec);
 async function getModifiedFiles(): Promise<string[]> {
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
     if (!workspaceFolder) {
+        logger.info('No workspace folder found, returning empty modified files list');
         return [];
     }
 
     const workspaceRoot = workspaceFolder.uri.fsPath;
+    logger.info(`Getting git modified files from workspace: ${workspaceRoot}`);
     const modifiedFiles: string[] = [];
 
     try {
@@ -74,8 +77,10 @@ async function getModifiedFiles(): Promise<string[]> {
             modifiedFiles.push(uri.toString());
         }
 
+        logger.info(`Found ${modifiedFiles.length} git modified files: ${modifiedFiles.map(f => path.basename(f)).join(', ')}`);
+
     } catch (error) {
-        console.warn(`Error getting git modified files: ${error}`);
+        logger.error(`Error getting git modified files: ${error}`);
         // Fallback: return empty array if git commands fail
         return [];
     }
@@ -89,11 +94,14 @@ async function getModifiedFiles(): Promise<string[]> {
 export const getDiagnostics = async (
     payload: EventParams<'getDiagnostics'>
 ): Promise<EventResult<'getDiagnostics'>> => {
+    logger.info(`getDiagnostics called with ${payload.uris.length} URIs, sources: [${payload.sources.join(', ')}], severities: [${payload.severities.join(', ')}]`);
+    
     let targetUris = payload.uris;
     const { sources, severities } = payload;
     
     // If empty array is provided, get all git modified files
     if (targetUris.length === 0) {
+        logger.info('No URIs provided, getting git modified files');
         targetUris = await getModifiedFiles();
     }
     
@@ -105,6 +113,8 @@ export const getDiagnostics = async (
         3: 'hint'
     } as const;
     
+    logger.info(`Processing diagnostics for ${targetUris.length} files`);
+    
     const files = await Promise.all(
         targetUris.map(async (uriString: string) => {
             // Ensure file is open to get accurate diagnostics
@@ -112,6 +122,8 @@ export const getDiagnostics = async (
             
             const uri = vscode.Uri.parse(uriString);
             const allDiagnostics = vscode.languages.getDiagnostics(uri);
+            
+            logger.info(`File ${path.basename(uri.fsPath)}: found ${allDiagnostics.length} total diagnostics`);
             
             // Filter diagnostics based on sources and severities
             const filteredDiagnostics = allDiagnostics.filter(diag => {
@@ -125,6 +137,8 @@ export const getDiagnostics = async (
                 
                 return sourceMatches && severityMatches;
             });
+            
+            logger.info(`File ${path.basename(uri.fsPath)}: after filtering - ${filteredDiagnostics.length} diagnostics (sources: ${filteredDiagnostics.map(d => d.source || 'unknown').join(', ') || 'none'})`);
             
             return {
                 uri: uriString,
@@ -141,6 +155,9 @@ export const getDiagnostics = async (
             };
         })
     );
+
+    const totalDiagnostics = files.reduce((sum, file) => sum + file.diagnostics.length, 0);
+    logger.info(`getDiagnostics completed: ${totalDiagnostics} total diagnostics across ${files.length} files`);
 
     return { files };
 }; 

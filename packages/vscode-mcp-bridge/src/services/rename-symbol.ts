@@ -15,7 +15,7 @@ export const renameSymbol = async (
     const position = await resolveSymbolPosition(uri, payload.symbol, payload.codeSnippet);
 
     // 2. Validate the document exists 
-    const document = await vscode.workspace.openTextDocument(uri);
+    await vscode.workspace.openTextDocument(uri);
 
     // 3. Validate new name
     if (!payload.newName.trim()) {

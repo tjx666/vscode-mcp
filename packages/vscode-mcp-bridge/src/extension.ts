@@ -29,7 +29,7 @@ import * as vscode from 'vscode';
 import type {CopyOpenedFilesPathOptions} from './commands/copy-opened-files-path';
 import { copyOpenedFilesPathCommand  } from './commands/copy-opened-files-path';
 import { sleepCommand } from './commands/sleep';
-import { tempEditToTerminalCommand, cleanupTempEditToTerminal } from './commands/temp-edit-to-terminal';
+import { cleanupTempEditToTerminal,tempEditToTerminalCommand } from './commands/temp-edit-to-terminal';
 import { logger } from './logger';
 import {
     callAgent,

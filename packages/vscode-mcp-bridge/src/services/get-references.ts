@@ -1,9 +1,9 @@
 import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
+import { getUsageCode } from '../utils/usage-code.js';
 import { resolveSymbolPosition } from './resolve-symbol-position.js';
 import { ensureFileIsOpen } from './utils.js';
-import { getUsageCode } from '../utils/usage-code.js';
 
 /**
  * Handle get references
