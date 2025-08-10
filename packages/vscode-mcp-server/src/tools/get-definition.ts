@@ -15,9 +15,9 @@ const DESCRIPTION = `Get definition location information for a symbol (variable,
 - Obtain LSP-based definition information for accurate code understanding
 
 **Parameter Examples:**
-- Get function definition: uri: 'file:///utils.ts', symbol: 'processData'
-- Get class definition: uri: 'file:///models.ts', symbol: 'UserModel'  
-- Precise location: uri: 'file:///config.ts', symbol: 'config', codeSnippet: 'export const config'
+- Get function definition: uri: 'file:///utils.ts', symbol: 'processData', codeSnippet: 'processData(user'
+- Get class definition: uri: 'file:///models.ts', symbol: 'UserModel', codeSnippet: 'new UserModel('
+- Get exported const: uri: 'file:///config.ts', symbol: 'config', codeSnippet: 'export const config'
 
 **Return Format:**
 Array of Location objects, each containing:

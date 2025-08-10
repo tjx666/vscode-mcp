@@ -16,9 +16,9 @@ const DESCRIPTION = `Get detailed function signature information including param
 - Understand function overloads and choose the right signature for the context
 
 **Parameter Examples:**
-- Get function signature: uri: 'file:///api.ts', symbol: 'fetchUserData'
-- Check method parameters: uri: 'file:///utils.js', symbol: 'processData'
-- Precise location: uri: 'file:///app.ts', symbol: 'handleRequest', codeSnippet: 'await handleRequest('
+- Get function signature: uri: 'file:///api.ts', symbol: 'fetchUserData', codeSnippet: 'fetchUserData(userId'
+- Check method parameters: uri: 'file:///utils.js', symbol: 'processData', codeSnippet: 'processData(data, options'
+- Inside function call: uri: 'file:///app.ts', symbol: 'handleRequest', codeSnippet: 'await handleRequest(req,'
 
 **Return Format:**
 Detailed signature information with parameter details and documentation

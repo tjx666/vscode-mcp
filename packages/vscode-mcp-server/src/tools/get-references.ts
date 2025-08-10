@@ -17,9 +17,9 @@ const DESCRIPTION = `Find all reference locations for a symbol (variable, functi
 - Find all usage patterns in complex codebases
 
 **Parameter Examples:**
-- Find function references: uri: 'file:///utils.ts', symbol: 'getUserName', includeDeclaration: true
-- Check variable usage: uri: 'file:///config.js', symbol: 'API_URL'
-- Precise location: uri: 'file:///app.ts', symbol: 'config', codeSnippet: 'import { config } from'
+- Find function references: uri: 'file:///utils.ts', symbol: 'getUserName', codeSnippet: 'function getUserName', includeDeclaration: true
+- Check variable usage: uri: 'file:///config.js', symbol: 'API_URL', codeSnippet: 'const API_URL ='
+- Find imported symbol: uri: 'file:///app.ts', symbol: 'config', codeSnippet: 'import { config } from'
 
 **Return Format:**
 Array of reference locations with file paths and exact positions

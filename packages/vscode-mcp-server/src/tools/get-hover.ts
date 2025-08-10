@@ -17,10 +17,9 @@ const DESCRIPTION = `Get rich type information, documentation, and value details
 - Analyze symbol details without manual code inspection
 
 **Parameter Examples:**
-- Get type info: positions: [{ uri: 'file:///app.ts', symbol: 'getUserData' }]
-- Multiple symbols: positions: [{ uri: 'file:///utils.js', symbol: 'API_URL' }, { uri: 'file:///api.ts', symbol: 'fetchData' }]
-- Precise location: positions: [{ uri: 'file:///config.ts', symbol: 'config', codeSnippet: 'export const config' }]
-- Comprehensive info: includeAllHovers: true
+- Get type info: positions: [{ uri: 'file:///app.ts', symbol: 'getUserData', codeSnippet: 'async getUserData(' }]
+- Multiple symbols: positions: [{ uri: 'file:///utils.js', symbol: 'API_URL', codeSnippet: 'const API_URL' }, { uri: 'file:///api.ts', symbol: 'fetchData', codeSnippet: 'export async function fetchData' }]
+- Check interface type: positions: [{ uri: 'file:///types.ts', symbol: 'User', codeSnippet: 'interface User {' }], includeAllHovers: true
 
 **Return Format:**
 Detailed hover information with types, documentation, and value details

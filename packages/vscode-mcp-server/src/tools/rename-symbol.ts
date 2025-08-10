@@ -17,9 +17,9 @@ const DESCRIPTION = `Rename a symbol (variable, function, class, etc.) by name a
 - ALWAYS prefer this over multiple call builtin edit file tools  - much more efficient and accurate for symbol renaming
 
 **Parameter Examples:**
-- Rename variable: uri: 'file:///utils.ts', symbol: 'userData', newName: 'processedData'
-- Rename function: uri: 'file:///api.ts', symbol: 'handleRequest', newName: 'handleUserRequest'
-- Precise location: uri: 'file:///models.ts', symbol: 'User', codeSnippet: 'class User', newName: 'UserModel'
+- Rename variable: uri: 'file:///utils.ts', symbol: 'userData', codeSnippet: 'const userData =', newName: 'processedData'
+- Rename function: uri: 'file:///api.ts', symbol: 'handleRequest', codeSnippet: 'async function handleRequest', newName: 'handleUserRequest'
+- Rename class: uri: 'file:///models.ts', symbol: 'User', codeSnippet: 'class User extends', newName: 'UserModel'
 
 **Return Format:**
 - success: boolean indicating if rename was successful
