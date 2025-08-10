@@ -26,6 +26,8 @@ import {
 } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
+import type {CopyOpenedFilesPathOptions} from './commands/copy-opened-files-path';
+import { copyOpenedFilesPathCommand  } from './commands/copy-opened-files-path';
 import { sleepCommand } from './commands/sleep';
 import { logger } from './logger';
 import {
@@ -152,6 +154,11 @@ export async function activate(context: vscode.ExtensionContext) {
             await sleepCommand(duration);
         });
         context.subscriptions.push(sleepCommandDisposable);
+
+        const copyOpenedFilesPathDisposable = vscode.commands.registerCommand('vscode-mcp-bridge.copyOpenedFilesPath', async (options?: CopyOpenedFilesPathOptions) => {
+            await copyOpenedFilesPathCommand(options);
+        });
+        context.subscriptions.push(copyOpenedFilesPathDisposable);
 
         // Register cleanup on extension deactivation
         context.subscriptions.push({
