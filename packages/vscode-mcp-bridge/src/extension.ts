@@ -29,7 +29,6 @@ import * as vscode from 'vscode';
 import type {CopyOpenedFilesPathOptions} from './commands/copy-opened-files-path';
 import { copyOpenedFilesPathCommand  } from './commands/copy-opened-files-path';
 import { sleepCommand } from './commands/sleep';
-import { cleanupTempEditToTerminal,tempEditToTerminalCommand } from './commands/temp-edit-to-terminal';
 import { logger } from './logger';
 import {
     callAgent,
@@ -161,11 +160,6 @@ export async function activate(context: vscode.ExtensionContext) {
         });
         context.subscriptions.push(copyOpenedFilesPathDisposable);
 
-        const tempEditToTerminalDisposable = vscode.commands.registerCommand('vscode-mcp-bridge.tempEditToTerminal', async () => {
-            await tempEditToTerminalCommand();
-        });
-        context.subscriptions.push(tempEditToTerminalDisposable);
-
         // Register cleanup on extension deactivation
         context.subscriptions.push({
             dispose: () => {
@@ -192,9 +186,6 @@ export function deactivate() {
         socketServer.cleanup();
         socketServer = null;
     }
-    
-    // Cleanup temp edit to terminal listeners
-    cleanupTempEditToTerminal();
-    
+
     logger.dispose();
 } 
