@@ -9,7 +9,7 @@ const inputSchema = {
   ...HealthCheckInputSchema.shape
 };
 
-const DESCRIPTION = `Test connection to VSCode MCP Bridge extension. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
+const DESCRIPTION = `Test connection to VSCode MCP Bridge extension
 
 **Core Function:**
 All VSCode MCP tools depend on VSCode MCP Bridge extension to function. This tool verifies the connection.
@@ -22,10 +22,7 @@ All VSCode MCP tools depend on VSCode MCP Bridge extension to function. This too
 
 **Return Format:**
 JSON object with connection status and diagnostic details
-
-**Important Notes:**
-- Only use when other VSCode MCP tools are failing
-- If connection fails, inform user to manually check: 1) VSCode MCP Bridge extension is installed and activated (https://marketplace.visualstudio.com/items?itemName=YuTengjing.vscode-mcp-bridge), 2) Extension output in VSCode Output panel → "VSCode MCP Bridge"`;
+`;
 
 export function registerHealthCheck(server: McpServer, serverVersion: string) {
   server.registerTool("health_check", {
@@ -81,6 +78,12 @@ export function registerHealthCheck(server: McpServer, serverVersion: string) {
         statusMessage += `   Please update the "VSCode MCP Bridge" extension (YuTengjing.vscode-mcp-bridge) to the latest version in VSCode Extensions marketplace\n\n`;
         statusMessage += `   🔄 Important: After updating both components, please restart your editor to ensure the changes take effect.`;
       }
+
+      // statusMessage += `\n\n Tips:
+      // 1. Check if the "VSCode MCP Bridge" extension is installed and activated: https://marketplace.visualstudio.com/items?itemName=YuTengjing.vscode-mcp-bridge
+      // 2. Check the "VSCode MCP Bridge" extension log in VSCode Output panel → "VSCode MCP Bridge"
+      // `;
+
       
       return {
         content: [{
@@ -89,7 +92,10 @@ export function registerHealthCheck(server: McpServer, serverVersion: string) {
         }]
       };
     } catch (error) {
-      return formatToolCallError("Health Check", error);
+      return formatToolCallError("Health Check", error, `💡 Tips:
+  1. Check if the "VSCode MCP Bridge" extension is installed and activated: https://marketplace.visualstudio.com/items?itemName=YuTengjing.vscode-mcp-bridge
+  2. Check the "VSCode MCP Bridge" extension log in VSCode Output panel → "VSCode MCP Bridge"
+      `);
     }
   });
 } 

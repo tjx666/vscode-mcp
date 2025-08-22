@@ -9,42 +9,20 @@ const inputSchema = {
   ...ExecuteCommandInputSchema.shape
 };
 
-const DESCRIPTION = `⚠️ Execute VSCode commands with arguments - DANGEROUS tool that can modify workspace, settings, or trigger harmful operations. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
+const DESCRIPTION = `⚠️ Execute VSCode commands with arguments - DANGEROUS tool that can modify workspace, settings, or trigger harmful operations.
 
-**Command Discovery:**
-- Use \`get_commands\` tool to discover all available commands in the current workspace
-- Reference: https://code.visualstudio.com/api/references/commands for official VSCode built-in commands with usage and parameters
+**Common Use Cases:**
+- Format code: 'editor.action.formatDocument'
+- Open files: 'vscode.open' with file URI
+- Save all files: 'workbench.action.files.saveAll' 
+- Auto-fix issues: 'editor.action.fixAll'
+- Restart TypeScript: 'typescript.restartTsServer'
+- Restart ESLint: 'eslint.restart'
 
-**SECURITY WARNING:**
-This tool can execute arbitrary VSCode commands and potentially modify files, settings, workspace configuration, or trigger external processes.
-
-**AI Coding Agent Use Cases:**
-- Format entire documents or selected code: 'editor.action.formatDocument'
-- Open specific files for analysis: 'vscode.open' with file URI
-- Trigger intelligent refactoring operations: 'editor.action.rename'
-- Run build tasks and scripts: 'workbench.action.tasks.runTask'
-- Save all modified files after bulk operations: 'workbench.action.files.saveAll'
-- Auto-fix code issues: 'editor.action.fixAll' - Apply all available auto-fixes in current file
-- Common daily troubleshooting commands:
-  - 'typescript.reloadProjects' - Reload TypeScript projects
-  - 'typescript.restartTsServer' - Restart TypeScript language server
-  - 'eslint.restart' - Restart ESLint server
-  - 'workbench.action.reloadWindow' - Reload window (⚠️ DISRUPTIVE)
-  - 'workbench.action.reloadExtensionHost' - Reload extension host (⚠️ DISRUPTIVE)
-
-**Parameter Examples:**
-- Format code: command: 'editor.action.formatDocument'
-- Open file: command: 'vscode.open', args: ['file:///path/to/file.ts']
-- Save all: command: 'workbench.action.files.saveAll'
-
-**Return Format:**
-Command execution result or confirmation message
-
-**Important Notes:**
-- USE WITH EXTREME CAUTION - can cause irreversible changes
-- **DISRUPTIVE COMMANDS**: Commands like 'reloadExtensionHost', 'reloadWindow' will interrupt our conversation. Execute these at the end of our session if needed.
-- **Parameter Mismatch**: Common failure cause is serializable parameters not matching VSCode's expected format. Built-in handling: 'file://path/a/b/c' URIs are automatically converted to Uri objects.
-- Command availability depends on installed extensions and VSCode version`;
+**⚠️ WARNING:**
+- Can cause irreversible changes
+- Commands like 'reloadWindow', 'reloadExtensionHost' will interrupt conversation
+- Use with extreme caution`;
 
 export function registerExecuteCommand(server: McpServer) {
   server.registerTool("execute_command", {

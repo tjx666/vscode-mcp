@@ -22,23 +22,7 @@ const inputSchema = {
   ...GetSymbolLSPInfoInputSchema.shape
 };
 
-const DESCRIPTION = `Get comprehensive LSP information for a symbol - unified access to all language server features. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
-
-**🚀 Key Advantages over Manual File Search:**
-- **Comprehensive info in one call**: No need to manually search multiple files - gets definition, type info, implementations, and documentation instantly
-- **Precise symbol resolution**: Handles overloaded functions, generic types, and complex inheritance without manual disambiguation
-- **Cross-file navigation**: Automatically finds symbols across imports, modules, and dependencies without knowing file structure
-- **Type-aware search**: Resolves actual types considering generics, union types, and type inference - not just text matching
-
-**AI Coding Agent Use Cases:**
-- **Check if function returns Promise**: Use hover info to see if return type contains Promise<T>
-- **Understand API parameter types**: Get hover info and signature help for function parameters and expected types
-- **Find interface/type definitions**: Use type_definition to locate where types are defined for better understanding
-- **Trace function implementations**: Use definition + implementation to find where functions are defined and implemented
-- **Validate function signatures**: Use signature help to understand required parameters, optional parameters, and overloads
-- **Understand generic constraints**: Use hover info to see generic type parameters and their constraints
-- **Check enum values**: Use definition to find enum declarations and their possible values
-- **Navigate to source declarations**: Use definition to jump from usage sites to original declarations
+const DESCRIPTION = `Get comprehensive LSP information for a symbol
 
 **Parameter Examples:**
 - Get all info: uri: 'file:///app.ts', symbol: 'getUserData', codeSnippet: 'async function getUserData('
@@ -46,12 +30,12 @@ const DESCRIPTION = `Get comprehensive LSP information for a symbol - unified ac
 - Interface analysis: uri: 'file:///types.ts', symbol: 'UserModel', infoType: 'type_definition'
 
 **Info Types Available:**
+- **all**(default): Returns all available information
 - **hover**: Rich type information and documentation
 - **signature_help**: Function parameters and overloads
 - **type_definition**: Where the symbol's type is defined
 - **definition**: Where the symbol is defined
 - **implementation**: All implementations of interfaces/abstract classes
-- **all**: Returns all available information (default)
 
 **Return Format:**
 Structured object containing requested LSP information:
@@ -59,13 +43,7 @@ Structured object containing requested LSP information:
 - Location-based results include file paths and precise coordinates
 - Hover results include formatted documentation and type info
 - Signature help includes parameter details and active signature
-
-**Important Notes:**
-- Files are automatically opened to ensure accurate LSP information
-- Uses smart text search to locate symbols when multiple occurrences exist
-- Returns only requested info types (defaults to all)
-- Executes LSP providers in parallel for optimal performance
-- Gracefully handles providers that don't support specific symbol types`;
+`;
 
 export function registerGetSymbolLSPInfo(server: McpServer) {
   server.registerTool("get_symbol_lsp_info", {

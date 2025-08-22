@@ -8,16 +8,7 @@ import { formatToolCallError } from "./utils.js";
 // since it discovers all workspaces
 const inputSchema = ListWorkspacesInputSchema.shape;
 
-const DESCRIPTION = `List all available VSCode workspaces that can be connected via MCP tools. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
-
-**Core Function:**
-Discovers and lists all VSCode workspaces that have the MCP Bridge extension active, helping clients choose the correct workspace_path parameter.
-
-**AI Coding Agent Use Cases:**
-- Show users available workspaces in multi-project environments
-- Help users identify the correct workspace_path for other MCP tools
-- Clean up stale socket files from closed VSCode instances
-- Verify which workspaces have active MCP Bridge connections
+const DESCRIPTION = `List all available VSCode workspaces that can be connected to use vscode mcp tools
 
 **Parameter Examples:**
 - Basic listing: {} (uses all defaults)

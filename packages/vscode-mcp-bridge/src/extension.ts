@@ -3,8 +3,6 @@ import {
     CallAgentOutputSchema,
     ExecuteCommandInputSchema, 
     ExecuteCommandOutputSchema,
-    GetCommandsInputSchema,
-    GetCommandsOutputSchema,
     GetDiagnosticsInputSchema,
     GetDiagnosticsOutputSchema,
     GetReferencesInputSchema,
@@ -13,12 +11,8 @@ import {
     GetSymbolLSPInfoOutputSchema,
     HealthCheckInputSchema,
     HealthCheckOutputSchema,
-    HighlightCodeInputSchema,
-    HighlightCodeOutputSchema,
     ListWorkspacesInputSchema,
     ListWorkspacesOutputSchema,
-    OpenDiffInputSchema,
-    OpenDiffOutputSchema,
     OpenFilesInputSchema,
     OpenFilesOutputSchema,
     RenameSymbolInputSchema,
@@ -33,15 +27,12 @@ import { logger } from './logger';
 import {
     callAgent,
     executeCommand,
-    getCommands,
 getCurrentWorkspacePath,
     getDiagnostics,
     getReferences,
     getSymbolLSPInfo,
     health,
-    highlightCode,
     listWorkspaces,
-    openDiff,
     openFiles,
     renameSymbol,
 } from './services';
@@ -82,11 +73,6 @@ export async function activate(context: vscode.ExtensionContext) {
             resultSchema: HealthCheckOutputSchema
         });
         
-        socketServer.register('highlightCode', {
-            handler: highlightCode,
-            payloadSchema: HighlightCodeInputSchema,
-            resultSchema: HighlightCodeOutputSchema
-        });
         
         socketServer.register('getDiagnostics', {
             handler: getDiagnostics,
@@ -100,11 +86,6 @@ export async function activate(context: vscode.ExtensionContext) {
             resultSchema: GetSymbolLSPInfoOutputSchema
         });
         
-        socketServer.register('getCommands', {
-            handler: getCommands,
-            payloadSchema: GetCommandsInputSchema,
-            resultSchema: GetCommandsOutputSchema
-        });
         
         socketServer.register('getReferences', {
             handler: getReferences,
@@ -118,11 +99,6 @@ export async function activate(context: vscode.ExtensionContext) {
             resultSchema: ExecuteCommandOutputSchema
         });
         
-        socketServer.register('openDiff', {
-            handler: openDiff,
-            payloadSchema: OpenDiffInputSchema,
-            resultSchema: OpenDiffOutputSchema
-        });
         
         socketServer.register('openFiles', {
             handler: openFiles,

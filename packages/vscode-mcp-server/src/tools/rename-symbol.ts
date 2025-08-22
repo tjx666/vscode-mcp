@@ -9,12 +9,7 @@ const inputSchema = {
   ...RenameSymbolInputSchema.shape
 };
 
-const DESCRIPTION = `Rename a symbol (variable, function, class, etc.) by name across all files. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
-
-**AI Coding Agent Use Cases:**
-- Refactor code with consistent naming across entire codebase during code improvements
-- Fix naming conflicts or improve code readability as part of code review
-- ALWAYS prefer this over multiple call builtin edit file tools  - much more efficient and accurate for symbol renaming
+const DESCRIPTION = `Rename a symbol (variable, function, class, etc.) by name across codebase
 
 **Parameter Examples:**
 - Rename variable: uri: 'file:///utils.ts', symbol: 'userData', codeSnippet: 'const userData =', newName: 'processedData'
@@ -29,8 +24,6 @@ const DESCRIPTION = `Rename a symbol (variable, function, class, etc.) by name a
 - error: detailed error message if rename failed
 
 **Important Notes:**
-- Files are automatically opened to ensure accurate LSP information
-- Uses smart text search to locate the symbol first
 - codeSnippet helps precisely locate the symbol when multiple occurrences exist
 - Modifies files immediately - operation cannot be undone through this tool
 - Some symbols may not be renameable (e.g., built-in types, external libraries)`;

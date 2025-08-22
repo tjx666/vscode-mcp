@@ -9,12 +9,7 @@ const inputSchema = {
   ...GetReferencesInputSchema.shape
 };
 
-const DESCRIPTION = `Find all reference locations for a symbol (variable, function, class, etc.) across the codebase. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
-
-**AI Coding Agent Use Cases:**
-- Assess the impact of modifying or removing a symbol before making changes
-- Assess the impact of refactoring function or class logic
-- Find all usage patterns in complex codebases
+const DESCRIPTION = `Find all reference locations of a symbol (variable, function, class, etc.) across the codebase
 
 **Parameter Examples:**
 - Find function references: uri: 'file:///utils.ts', symbol: 'getUserName', codeSnippet: 'function getUserName', includeDeclaration: true

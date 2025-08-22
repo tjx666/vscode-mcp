@@ -14,13 +14,7 @@ export function registerCallAgent(server: McpServer) {
     'call_agent',
     {
       title: 'Call IDE Agent',
-      description: `Call the AI agent in VSCode, Cursor, Windsurf, or other IDE forks with a prompt. Works with all VSCode-based editors.
-
-**AI Coding Agent Use Cases:**
-- Send requests to the IDE's built-in AI agent (like Cursor's Composer, GitHub Copilot Chat, etc.)
-- Delegate tasks to the IDE's agent for code generation, explanation, or modification
-- Leverage IDE-specific AI features that are already available in the workspace
-- Combine with other MCP tools for comprehensive AI-assisted development workflows
+      description: `Call the AI agent in VSCode, Cursor, Windsurf, or other IDE forks with a prompt. 
 
 **Parameter Examples:**
 - Simple request: prompt: "Explain this function", ide_type: "auto"

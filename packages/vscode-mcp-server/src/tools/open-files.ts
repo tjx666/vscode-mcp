@@ -9,14 +9,7 @@ const inputSchema = {
   ...OpenFilesInputSchema.shape
 };
 
-const DESCRIPTION = `Open multiple files in editor with optional display control for efficient LSP processing. Works with all VSCode-based editors (VSCode, Cursor, Windsurf, etc.).
-
-**AI Coding Agent Use Cases:**
-- Pre-load files for analysis without cluttering the editor interface (showEditor: false)
-- Prepare multiple files for batch operations like diagnostics or cross-file refactoring
-- Ensure accurate LSP information by opening files in editor context before analysis
-- Open related files (imports, dependencies) before performing complex code operations
-- Load file sets for comprehensive code review and understanding
+const DESCRIPTION = `Open files in vscode
 
 **Parameter Examples:**
 - Background loading: files: [{ uri: 'file:///app.ts', showEditor: false }]
@@ -25,13 +18,7 @@ const DESCRIPTION = `Open multiple files in editor with optional display control
 
 **Return Format:**
 Success status with count of files processed and any errors encountered
-
-**Important Notes:**
-- showEditor: false loads files for LSP without displaying tabs
-- Files must exist and be accessible to VSCode
-- Loading large numbers of files may impact performance
-- Essential for accurate diagnostics and code analysis`;
-
+`
 export function registerOpenFiles(server: McpServer) {
   server.registerTool("open_files", {
     title: "Open Files",

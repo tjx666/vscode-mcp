@@ -55,14 +55,11 @@ VSCode MCP provides the following tools through the MCP protocol:
 | ----------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | **call_agent**          | Call IDE's AI agent with prompts and context                     | `workspace_path`, `prompt`, `files?`, `images?`, `model?`, `mode?`, `ide_type?`                                |
 | **execute_command**     | ⚠️ Execute VSCode commands with arguments                        | `workspace_path`, `command`, `args?`                                                                           |
-| **get_commands**        | Get all available VSCode commands in workspace                   | `workspace_path`, `include_internal?`, `filter?`, `category?`, `limit?`                                        |
 | **get_symbol_lsp_info** | Get comprehensive LSP info (definition, hover, signatures, etc.) | `workspace_path`, `uri`, `symbol`, `codeSnippet?`, `infoType?`                                                 |
 | **get_diagnostics**     | Get real-time diagnostics, replace slow tsc/eslint               | `workspace_path`, `uris?`, `sources?`, `severities?`                                                           |
 | **get_references**      | Find symbol references with usage context code                   | `workspace_path`, `uri`, `symbol`, `codeSnippet?`, `includeDeclaration?`, `usageCodeLineRange?`                |
 | **health_check**        | Test connection to VSCode MCP Bridge extension                   | `workspace_path`                                                                                               |
-| **highlight_code**      | Open file and highlight specific code sections                   | `workspace_path`, `uri`, `ranges`, `showEditor?`, `scrollToFirst?`, `clearPrevious?`, `timeout?`               |
 | **list_workspaces**     | List all available VSCode workspaces                             | `clean_zombie_sockets?`, `include_details?`, `test_connection?`                                                |
-| **open_diff**           | Open diff editor to compare files or text                        | `workspace_path`, `before?`, `after?`, `beforeText?`, `afterText?`, `beforeLabel?`, `afterLabel?`, `language?` |
 | **open_files**          | Open multiple files with optional editor display                 | `workspace_path`, `files` (array with `uri` and `showEditor?`)                                                 |
 | **rename_symbol**       | ⚠️ Rename symbols across all files in workspace                  | `workspace_path`, `uri`, `symbol`, `codeSnippet?`, `newName`                                                   |
 
@@ -77,7 +74,6 @@ The `call_agent` tool enables seamless integration between external AI assistant
 - **Cursor**: Integrates with Cursor Composer for advanced code generation
 - **VSCode**: Supports GitHub Copilot, Cline, Continue, and other popular extensions
 - **Windsurf**: Integrates with Windsurf's native AI capabilities
-- **Trae**: Supports Trae's AI assistant features
 
 **Supported AI Agents:**
 
@@ -85,7 +81,6 @@ The `call_agent` tool enables seamless integration between external AI assistant
 - **GitHub Copilot**: Code completion and chat assistance
 - **Cline**: Interactive coding assistant with file management
 - **Continue**: Open-source coding assistant
-- **Roocode & Kilocode**: Specialized coding tools
 
 **Key Features:**
 

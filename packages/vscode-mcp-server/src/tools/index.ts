@@ -10,13 +10,10 @@ export { formatToolCallError } from "./utils.js";
 // 工具注册函数
 export { registerCallAgent } from "./call-agent.js";
 export { registerExecuteCommand } from "./execute-command.js"; 
-export { registerGetCommands } from "./get-commands.js";
 export { registerGetDiagnostics } from "./get-diagnostics.js";
 export { registerGetReferences } from "./get-references.js";
 export { registerGetSymbolLSPInfo } from "./get-symbol-lsp-info.js";
 export { registerHealthCheck } from "./health-check.js";
-export { registerHighlightCode } from "./highlight-code.js";
 export { registerListWorkspaces } from "./list-workspaces.js";
-export { registerOpenDiff } from "./open-diff.js";
 export { registerOpenFiles } from "./open-files.js";
 export { registerRenameSymbol } from "./rename-symbol.js";

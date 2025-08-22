@@ -1,14 +1,11 @@
 // Import all event modules
 import type { CallAgentPayload, CallAgentResult } from './call-agent.js';
 import type { ExecuteCommandPayload, ExecuteCommandResult } from './execute-command.js';
-import type { GetCommandsPayload, GetCommandsResult } from './get-commands.js';
 import type { GetDiagnosticsPayload, GetDiagnosticsResult } from './get-diagnostics.js';
 import type { GetReferencesPayload, GetReferencesResult } from './get-references.js';
 import type { GetSymbolLSPInfoPayload, GetSymbolLSPInfoResult } from './get-symbol-lsp-info.js';
 import type { HealthCheckPayload, HealthCheckResult } from './health-check.js';
-import type { HighlightCodePayload, HighlightCodeResult } from './highlight-code.js';
 import type { ListWorkspacesPayload, ListWorkspacesResult } from './list-workspaces.js';
-import type { OpenDiffPayload, OpenDiffResult } from './open-diff.js';
 import type { OpenFilesPayload, OpenFilesResult } from './open-file.js';
 import type { RenameSymbolPayload, RenameSymbolResult } from './rename-symbol.js';
 
@@ -16,14 +13,11 @@ import type { RenameSymbolPayload, RenameSymbolResult } from './rename-symbol.js
 export * from './call-agent.js';
 export * from './common.js';
 export * from './execute-command.js';
-export * from './get-commands.js';
 export * from './get-diagnostics.js';
 export * from './get-references.js';
 export * from './get-symbol-lsp-info.js';
 export * from './health-check.js';
-export * from './highlight-code.js';
 export * from './list-workspaces.js';
-export * from './open-diff.js';
 export * from './open-file.js';
 export * from './rename-symbol.js';
 
@@ -65,11 +59,6 @@ export interface EventMap {
     result: HealthCheckResult;
   };
 
-  /** Highlight code ranges */
-  highlightCode: {
-    params: HighlightCodePayload;
-    result: HighlightCodeResult;
-  };
 
   /** LSP Methods */
   getDiagnostics: {
@@ -87,11 +76,6 @@ export interface EventMap {
     result: GetReferencesResult;
   };
 
-  /** Get VSCode commands */
-  getCommands: {
-    params: GetCommandsPayload;
-    result: GetCommandsResult;
-  };
 
   /** Execute VSCode command */
   executeCommand: {
@@ -99,11 +83,6 @@ export interface EventMap {
     result: ExecuteCommandResult;
   };
 
-  /** Open diff editor */
-  openDiff: {
-    params: OpenDiffPayload;
-    result: OpenDiffResult;
-  };
 
   /** Open files */
   openFiles: {
