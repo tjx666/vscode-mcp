@@ -73,7 +73,7 @@ function processArguments(args: unknown[]): unknown[] {
 export const executeCommand = async (
     payload: EventParams<'executeCommand'>
 ): Promise<EventResult<'executeCommand'>> => {
-    const { command, args } = payload;
+    const { command, args, saveAllEditors } = payload;
     
     try {
         // Process arguments to convert URI strings to vscode.Uri objects
@@ -81,6 +81,11 @@ export const executeCommand = async (
         
         // Execute the VSCode command
         const result = await vscode.commands.executeCommand(command, ...processedArgs);
+        
+        // Save all dirty editors after command execution if requested
+        if (saveAllEditors) {
+            await vscode.workspace.saveAll(false);
+        }
         
         return {
             result: toJsonifiable(result)

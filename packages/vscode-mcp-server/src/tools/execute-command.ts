@@ -36,10 +36,10 @@ export function registerExecuteCommand(server: McpServer) {
       idempotentHint: false,
       openWorldHint: false
     }
-  }, async ({ workspace_path, command, args }) => {
+  }, async ({ workspace_path, command, args, saveAllEditors }) => {
     try {
       const dispatcher = createDispatcher(workspace_path);
-      const result = await dispatcher.dispatch("executeCommand", { command, args });
+      const result = await dispatcher.dispatch("executeCommand", { command, args, saveAllEditors });
       
       return {
         content: [{

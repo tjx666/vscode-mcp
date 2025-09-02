@@ -24,6 +24,7 @@ const JsonifiableSchema: z.ZodType<any> = z.lazy(() =>
 export const ExecuteCommandInputSchema = z.object({
   command: z.string().describe('VSCode command to execute (e.g., \'vscode.open\', \'editor.action.formatDocument\')'),
   args: z.array(JsonifiableSchema).optional().describe('Optional arguments to pass to the command'),
+  saveAllEditors: z.boolean().optional().default(true).describe('Save all dirty editors after executing the command (default: true)'),
 }).strict();
 
 /**
