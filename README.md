@@ -54,7 +54,7 @@ VSCode MCP provides the following tools through the MCP protocol:
 | Tool                    | Description                                                      | Parameters                                                                                                     |
 | ----------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | **call_agent**          | Call IDE's AI agent with prompts and context                     | `workspace_path`, `prompt`, `files?`, `images?`, `model?`, `mode?`, `ide_type?`                                |
-| **execute_command**     | ⚠️ Execute VSCode commands with arguments                        | `workspace_path`, `command`, `args?`                                                                           |
+| **execute_command**     | ⚠️ Execute VSCode commands with JSON string arguments            | `workspace_path`, `command`, `args?` (JSON string of arguments array)                                          |
 | **get_symbol_lsp_info** | Get comprehensive LSP info (definition, hover, signatures, etc.) | `workspace_path`, `uri`, `symbol`, `codeSnippet?`, `infoType?`                                                 |
 | **get_diagnostics**     | Get real-time diagnostics, replace slow tsc/eslint               | `workspace_path`, `uris?`, `sources?`, `severities?`                                                           |
 | **get_references**      | Find symbol references with usage context code                   | `workspace_path`, `uri`, `symbol`, `codeSnippet?`, `includeDeclaration?`, `usageCodeLineRange?`                |

@@ -1,3 +1,4 @@
+// cSpell:ignore Jsonifiable
 import type { EventParams, EventResult, Jsonifiable } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
@@ -76,8 +77,21 @@ export const executeCommand = async (
     const { command, args, saveAllEditors } = payload;
     
     try {
+        // Parse JSON string arguments if provided
+        let parsedArgs: unknown[] = [];
+        if (args) {
+            try {
+                parsedArgs = JSON.parse(args);
+                if (!Array.isArray(parsedArgs)) {
+                    throw new TypeError('Args must be an array');
+                }
+            } catch (parseError) {
+                throw new Error(`Invalid JSON in args parameter: ${parseError instanceof Error ? parseError.message : String(parseError)}`);
+            }
+        }
+        
         // Process arguments to convert URI strings to vscode.Uri objects
-        const processedArgs = args ? processArguments(args) : [];
+        const processedArgs = processArguments(parsedArgs);
         
         // Execute the VSCode command
         const result = await vscode.commands.executeCommand(command, ...processedArgs);
@@ -96,7 +110,7 @@ export const executeCommand = async (
             result: {
                 error: error instanceof Error ? error.message : String(error),
                 command,
-                args: args || []
+                args: args || ''
             }
         };
     }

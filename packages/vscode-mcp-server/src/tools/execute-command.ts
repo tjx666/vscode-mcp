@@ -11,13 +11,18 @@ const inputSchema = {
 
 const DESCRIPTION = `⚠️ Execute VSCode commands with arguments - DANGEROUS tool that can modify workspace, settings, or trigger harmful operations.
 
+**Arguments Format:**
+- args parameter must be a JSON string representing an array of arguments
+- Example: '["file:///path/to/file.ts"]' for opening a file
+- Example: '[]' for commands without arguments
+
 **Common Use Cases:**
-- Format code: 'editor.action.formatDocument'
-- Open files: 'vscode.open' with file URI
-- Save all files: 'workbench.action.files.saveAll' 
-- Auto-fix issues: 'editor.action.fixAll'
-- Restart TypeScript: 'typescript.restartTsServer'
-- Restart ESLint: 'eslint.restart'
+- Format code: 'editor.action.formatDocument' with args: '[]'
+- Open files: 'vscode.open' with args: '["file:///path/to/file.ts"]'
+- Save all files: 'workbench.action.files.saveAll' with args: '[]'
+- Auto-fix issues: 'editor.action.fixAll' with args: '[]'
+- Restart TypeScript: 'typescript.restartTsServer' with args: '[]'
+- Restart ESLint: 'eslint.restart' with args: '[]'
 
 **⚠️ WARNING:**
 - Can cause irreversible changes
