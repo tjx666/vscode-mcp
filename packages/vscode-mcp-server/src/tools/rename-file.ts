@@ -11,9 +11,8 @@ const inputSchema = {
 
 const DESCRIPTION = `Rename a file with automatic import updates
 
-**Benefits:**
+**Key Advantage:**
 - Automatically updates TypeScript/JavaScript import statements
-- Maintains project integrity by updating all references
 - Much more reliable than using 'mv' command directly
 
 **Parameter Examples:**
@@ -24,13 +23,7 @@ const DESCRIPTION = `Rename a file with automatic import updates
 **Return Format:**
 - success: boolean indicating if rename was successful
 - newUri: new file URI after rename
-- error: detailed error message if rename failed
-
-**Important Notes:**
-- Operation is immediate and cannot be undone through this tool
-- Automatically triggers import updates in TypeScript/JavaScript projects
-- Will fail if target file name already exists
-- Preserves file extension if not specified in newName`;
+- error: detailed error message if rename failed`;
 
 export function registerRenameFile(server: McpServer) {
   server.registerTool("rename_file", {
