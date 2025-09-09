@@ -161,75 +161,29 @@ Go to `Cursor Settings` -> `Tools & Integrations` -> `New MCP Server`. Name to y
 }
 ```
 
-## Architecture
+## Recommended Keybindings
 
-VSCode MCP follows a modular architecture with three main components communicating through Unix sockets:
+The VSCode MCP Bridge extension provides useful commands that can be enhanced with custom keybindings. Add the following to your VSCode `keybindings.json`:
 
-```mermaid
-graph TB
-    subgraph "MCP Client"
-        Client[AI Assistant<br/>Cursor/Claude/etc]
-    end
-
-    subgraph "vscode-mcp-server"
-        Server[MCP Server<br/>Protocol Implementation]
-    end
-
-    subgraph "vscode-mcp-ipc"
-        IPC[IPC Layer<br/>Type-safe Communication]
-        Socket[Unix Socket<br/>Cross-platform]
-    end
-
-    subgraph "VSCode Instance"
-        Extension[VSCode Extension<br/>vscode-mcp-bridge]
-        LSP[Language Server Protocol]
-        API[VSCode API]
-    end
-
-    Client <-->|JSON-RPC<br/>stdio| Server
-    Server <-->|TypeScript<br/>Function Calls| IPC
-    IPC <-->|JSON<br/>Unix Socket| Socket
-    Socket <-->|Local Connection| Extension
-    Extension <-->|Extension API| API
-    Extension <-->|Diagnostics<br/>Navigation| LSP
-
-    classDef client fill:#e1f5fe
-    classDef server fill:#f3e5f5
-    classDef ipc fill:#e8f5e8
-    classDef vscode fill:#fff3e0
-
-    class Client client
-    class Server server
-    class IPC,Socket ipc
-    class Extension,LSP,API vscode
+```json
+{
+  "key": "alt+cmd+o",
+  "command": "vscode-mcp-bridge.copyOpenedFilesPath",
+  "when": "terminalFocus",
+  "args": {
+    "isSendToActiveTerminal": true
+  }
+}
 ```
 
-### Communication Flow
+This shortcuts will copies paths of all opened files and sends them directly to the active terminal,useful for claude code and other terminal ai agents.
 
-1. **MCP Client** sends requests via JSON-RPC over stdio
-2. **MCP Server** translates requests to TypeScript function calls
-3. **IPC Layer** handles type-safe communication and validation
-4. **Unix Socket** provides fast, local-only communication
-5. **VSCode Extension** executes operations using VSCode APIs
-6. **LSP Integration** provides real-time code analysis and navigation
-
-### Multi-Workspace Support
-
-Each VSCode workspace gets its own socket connection:
-
-- `/Users/user/frontend` → `/tmp/vscode-mcp-a1b2c3d4.sock`
-- `/Users/user/backend` → `/tmp/vscode-mcp-e5f6g7h8.sock`
-
-### How It Works
+## How It Works
 
 Once installed and configured, VSCode MCP works seamlessly with MCP-compatible clients:
 
 1. **VSCode Extension**: Runs in your VSCode instance and provides access to LSP data
 2. **MCP Server**: Translates MCP protocol calls to VSCode extension requests
-3. **Socket Communication**: Uses Unix sockets for fast, local-only communication
-4. **AI Integration**: MCP clients can access real-time code context through standard tools
-
-The system operates transparently - MCP clients use standard tool calls, and VSCode MCP handles all the complexity of communicating with VSCode's APIs.
 
 All tools require the `workspace_path` parameter to target specific VSCode instances. Each VSCode workspace gets its own socket connection for multi-window support.
 
