@@ -7,7 +7,6 @@ import type { GetSymbolLSPInfoPayload, GetSymbolLSPInfoResult } from './get-symb
 import type { HealthCheckPayload, HealthCheckResult } from './health-check.js';
 import type { ListWorkspacesPayload, ListWorkspacesResult } from './list-workspaces.js';
 import type { OpenFilesPayload, OpenFilesResult } from './open-file.js';
-import type { RenameFilePayload, RenameFileResult } from './rename-file.js';
 import type { RenameSymbolPayload, RenameSymbolResult } from './rename-symbol.js';
 
 // Re-export all event types and schemas
@@ -20,7 +19,6 @@ export * from './get-symbol-lsp-info.js';
 export * from './health-check.js';
 export * from './list-workspaces.js';
 export * from './open-file.js';
-export * from './rename-file.js';
 export * from './rename-symbol.js';
 
 /**
@@ -93,11 +91,6 @@ export interface EventMap {
   };
 
 
-  /** Rename file */
-  renameFile: {
-    params: RenameFilePayload;
-    result: RenameFileResult;
-  };
 
   /** Rename symbol */
   renameSymbol: {

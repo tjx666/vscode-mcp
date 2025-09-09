@@ -15,8 +15,6 @@ import {
     ListWorkspacesOutputSchema,
     OpenFilesInputSchema,
     OpenFilesOutputSchema,
-    RenameFileInputSchema,
-    RenameFileOutputSchema,
     RenameSymbolInputSchema,
     RenameSymbolOutputSchema,
 } from '@vscode-mcp/vscode-mcp-ipc';
@@ -36,7 +34,6 @@ getCurrentWorkspacePath,
     health,
     listWorkspaces,
     openFiles,
-    renameFile,
     renameSymbol,
 } from './services';
 import { SocketServer } from './socket-server';
@@ -110,11 +107,6 @@ export async function activate(context: vscode.ExtensionContext) {
         });
         
         
-        socketServer.register('renameFile', {
-            handler: renameFile,
-            payloadSchema: RenameFileInputSchema,
-            resultSchema: RenameFileOutputSchema
-        });
         
         socketServer.register('renameSymbol', {
             handler: renameSymbol,
