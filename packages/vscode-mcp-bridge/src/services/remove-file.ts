@@ -2,8 +2,8 @@ import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
 import { logger } from '../logger.js';
-import { checkFileSafety } from './file-safety-check.js';
-import { resolveFilePath } from './utils.js';
+import { checkFileSafety } from '../utils/file-safety-check.js';
+import { resolveFilePath } from '../utils/workspace.js';
 
 export const removeFile = async (
   payload: EventParams<'removeFile'>,

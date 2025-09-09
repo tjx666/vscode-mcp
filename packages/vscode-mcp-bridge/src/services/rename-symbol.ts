@@ -2,8 +2,8 @@ import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
 import { logger } from '../logger.js';
-import { resolveSymbolPosition } from './resolve-symbol-position.js';
-import { resolveFilePath } from './utils.js';
+import { resolveSymbolPosition } from '../utils/resolve-symbol-position.js';
+import { resolveFilePath } from '../utils/workspace.js';
 
 export const renameSymbol = async (
   payload: EventParams<'renameSymbol'>,
@@ -86,6 +86,9 @@ export const renameSymbol = async (
       });
       totalChanges += textEdits.length;
     }
+
+    // Save all dirty editors after rename operation
+    await vscode.workspace.saveAll(false);
 
     logger.info(`Rename completed successfully: "${symbolName}" -> "${payload.newName}", ${modifiedFiles.length} files, ${totalChanges} changes`);
 

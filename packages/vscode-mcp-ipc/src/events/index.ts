@@ -12,8 +12,8 @@ import type { RenameFilePayload, RenameFileResult } from './rename-file.js';
 import type { RenameSymbolPayload, RenameSymbolResult } from './rename-symbol.js';
 
 // Re-export all event types and schemas
+export * from '../common.js';
 export * from './call-agent.js';
-export * from './common.js';
 export * from './execute-command.js';
 export * from './get-diagnostics.js';
 export * from './get-references.js';

@@ -1,7 +1,7 @@
 import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
-import { resolveFilePath } from './utils.js';
+import { resolveFilePath } from '../utils/workspace.js';
 
 /**
  * Handle opening multiple files

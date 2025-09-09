@@ -4,7 +4,7 @@
 
 import { z } from 'zod';
 
-import { FilePathSchema } from './common.js';
+import { FilePathSchema } from '../common.js';
 
 /**
  * Single file open request

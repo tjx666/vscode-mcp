@@ -2,7 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createDispatcher, GetReferencesInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 import { z } from "zod";
 
-import { formatToolCallError } from "./utils.js";
+import { formatToolCallError } from "../utils/formatToolCallError.js";
 
 const inputSchema = {
   workspace_path: z.string().describe("VSCode workspace path to target"),

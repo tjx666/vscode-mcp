@@ -4,7 +4,7 @@
 
 import { z } from 'zod';
 
-import { LocationSchema, SymbolLocatorSchema } from './common.js';
+import { LocationSchema, SymbolLocatorSchema } from '../common.js';
 
 /**
  * Get references input schema

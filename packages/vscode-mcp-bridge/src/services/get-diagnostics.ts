@@ -6,7 +6,7 @@ import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
 import { logger } from '../logger.js';
-import { ensureFileIsOpen, resolveFilePaths } from './utils.js';
+import { ensureFileIsOpen, resolveFilePaths } from '../utils/workspace.js';
 
 const execAsync = promisify(exec);
 

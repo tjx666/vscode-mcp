@@ -12,4 +12,4 @@ export { renameFile } from './rename-file';
 export { renameSymbol } from './rename-symbol';
 
 // Export utilities
-export { getCurrentWorkspacePath } from './utils'; 
+export { getCurrentWorkspacePath } from '../utils/workspace.js'; 

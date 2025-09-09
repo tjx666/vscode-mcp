@@ -1,9 +1,9 @@
 import type { EventParams, EventResult, LSPInfoType } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
-import { getUsageCode } from '../utils/usage-code.js';
-import { resolveSymbolPosition } from './resolve-symbol-position.js';
-import { ensureFileIsOpen, resolveFilePath } from './utils.js';
+import { getUsageCode } from '../utils/get-usage-code.js';
+import { resolveSymbolPosition } from '../utils/resolve-symbol-position.js';
+import { ensureFileIsOpen, resolveFilePath } from '../utils/workspace.js';
 
 /**
  * Add usage code to location array

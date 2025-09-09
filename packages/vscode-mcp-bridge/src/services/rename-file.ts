@@ -4,7 +4,7 @@ import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
 import { logger } from '../logger.js';
-import { checkFileSafety } from './file-safety-check.js';
+import { checkFileSafety } from '../utils/file-safety-check.js';
 
 export const renameFile = async (
   payload: EventParams<'renameFile'>,
@@ -93,6 +93,9 @@ export const renameFile = async (
         error: 'Failed to apply rename operation',
       };
     }
+
+    // Save all dirty editors after rename operation
+    await vscode.workspace.saveAll(false);
 
     logger.info(`File renamed successfully: ${payload.filePath} -> ${newUri.toString()}`);
 

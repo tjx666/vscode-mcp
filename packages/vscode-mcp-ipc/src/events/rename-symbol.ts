@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { SymbolLocatorSchema } from './common.js';
+import { SymbolLocatorSchema } from '../common.js';
 
 export const RenameSymbolInputSchema = SymbolLocatorSchema.extend({
   newName: z.string().describe('New symbol name'),

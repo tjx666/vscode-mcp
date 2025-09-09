@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { FilePathSchema } from './common.js';
+import { FilePathSchema } from '../common.js';
 
 export const RemoveFileInputSchema = z.object({
   filePath: FilePathSchema,

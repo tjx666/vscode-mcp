@@ -4,7 +4,7 @@
 
 import { z } from 'zod';
 
-import { FilePathSchema, RangeSchema } from './common.js';
+import { FilePathSchema, RangeSchema } from '../common.js';
 
 /**
  * Diagnostic schema

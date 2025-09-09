@@ -5,7 +5,7 @@
 
 import { z } from 'zod';
 
-import { LocationSchema, RangeSchema, SymbolLocatorSchema } from './common.js';
+import { LocationSchema, RangeSchema, SymbolLocatorSchema } from '../common.js';
 
 /**
  * LSP info types that can be requested

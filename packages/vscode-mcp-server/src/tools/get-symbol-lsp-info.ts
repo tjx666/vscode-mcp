@@ -2,7 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createDispatcher, GetSymbolLSPInfoInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 import { z } from "zod";
 
-import { formatToolCallError } from "./utils.js";
+import { formatToolCallError } from "../utils/formatToolCallError.js";
 
 /**
  * Format location info with optional code content

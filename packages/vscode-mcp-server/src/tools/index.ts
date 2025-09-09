@@ -5,7 +5,7 @@
  */
 
 // 工具错误处理函数
-export { formatToolCallError } from "./utils.js";
+export { formatToolCallError } from "../utils/formatToolCallError.js";
 
 // 工具注册函数
 export { registerCallAgent } from "./call-agent.js";
