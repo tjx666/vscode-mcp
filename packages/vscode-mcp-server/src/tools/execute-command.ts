@@ -13,12 +13,12 @@ const DESCRIPTION = `⚠️ Execute VSCode commands with arguments - DANGEROUS t
 
 **Arguments Format:**
 - args parameter must be a JSON string representing an array of arguments
-- Example: '["file:///path/to/file.ts"]' for opening a file
+- For file paths: Use absolute paths like '["file:///absolute/path/to/file.ts"]' (VSCode commands still expect file:// URIs)
 - Example: '[]' for commands without arguments
 
 **Common Use Cases:**
 - Format code: 'editor.action.formatDocument' with args: '[]'
-- Open files: 'vscode.open' with args: '["file:///path/to/file.ts"]'
+- Open files: 'vscode.open' with args: '["file:///absolute/path/to/file.ts"]'
 - Save all files: 'workbench.action.files.saveAll' with args: '[]'
 - Auto-fix issues: 'editor.action.fixAll' with args: '[]'
 - Restart TypeScript: 'typescript.restartTsServer' with args: '[]'

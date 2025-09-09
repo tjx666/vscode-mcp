@@ -4,11 +4,13 @@
 
 import { z } from 'zod';
 
+import { FilePathSchema } from './common.js';
+
 /**
  * Single file open request
  */
 const FileOpenRequestSchema = z.object({
-  uri: z.string().describe('File URI to open'),
+  filePath: FilePathSchema.describe('File path to open'),
   showEditor: z.boolean().optional().default(true).describe('Whether to show the file in editor (default: true)'),
 }).strict();
 
@@ -16,7 +18,7 @@ const FileOpenRequestSchema = z.object({
  * Single file open result
  */
 const FileOpenResultSchema = z.object({
-  uri: z.string().describe('File URI that was processed'),
+  filePath: z.string().describe('File path that was processed'),
   success: z.boolean().describe('Whether the file was opened successfully'),
   message: z.string().optional().describe('Optional message about the operation'),
 }).strict();

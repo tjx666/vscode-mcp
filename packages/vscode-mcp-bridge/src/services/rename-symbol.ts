@@ -3,15 +3,16 @@ import * as vscode from 'vscode';
 
 import { logger } from '../logger.js';
 import { resolveSymbolPosition } from './resolve-symbol-position.js';
+import { resolveFilePath } from './utils.js';
 
 export const renameSymbol = async (
   payload: EventParams<'renameSymbol'>,
 ): Promise<EventResult<'renameSymbol'>> => {
-  logger.info(`Renaming symbol "${payload.symbol}" in ${payload.uri} to "${payload.newName}"`);
+  logger.info(`Renaming symbol "${payload.symbol}" in ${payload.filePath} to "${payload.newName}"`);
 
   try {
-    // 1. Parse URI and resolve symbol to position
-    const uri = vscode.Uri.parse(payload.uri);
+    // 1. Resolve file path to URI and resolve symbol to position
+    const uri = resolveFilePath(payload.filePath);
     const position = await resolveSymbolPosition(uri, payload.symbol, payload.codeSnippet);
 
     // 2. Validate the document exists 

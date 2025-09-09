@@ -12,9 +12,10 @@ const inputSchema = {
 const DESCRIPTION = `Rename a symbol (variable, function, class, etc.) by name across codebase
 
 **Parameter Examples:**
-- Rename variable: uri: 'file:///utils.ts', symbol: 'userData', codeSnippet: 'const userData =', newName: 'processedData'
-- Rename function: uri: 'file:///api.ts', symbol: 'handleRequest', codeSnippet: 'async function handleRequest', newName: 'handleUserRequest'
-- Rename class: uri: 'file:///models.ts', symbol: 'User', codeSnippet: 'class User extends', newName: 'UserModel'
+- Rename variable: filePath: 'utils.ts', symbol: 'userData', codeSnippet: 'const userData =', newName: 'processedData'
+- Rename function: filePath: 'api.ts', symbol: 'handleRequest', codeSnippet: 'async function handleRequest', newName: 'handleUserRequest'
+- Rename class: filePath: 'models.ts', symbol: 'User', codeSnippet: 'class User extends', newName: 'UserModel'
+- Absolute path: filePath: '/absolute/path/service.ts', symbol: 'ApiService', newName: 'DataService'
 
 **Return Format:**
 - success: boolean indicating if rename was successful
@@ -40,11 +41,11 @@ export function registerRenameSymbol(server: McpServer) {
       idempotentHint: false,
       openWorldHint: false
     }
-  }, async ({ workspace_path, uri, symbol, codeSnippet, newName }) => {
+  }, async ({ workspace_path, filePath, symbol, codeSnippet, newName }) => {
     const dispatcher = createDispatcher(workspace_path);
     
     try {
-      const result = await dispatcher.dispatch("renameSymbol", { uri, symbol, codeSnippet, newName });
+      const result = await dispatcher.dispatch("renameSymbol", { filePath, symbol, codeSnippet, newName });
       
       if (result.success) {
         const filesList = result.modifiedFiles

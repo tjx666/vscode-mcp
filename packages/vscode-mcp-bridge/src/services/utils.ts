@@ -1,3 +1,5 @@
+import * as path from 'path';
+
 import * as vscode from 'vscode';
 
 /**
@@ -29,4 +31,30 @@ export async function ensureFileIsOpen(uriString: string): Promise<void> {
         // This might happen with files that are not in the workspace
         console.warn(`Could not open file ${uriString}: ${error}`);
     }
+}
+
+/**
+ * Resolve a file path to VSCode URI
+ * Supports both absolute paths and relative paths (relative to workspace root)
+ */
+export function resolveFilePath(filePath: string): vscode.Uri {
+    if (path.isAbsolute(filePath)) {
+        // Absolute path - convert directly to URI
+        return vscode.Uri.file(filePath);
+    } else {
+        // Relative path - resolve relative to workspace root
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+        if (!workspaceFolder) {
+            throw new Error('No workspace folder found for relative path resolution');
+        }
+        const absolutePath = path.join(workspaceFolder.uri.fsPath, filePath);
+        return vscode.Uri.file(absolutePath);
+    }
+}
+
+/**
+ * Convert an array of file paths to VSCode URIs
+ */
+export function resolveFilePaths(filePaths: string[]): vscode.Uri[] {
+    return filePaths.map(filePath => resolveFilePath(filePath));
 } 

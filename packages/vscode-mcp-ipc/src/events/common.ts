@@ -44,11 +44,17 @@ export type Range = z.infer<typeof RangeSchema>;
  */
 export type Location = z.infer<typeof LocationSchema>;
 
+
+/**
+ * File path schema - supports both absolute and relative paths
+ */
+export const FilePathSchema = z.string().describe('File path (absolute or relative to workspace root)');
+
 /**
  * Symbol locator schema - common fields for locating symbols in code
  */
 export const SymbolLocatorSchema = z.object({
-  uri: z.string().describe('File URI'),
+  filePath: FilePathSchema,
   symbol: z.string().describe('Symbol name'),
   codeSnippet: z.string().optional().describe('Optional code snippet to precisely locate the symbol when multiple occurrences exist'),
 }).strict();

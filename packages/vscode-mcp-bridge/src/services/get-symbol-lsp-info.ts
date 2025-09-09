@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 
 import { getUsageCode } from '../utils/usage-code.js';
 import { resolveSymbolPosition } from './resolve-symbol-position.js';
-import { ensureFileIsOpen } from './utils.js';
+import { ensureFileIsOpen, resolveFilePath } from './utils.js';
 
 /**
  * Add usage code to location array
@@ -36,7 +36,7 @@ async function addUsageCodeToLocations(locations: Array<{ uri: string; range: { 
 export const getSymbolLSPInfo = async (
     payload: EventParams<'getSymbolLSPInfo'>
 ): Promise<EventResult<'getSymbolLSPInfo'>> => {
-    const { uri, symbol, codeSnippet, infoType = 'all' } = payload;
+    const { filePath, symbol, codeSnippet, infoType = 'all' } = payload;
     
     // Determine which info types to retrieve
     const shouldRetrieveAll = infoType === 'all';
@@ -44,10 +44,11 @@ export const getSymbolLSPInfo = async (
         ? ['hover', 'signature_help', 'type_definition', 'definition', 'implementation'] as LSPInfoType[]
         : [infoType] as LSPInfoType[];
     
-    // Ensure file is open to get accurate LSP information
-    await ensureFileIsOpen(uri);
+    // Resolve file path to URI
+    const vscodeUri = resolveFilePath(filePath);
     
-    const vscodeUri = vscode.Uri.parse(uri);
+    // Ensure file is open to get accurate LSP information
+    await ensureFileIsOpen(vscodeUri.toString());
     
     // Resolve symbol to position
     const position = await resolveSymbolPosition(vscodeUri, symbol, codeSnippet);

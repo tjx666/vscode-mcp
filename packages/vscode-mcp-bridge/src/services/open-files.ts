@@ -1,6 +1,8 @@
 import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
+import { resolveFilePath } from './utils.js';
+
 /**
  * Handle opening multiple files
  */
@@ -10,7 +12,7 @@ export const openFiles = async (
     const results = await Promise.all(
         payload.files.map(async (fileRequest) => {
             try {
-                const uri = vscode.Uri.parse(fileRequest.uri);
+                const uri = resolveFilePath(fileRequest.filePath);
                 
                 // Always open the document to load it
                 const document = await vscode.workspace.openTextDocument(uri);
@@ -25,7 +27,7 @@ export const openFiles = async (
                 }
                 
                 return {
-                    uri: fileRequest.uri,
+                    filePath: fileRequest.filePath,
                     success: true,
                     message: showEditor 
                         ? 'File opened and displayed in editor'
@@ -33,7 +35,7 @@ export const openFiles = async (
                 };
             } catch (error) {
                 return {
-                    uri: fileRequest.uri,
+                    filePath: fileRequest.filePath,
                     success: false,
                     message: `Failed to open file: ${String(error)}`
                 };

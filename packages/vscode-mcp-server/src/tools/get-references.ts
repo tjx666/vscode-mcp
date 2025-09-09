@@ -12,9 +12,10 @@ const inputSchema = {
 const DESCRIPTION = `Find all reference locations of a symbol (variable, function, class, etc.) across the codebase
 
 **Parameter Examples:**
-- Find function references: uri: 'file:///utils.ts', symbol: 'getUserName', codeSnippet: 'function getUserName', includeDeclaration: true
-- Check variable usage: uri: 'file:///config.js', symbol: 'API_URL', codeSnippet: 'const API_URL ='
-- Find imported symbol: uri: 'file:///app.ts', symbol: 'config', codeSnippet: 'import { config } from'
+- Find function references: filePath: 'utils.ts', symbol: 'getUserName', codeSnippet: 'function getUserName', includeDeclaration: true
+- Check variable usage: filePath: 'config.js', symbol: 'API_URL', codeSnippet: 'const API_URL ='
+- Find imported symbol: filePath: 'app.ts', symbol: 'config', codeSnippet: 'import { config } from'
+- Absolute path: filePath: '/absolute/path/service.ts', symbol: 'ApiService'
 
 **Return Format:**
 Array of reference locations with file paths and exact positions
@@ -38,11 +39,11 @@ export function registerGetReferences(server: McpServer) {
       idempotentHint: true,
       openWorldHint: false
     }
-  }, async ({ workspace_path, uri, symbol, codeSnippet, includeDeclaration, usageCodeLineRange }) => {
+  }, async ({ workspace_path, filePath, symbol, codeSnippet, includeDeclaration, usageCodeLineRange }) => {
     try {
       const dispatcher = createDispatcher(workspace_path);
       const result = await dispatcher.dispatch("getReferences", { 
-        uri, 
+        filePath, 
         symbol, 
         codeSnippet,
         includeDeclaration,
@@ -54,7 +55,7 @@ export function registerGetReferences(server: McpServer) {
         return {
           content: [{
             type: "text" as const,
-            text: `❌ No references found for symbol "${symbol}" in ${uri}
+            text: `❌ No references found for symbol "${symbol}" in ${filePath}
 
 💡 **Troubleshooting Tips:**
 - Make sure the symbol name is spelled correctly

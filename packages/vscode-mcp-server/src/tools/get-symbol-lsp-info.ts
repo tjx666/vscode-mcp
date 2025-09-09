@@ -25,9 +25,10 @@ const inputSchema = {
 const DESCRIPTION = `Get comprehensive LSP information for a symbol
 
 **Parameter Examples:**
-- Get all info: uri: 'file:///app.ts', symbol: 'getUserData', codeSnippet: 'async function getUserData('
-- Specific types: uri: 'file:///utils.js', symbol: 'processData', infoType: 'definition'
-- Interface analysis: uri: 'file:///types.ts', symbol: 'UserModel', infoType: 'type_definition'
+- Get all info: filePath: 'app.ts', symbol: 'getUserData', codeSnippet: 'async function getUserData('
+- Specific types: filePath: 'utils.js', symbol: 'processData', infoType: 'definition'
+- Interface analysis: filePath: 'types.ts', symbol: 'UserModel', infoType: 'type_definition'
+- Absolute path: filePath: '/absolute/path/service.ts', symbol: 'ApiService'
 
 **Info Types Available:**
 - **all**(default): Returns all available information
@@ -57,14 +58,14 @@ export function registerGetSymbolLSPInfo(server: McpServer) {
       idempotentHint: true,
       openWorldHint: false
     }
-  }, async ({ workspace_path, uri, symbol, codeSnippet, infoType }) => {
+  }, async ({ workspace_path, filePath, symbol, codeSnippet, infoType }) => {
     try {
       const dispatcher = createDispatcher(workspace_path);
-      const result = await dispatcher.dispatch("getSymbolLSPInfo", { uri, symbol, codeSnippet, infoType });
+      const result = await dispatcher.dispatch("getSymbolLSPInfo", { filePath, symbol, codeSnippet, infoType });
       
       // Format the comprehensive results
       let output = `🔍 **Symbol LSP Information: \`${symbol}\`**\n\n`;
-      output += `📍 **File**: ${uri}\n`;
+      output += `📍 **File**: ${filePath}\n`;
       if (codeSnippet) {
         output += `📝 **Context**: \`${codeSnippet}\`\n`;
       }

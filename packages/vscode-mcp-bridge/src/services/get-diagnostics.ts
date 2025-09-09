@@ -6,7 +6,7 @@ import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
 import { logger } from '../logger.js';
-import { ensureFileIsOpen } from './utils.js';
+import { ensureFileIsOpen, resolveFilePaths } from './utils.js';
 
 const execAsync = promisify(exec);
 
@@ -94,16 +94,19 @@ async function getModifiedFiles(): Promise<string[]> {
 export const getDiagnostics = async (
     payload: EventParams<'getDiagnostics'>
 ): Promise<EventResult<'getDiagnostics'>> => {
-    logger.info(`getDiagnostics called with ${payload.uris.length} URIs, sources: [${payload.sources.join(', ')}], severities: [${payload.severities.join(', ')}]`);
+    logger.info(`getDiagnostics called with ${payload.filePaths.length} file paths, sources: [${payload.sources.join(', ')}], severities: [${payload.severities.join(', ')}]`);
     
-    let targetUris = payload.uris;
+    let targetFilePaths = payload.filePaths;
     const { sources, severities } = payload;
     
     // If empty array is provided, get all git modified files
-    if (targetUris.length === 0) {
-        logger.info('No URIs provided, getting git modified files');
-        targetUris = await getModifiedFiles();
+    if (targetFilePaths.length === 0) {
+        logger.info('No file paths provided, getting git modified files');
+        targetFilePaths = await getModifiedFiles();
     }
+    
+    // Convert file paths to URIs
+    const targetUris = resolveFilePaths(targetFilePaths);
     
     // Severity mapping from VSCode number to string
     const severityNumberToString = {
@@ -116,11 +119,11 @@ export const getDiagnostics = async (
     logger.info(`Processing diagnostics for ${targetUris.length} files`);
     
     const files = await Promise.all(
-        targetUris.map(async (uriString: string) => {
+        targetUris.map(async (uri: vscode.Uri) => {
             // Ensure file is open to get accurate diagnostics
-            await ensureFileIsOpen(uriString);
+            await ensureFileIsOpen(uri.toString());
             
-            const uri = vscode.Uri.parse(uriString);
+            // uri is already a VSCode Uri object
             const allDiagnostics = vscode.languages.getDiagnostics(uri);
             
             logger.info(`File ${path.basename(uri.fsPath)}: found ${allDiagnostics.length} total diagnostics`);
@@ -141,7 +144,7 @@ export const getDiagnostics = async (
             logger.info(`File ${path.basename(uri.fsPath)}: after filtering - ${filteredDiagnostics.length} diagnostics (sources: ${filteredDiagnostics.map(d => d.source || 'unknown').join(', ') || 'none'})`);
             
             return {
-                uri: uriString,
+                uri: uri.toString(),
                 diagnostics: filteredDiagnostics.map(diag => ({
                     range: {
                         start: { line: diag.range.start.line, character: diag.range.start.character },

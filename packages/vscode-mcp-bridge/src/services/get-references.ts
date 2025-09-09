@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 
 import { getUsageCode } from '../utils/usage-code.js';
 import { resolveSymbolPosition } from './resolve-symbol-position.js';
-import { ensureFileIsOpen } from './utils.js';
+import { ensureFileIsOpen, resolveFilePath } from './utils.js';
 
 /**
  * Handle get references
@@ -11,10 +11,11 @@ import { ensureFileIsOpen } from './utils.js';
 export const getReferences = async (
     payload: EventParams<'getReferences'>
 ): Promise<EventResult<'getReferences'>> => {
-    // Ensure file is open to get accurate references
-    await ensureFileIsOpen(payload.uri);
+    // Resolve file path to URI
+    const uri = resolveFilePath(payload.filePath);
     
-    const uri = vscode.Uri.parse(payload.uri);
+    // Ensure file is open to get accurate references
+    await ensureFileIsOpen(uri.toString());
     
     // Resolve symbol to position
     const position = await resolveSymbolPosition(uri, payload.symbol, payload.codeSnippet);

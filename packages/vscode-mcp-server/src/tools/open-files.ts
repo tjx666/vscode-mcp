@@ -12,9 +12,10 @@ const inputSchema = {
 const DESCRIPTION = `Open files in vscode
 
 **Parameter Examples:**
-- Background loading: files: [{ uri: 'file:///app.ts', showEditor: false }]
-- Open in editor: files: [{ uri: 'file:///main.js', showEditor: true }]
-- Mixed mode: files: [{ uri: 'file:///config.ts', showEditor: true }, { uri: 'file:///utils.ts', showEditor: false }]
+- Background loading: files: [{ filePath: 'app.ts', showEditor: false }]
+- Open in editor: files: [{ filePath: 'main.js', showEditor: true }]
+- Absolute path: files: [{ filePath: '/absolute/path/config.ts', showEditor: true }]
+- Mixed mode: files: [{ filePath: 'config.ts', showEditor: true }, { filePath: 'utils.ts', showEditor: false }]
 
 **Return Format:**
 Success status with count of files processed and any errors encountered
@@ -54,9 +55,9 @@ export function registerOpenFiles(server: McpServer) {
       // Format output for better readability
       const output = result.results.map(fileResult => {
         if (fileResult.success) {
-          return `✅ ${fileResult.uri}\n   ${fileResult.message}`;
+          return `✅ ${fileResult.filePath}\n   ${fileResult.message}`;
         } else {
-          return `❌ ${fileResult.uri}\n   ${fileResult.message}`;
+          return `❌ ${fileResult.filePath}\n   ${fileResult.message}`;
         }
       }).join('\n\n');
       
