@@ -15,6 +15,10 @@ const DESCRIPTION = `Remove file or folder using VSCode's workspace API with und
 - Uses VSCode's workspace edit system - deleted files can be restored with Cmd+Z (macOS) / Ctrl+Z (Windows)
 - Much safer than rm command which permanently deletes without recovery option
 
+**Safety Restrictions:**
+- Only operates on files within workspace boundaries
+- Only operates on git-tracked files (committed or staged)
+
 **Parameter Examples:**
 - Remove file: filePath: 'src/unused.ts', useTrash: true
 - Remove folder: filePath: 'old-components/', recursive: true, useTrash: true  

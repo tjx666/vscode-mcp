@@ -37,6 +37,7 @@ These commands run slowly in large projects, severely impacting AI development e
 - **Get fast diagnostics** (`get-diagnostics`) - Replace time-consuming type checking and lint commands
 - **Access comprehensive LSP information** (`get-symbol-lsp-info`) - Get definition, hover, signatures, and type info in one call
 - **Navigate code efficiently** (`get-references`) - Understand code structure and dependencies with usage context
+- **Safe file operations** (`remove-file`, `rename-file`) - Delete/rename files with undo support and automatic import updates
 - **Call IDE AI agents** (`call-agent`) - Integrate with built-in AI assistants like Cursor Composer, GitHub Copilot, and others
 
 ### Core Advantages
@@ -51,17 +52,19 @@ These commands run slowly in large projects, severely impacting AI development e
 
 VSCode MCP provides the following tools through the MCP protocol:
 
-| Tool                    | Description                                                      | Parameters                                                                                                     |
-| ----------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| **call_agent**          | Call IDE's AI agent with prompts and context                     | `workspace_path`, `prompt`, `files?`, `images?`, `model?`, `mode?`, `ide_type?`                                |
-| **execute_command**     | ⚠️ Execute VSCode commands with JSON string arguments            | `workspace_path`, `command`, `args?` (JSON string of arguments array)                                          |
-| **get_symbol_lsp_info** | Get comprehensive LSP info (definition, hover, signatures, etc.) | `workspace_path`, `uri`, `symbol`, `codeSnippet?`, `infoType?`                                                 |
-| **get_diagnostics**     | Get real-time diagnostics, replace slow tsc/eslint               | `workspace_path`, `uris?`, `sources?`, `severities?`                                                           |
-| **get_references**      | Find symbol references with usage context code                   | `workspace_path`, `uri`, `symbol`, `codeSnippet?`, `includeDeclaration?`, `usageCodeLineRange?`                |
-| **health_check**        | Test connection to VSCode MCP Bridge extension                   | `workspace_path`                                                                                               |
-| **list_workspaces**     | List all available VSCode workspaces                             | `clean_zombie_sockets?`, `include_details?`, `test_connection?`                                                |
-| **open_files**          | Open multiple files with optional editor display                 | `workspace_path`, `files` (array with `uri` and `showEditor?`)                                                 |
-| **rename_symbol**       | ⚠️ Rename symbols across all files in workspace                  | `workspace_path`, `uri`, `symbol`, `codeSnippet?`, `newName`                                                   |
+| Tool                    | Description                                                      |
+| ----------------------- | ---------------------------------------------------------------- |
+| **call_agent**          | Call IDE's AI agent with prompts and context                     |
+| **execute_command**     | ⚠️ Execute VSCode commands with JSON string arguments            |
+| **get_symbol_lsp_info** | Get comprehensive LSP info (definition, hover, signatures, etc.) |
+| **get_diagnostics**     | Get real-time diagnostics, replace slow tsc/eslint               |
+| **get_references**      | Find symbol references with usage context code                   |
+| **health_check**        | Test connection to VSCode MCP Bridge extension                   |
+| **list_workspaces**     | List all available VSCode workspaces                             |
+| **open_files**          | Open multiple files with optional editor display                 |
+| **remove_file**         | ⚠️ Remove file/folder with VSCode undo support (safer than rm)   |
+| **rename_file**         | ⚠️ Rename file with automatic import updates                     |
+| **rename_symbol**       | ⚠️ Rename symbols across all files in workspace                  |
 
 > **⚠️ Security Warning**: The `execute_command` tool can execute arbitrary VSCode commands and potentially trigger dangerous operations. Use with extreme caution and only with trusted AI models.
 

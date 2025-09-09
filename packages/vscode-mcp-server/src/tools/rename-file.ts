@@ -15,6 +15,10 @@ const DESCRIPTION = `Rename a file with automatic import updates
 - Automatically updates TypeScript/JavaScript import statements
 - Much more reliable than using 'mv' command directly
 
+**Safety Restrictions:**
+- Only operates on files within workspace boundaries
+- Only operates on git-tracked files (committed or staged)
+
 **Parameter Examples:**
 - Simple rename: filePath: 'src/utils.ts', newName: 'helpers.ts'
 - Change extension: filePath: '/absolute/path/Button.jsx', newName: 'Button.tsx'

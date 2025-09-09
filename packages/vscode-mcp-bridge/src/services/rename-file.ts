@@ -4,6 +4,7 @@ import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
 import { logger } from '../logger.js';
+import { checkFileSafety } from './file-safety-check.js';
 
 export const renameFile = async (
   payload: EventParams<'renameFile'>,
@@ -41,7 +42,17 @@ export const renameFile = async (
       };
     }
 
-    // 3. Validate new name
+    // 3. Safety check: ensure file is within workspace and git-tracked
+    const safetyCheck = await checkFileSafety(oldUri);
+    if (!safetyCheck.safe) {
+      return {
+        success: false,
+        newUri: payload.filePath,
+        error: `Safety check failed: ${safetyCheck.error}`,
+      };
+    }
+
+    // 4. Validate new name
     const newName = payload.newName.trim();
     if (!newName) {
       return {
@@ -51,13 +62,13 @@ export const renameFile = async (
       };
     }
 
-    // 4. Create new URI by replacing the file name
+    // 5. Create new URI by replacing the file name
     const oldPath = oldUri.fsPath;
     const dir = path.dirname(oldPath);
     const newPath = path.join(dir, newName);
     const newUri = vscode.Uri.file(newPath);
 
-    // 5. Check if the new file path already exists
+    // 6. Check if the new file path already exists
     try {
       await vscode.workspace.fs.stat(newUri);
       return {
@@ -69,7 +80,7 @@ export const renameFile = async (
       // File doesn't exist, which is good for renaming
     }
 
-    // 6. Execute rename using WorkspaceEdit to trigger automatic import updates
+    // 7. Execute rename using WorkspaceEdit to trigger automatic import updates
     const workspaceEdit = new vscode.WorkspaceEdit();
     workspaceEdit.renameFile(oldUri, newUri);
     

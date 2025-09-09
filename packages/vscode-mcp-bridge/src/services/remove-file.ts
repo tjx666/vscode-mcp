@@ -2,6 +2,7 @@ import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
 import { logger } from '../logger.js';
+import { checkFileSafety } from './file-safety-check.js';
 import { resolveFilePath } from './utils.js';
 
 export const removeFile = async (
@@ -21,6 +22,15 @@ export const removeFile = async (
       return {
         success: false,
         error: `File or folder not found: ${payload.filePath} - ${String(error)}`,
+      };
+    }
+
+    // Safety check: ensure file is within workspace and git-tracked
+    const safetyCheck = await checkFileSafety(uri);
+    if (!safetyCheck.safe) {
+      return {
+        success: false,
+        error: `Safety check failed: ${safetyCheck.error}`,
       };
     }
 
