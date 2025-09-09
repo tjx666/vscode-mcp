@@ -43,7 +43,7 @@ export const removeFile = async (
     // Delete file/folder using workspace.fs.delete (always moves to trash)
     await vscode.workspace.fs.delete(uri, deleteOptions);
     
-    const message = `Successfully removed ${payload.filePath} (moved to trash)`;
+    const message = `Successfully removed ${payload.filePath} (moved to trash - can be restored from system trash)`;
     logger.info(message);
     
     return {

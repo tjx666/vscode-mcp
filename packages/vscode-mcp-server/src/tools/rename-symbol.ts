@@ -2,7 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createDispatcher, RenameSymbolInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 import { z } from "zod";
 
-import { formatToolCallError } from "../utils/formatToolCallError.js";
+import { formatToolCallError } from "../utils/format-tool-call-error.js";
 
 const inputSchema = {
   workspace_path: z.string().describe("VSCode workspace path to target"),

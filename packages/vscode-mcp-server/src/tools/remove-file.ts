@@ -2,19 +2,23 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createDispatcher, RemoveFileInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 import { z } from "zod";
 
-import { formatToolCallError } from "../utils/formatToolCallError.js";
+import { formatToolCallError } from "../utils/format-tool-call-error.js";
 
 const inputSchema = {
   workspace_path: z.string().describe("VSCode workspace path to target"),
   ...RemoveFileInputSchema.shape
 };
 
-const DESCRIPTION = `Remove file or folder using VSCode's workspace API with undo support
+const DESCRIPTION = `Remove file or folder using VSCode's workspace API
 
 **Key Advantage:** 
 - Files are always moved to trash (never permanently deleted) for safety
-- Deleted files can be restored with Cmd+Z (macOS) / Ctrl+Z (Windows)
 - Much safer than rm command which permanently deletes without recovery option
+- Deleted files can be restored from system trash/recycle bin
+
+**Important Note:**
+- VSCode extensions currently cannot provide undo support (Cmd+Z) for file operations
+- This is a known VSCode limitation, not specific to this tool
 
 **Safety Restrictions:**
 - Only operates on files within workspace boundaries
@@ -52,11 +56,11 @@ export function registerRemoveFile(server: McpServer) {
         return {
           content: [{
             type: "text",
-            text: `✅ Successfully removed '${result.deletedPath}' 🗑️ (moved to trash - can be restored)
+            text: `✅ Successfully removed '${result.deletedPath}' 🗑️ (moved to trash)
 
-💡 **Recovery Tips:**
-- Use Cmd+Z (macOS) or Ctrl+Z (Windows) in VSCode to undo this deletion
-- Or restore from your system's trash/recycle bin
+💡 **Recovery Options:**
+- Restore from your system's trash/recycle bin
+- Note: VSCode Cmd+Z cannot undo file deletions (this is a VSCode limitation)
 
 📊 **Operation Details:**
 - Target: ${result.deletedPath}
