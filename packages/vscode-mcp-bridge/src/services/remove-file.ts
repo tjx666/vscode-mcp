@@ -20,7 +20,7 @@ export const removeFile = async (
     } catch (error) {
       return {
         success: false,
-        error: `File or folder not found: ${payload.filePath}`,
+        error: `File or folder not found: ${payload.filePath} - ${String(error)}`,
       };
     }
 
@@ -43,7 +43,7 @@ export const removeFile = async (
     const success = await vscode.workspace.applyEdit(workspaceEdit);
     
     if (success) {
-      const trashMsg = payload.useTrash ? ' (moved to trash)' : ' (permanently deleted)';
+      const trashMsg = payload.useTrash !== false ? ' (moved to trash)' : ' (permanently deleted)';
       const message = `Successfully removed ${payload.filePath}${trashMsg}`;
       logger.info(message);
       
