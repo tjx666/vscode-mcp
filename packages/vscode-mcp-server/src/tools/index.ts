@@ -16,5 +16,6 @@ export { registerGetSymbolLSPInfo } from "./get-symbol-lsp-info.js";
 export { registerHealthCheck } from "./health-check.js";
 export { registerListWorkspaces } from "./list-workspaces.js";
 export { registerOpenFiles } from "./open-files.js";
+export { registerRemoveFile } from "./remove-file.js";
 export { registerRenameFile } from "./rename-file.js";
 export { registerRenameSymbol } from "./rename-symbol.js";

@@ -7,6 +7,7 @@ export { getSymbolLSPInfo } from './get-symbol-lsp-info';
 export { health } from './health';
 export { listWorkspaces } from './list-workspaces';
 export { openFiles } from './open-files';
+export { removeFile } from './remove-file';
 export { renameFile } from './rename-file';
 export { renameSymbol } from './rename-symbol';
 
