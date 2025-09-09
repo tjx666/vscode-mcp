@@ -15,8 +15,6 @@ import {
     ListWorkspacesOutputSchema,
     OpenFilesInputSchema,
     OpenFilesOutputSchema,
-    RemoveFileInputSchema,
-    RemoveFileOutputSchema,
     RenameFileInputSchema,
     RenameFileOutputSchema,
     RenameSymbolInputSchema,
@@ -38,7 +36,6 @@ getCurrentWorkspacePath,
     health,
     listWorkspaces,
     openFiles,
-    removeFile,
     renameFile,
     renameSymbol,
 } from './services';
@@ -112,11 +109,6 @@ export async function activate(context: vscode.ExtensionContext) {
             resultSchema: OpenFilesOutputSchema
         });
         
-        socketServer.register('removeFile', {
-            handler: removeFile,
-            payloadSchema: RemoveFileInputSchema,
-            resultSchema: RemoveFileOutputSchema
-        });
         
         socketServer.register('renameFile', {
             handler: renameFile,

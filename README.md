@@ -37,7 +37,7 @@ These commands run slowly in large projects, severely impacting AI development e
 - **Get fast diagnostics** (`get-diagnostics`) - Replace time-consuming type checking and lint commands
 - **Access comprehensive LSP information** (`get-symbol-lsp-info`) - Get definition, hover, signatures, and type info in one call
 - **Navigate code efficiently** (`get-references`) - Understand code structure and dependencies with usage context
-- **Safe file operations** (`remove-file`, `rename-file`) - Delete/rename files with undo support and automatic import updates
+- **Safe file operations** (`rename-file`) - Rename files with undo support and automatic import updates
 - **Call IDE AI agents** (`call-agent`) - Integrate with built-in AI assistants like Cursor Composer, GitHub Copilot, and others
 
 ### Core Advantages
@@ -62,7 +62,6 @@ VSCode MCP provides the following tools through the MCP protocol:
 | **health_check**        | Test connection to VSCode MCP Bridge extension                   |
 | **list_workspaces**     | List all available VSCode workspaces                             |
 | **open_files**          | Open multiple files with optional editor display                 |
-| **remove_file**         | ⚠️ Remove file/folder with VSCode undo support (safer than rm)   |
 | **rename_file**         | ⚠️ Rename file with automatic import updates                     |
 | **rename_symbol**       | ⚠️ Rename symbols across all files in workspace                  |
 

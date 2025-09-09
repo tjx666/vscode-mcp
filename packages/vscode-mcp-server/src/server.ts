@@ -9,7 +9,6 @@ import {
   registerHealthCheck,
   registerListWorkspaces,
   registerOpenFiles,
-  registerRemoveFile,
   registerRenameFile,
   registerRenameSymbol,
 } from "./tools/index.js";
@@ -31,7 +30,6 @@ export function createVSCodeMCPServer(name: string, version: string): McpServer 
   registerGetReferences(server);
   registerExecuteCommand(server);
   registerOpenFiles(server);
-  registerRemoveFile(server);
   registerRenameFile(server);
   registerRenameSymbol(server);
   registerListWorkspaces(server);
