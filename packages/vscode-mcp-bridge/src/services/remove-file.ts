@@ -34,16 +34,31 @@ export const removeFile = async (
       };
     }
 
-    // Configure deletion options - VSCode always moves files to trash
-    const deleteOptions: { recursive?: boolean } = {};
+    // Execute delete using WorkspaceEdit for better integration
+    const workspaceEdit = new vscode.WorkspaceEdit();
+    
+    // Configure deletion options
+    const deleteOptions: { recursive?: boolean; ignoreIfNotExists?: boolean } = {
+      ignoreIfNotExists: true,
+    };
     if (payload.recursive !== undefined) {
       deleteOptions.recursive = payload.recursive;
     }
     
-    // Delete file/folder using workspace.fs.delete (always moves to trash)
-    await vscode.workspace.fs.delete(uri, deleteOptions);
+    workspaceEdit.deleteFile(uri, deleteOptions);
+    const success = await vscode.workspace.applyEdit(workspaceEdit);
+
+    if (!success) {
+      return {
+        success: false,
+        error: 'Failed to apply delete operation',
+      };
+    }
     
-    const message = `Successfully removed ${payload.filePath} (moved to trash - can be restored from system trash)`;
+    // Save all dirty editors after delete operation
+    await vscode.workspace.saveAll(false);
+
+    const message = `Successfully removed ${payload.filePath} using WorkspaceEdit (moved to trash - may support undo)`;
     logger.info(message);
     
     return {
