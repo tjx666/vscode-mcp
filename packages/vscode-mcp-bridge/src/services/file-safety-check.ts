@@ -38,7 +38,7 @@ export async function checkFileSafety(uri: vscode.Uri): Promise<FileSafetyResult
 }
 
 /**
- * Check if file is tracked by git (committed or at least staged)
+ * Check if file is tracked by git (committed or staged)
  */
 async function checkGitTracking(uri: vscode.Uri, workspaceFolder: vscode.WorkspaceFolder): Promise<FileSafetyResult> {
   try {
@@ -54,21 +54,6 @@ async function checkGitTracking(uri: vscode.Uri, workspaceFolder: vscode.Workspa
     if (lsFilesOutput.trim()) {
       // File is tracked (committed or staged)
       return { safe: true };
-    }
-
-    // Check if file is at least staged (added but not committed)
-    const { stdout: statusOutput } = await execAsync(
-      `git status --porcelain "${relativePath}"`,
-      { cwd: workspacePath }
-    );
-
-    const statusLine = statusOutput.trim();
-    if (statusLine) {
-      const indexStatus = statusLine[0]; // First character indicates index status
-      if (indexStatus === 'A' || indexStatus === 'M' || indexStatus === 'R' || indexStatus === 'C') {
-        // File is staged (added, modified, renamed, or copied in index)
-        return { safe: true };
-      }
     }
 
     // File is not tracked by git
