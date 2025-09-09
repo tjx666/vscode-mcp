@@ -12,7 +12,8 @@ const inputSchema = {
 const DESCRIPTION = `Remove file or folder using VSCode's workspace API with undo support
 
 **Key Advantage:** 
-- Uses VSCode's workspace edit system - deleted files can be restored with Cmd+Z (macOS) / Ctrl+Z (Windows)
+- Files are always moved to trash (never permanently deleted) for safety
+- Deleted files can be restored with Cmd+Z (macOS) / Ctrl+Z (Windows)
 - Much safer than rm command which permanently deletes without recovery option
 
 **Safety Restrictions:**
@@ -20,10 +21,9 @@ const DESCRIPTION = `Remove file or folder using VSCode's workspace API with und
 - Only operates on git-tracked files (committed or staged)
 
 **Parameter Examples:**
-- Remove file: filePath: 'src/unused.ts', useTrash: true
-- Remove folder: filePath: 'old-components/', recursive: true, useTrash: true  
-- Permanent delete: filePath: 'temp.log', useTrash: false
-- Absolute path: filePath: '/absolute/path/to/file.ts', useTrash: true
+- Remove file: filePath: 'src/unused.ts'
+- Remove folder: filePath: 'old-components/', recursive: true
+- Absolute path: filePath: '/absolute/path/to/file.ts'
 
 **Return Format:**
 - success: boolean indicating if removal was successful
@@ -43,28 +43,24 @@ export function registerRemoveFile(server: McpServer) {
       idempotentHint: false,
       openWorldHint: false
     }
-  }, async ({ workspace_path, filePath, useTrash, recursive }) => {
+  }, async ({ workspace_path, filePath, recursive }) => {
     try {
       const dispatcher = createDispatcher(workspace_path);
-      const result = await dispatcher.dispatch("removeFile", { filePath, useTrash, recursive });
+      const result = await dispatcher.dispatch("removeFile", { filePath, recursive });
       
       if (result.success) {
-        const trashStatus = useTrash !== false ? " 🗑️ (moved to trash - can be restored)" : " ⚠️ (permanently deleted)";
-        
         return {
           content: [{
             type: "text",
-            text: `✅ Successfully removed '${result.deletedPath}'${trashStatus}
+            text: `✅ Successfully removed '${result.deletedPath}' 🗑️ (moved to trash - can be restored)
 
 💡 **Recovery Tips:**
-${useTrash !== false 
-  ? `- Use Cmd+Z (macOS) or Ctrl+Z (Windows) in VSCode to undo this deletion
-- Or restore from your system's trash/recycle bin` 
-  : `- This was a permanent deletion - file cannot be recovered through normal means`}
+- Use Cmd+Z (macOS) or Ctrl+Z (Windows) in VSCode to undo this deletion
+- Or restore from your system's trash/recycle bin
 
 📊 **Operation Details:**
 - Target: ${result.deletedPath}
-- Method: ${useTrash !== false ? 'Moved to trash' : 'Permanent deletion'}
+- Method: Moved to trash (safe deletion)
 - Recursive: ${recursive !== false ? 'Yes' : 'No'}`
           }]
         };

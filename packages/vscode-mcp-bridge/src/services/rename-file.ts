@@ -5,6 +5,7 @@ import * as vscode from 'vscode';
 
 import { logger } from '../logger.js';
 import { checkFileSafety } from '../utils/file-safety-check.js';
+import { resolveFilePath } from '../utils/workspace.js';
 
 export const renameFile = async (
   payload: EventParams<'renameFile'>,
@@ -14,21 +15,14 @@ export const renameFile = async (
   try {
     // 1. Resolve file path to URI
     let oldUri: vscode.Uri;
-    if (path.isAbsolute(payload.filePath)) {
-      // Absolute path
-      oldUri = vscode.Uri.file(payload.filePath);
-    } else {
-      // Relative path - resolve relative to workspace root
-      const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-      if (!workspaceFolder) {
-        return {
-          success: false,
-          newUri: payload.filePath,
-          error: 'No workspace folder found for relative path resolution',
-        };
-      }
-      const absolutePath = path.join(workspaceFolder.uri.fsPath, payload.filePath);
-      oldUri = vscode.Uri.file(absolutePath);
+    try {
+      oldUri = resolveFilePath(payload.filePath);
+    } catch (error) {
+      return {
+        success: false,
+        newUri: payload.filePath,
+        error: String(error),
+      };
     }
     
     // 2. Validate the file exists

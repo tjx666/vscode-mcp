@@ -8,7 +8,7 @@ import { resolveFilePath } from '../utils/workspace.js';
 export const removeFile = async (
   payload: EventParams<'removeFile'>,
 ): Promise<EventResult<'removeFile'>> => {
-  logger.info(`Removing file/folder "${payload.filePath}" (useTrash: ${payload.useTrash}, recursive: ${payload.recursive})`);
+  logger.info(`Removing file/folder "${payload.filePath}" (recursive: ${payload.recursive})`);
 
   try {
     // Resolve file path to URI
@@ -34,42 +34,23 @@ export const removeFile = async (
       };
     }
 
-    // Create workspace edit for deletion
-    const workspaceEdit = new vscode.WorkspaceEdit();
-    
-    // Configure deletion options
-    const deleteOptions: { recursive?: boolean; useTrash?: boolean } = {};
+    // Configure deletion options - VSCode always moves files to trash
+    const deleteOptions: { recursive?: boolean } = {};
     if (payload.recursive !== undefined) {
       deleteOptions.recursive = payload.recursive;
     }
-    if (payload.useTrash !== undefined) {
-      deleteOptions.useTrash = payload.useTrash;
-    }
     
-    // Add delete operation to workspace edit
-    workspaceEdit.deleteFile(uri, deleteOptions);
+    // Delete file/folder using workspace.fs.delete (always moves to trash)
+    await vscode.workspace.fs.delete(uri, deleteOptions);
     
-    // Apply the workspace edit
-    const success = await vscode.workspace.applyEdit(workspaceEdit);
+    const message = `Successfully removed ${payload.filePath} (moved to trash)`;
+    logger.info(message);
     
-    if (success) {
-      const trashMsg = payload.useTrash !== false ? ' (moved to trash)' : ' (permanently deleted)';
-      const message = `Successfully removed ${payload.filePath}${trashMsg}`;
-      logger.info(message);
-      
-      return {
-        success: true,
-        deletedPath: payload.filePath,
-        message,
-      };
-    } else {
-      const errorMsg = 'Failed to apply workspace edit for file deletion';
-      logger.error(errorMsg);
-      return {
-        success: false,
-        error: errorMsg,
-      };
-    }
+    return {
+      success: true,
+      deletedPath: payload.filePath,
+      message,
+    };
   } catch (error) {
     const errorMsg = `Error removing file/folder: ${String(error)}`;
     logger.error(errorMsg);

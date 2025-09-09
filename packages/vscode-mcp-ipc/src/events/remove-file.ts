@@ -4,7 +4,6 @@ import { FilePathSchema } from '../common.js';
 
 export const RemoveFileInputSchema = z.object({
   filePath: FilePathSchema,
-  useTrash: z.boolean().optional().default(true).describe('Whether to move to trash instead of permanently delete (default: true)'),
   recursive: z.boolean().optional().default(true).describe('Whether to recursively delete folder contents (default: true)'),
 }).strict();
 
