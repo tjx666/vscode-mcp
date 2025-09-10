@@ -69,6 +69,16 @@
                 "title": "Copy Opened Files Path",
                 "category": "VSCode MCP Bridge"
             }
+        ],
+        "keybindings": [
+            {
+                "key": "alt+cmd+o",
+                "command": "vscode-mcp-bridge.copyOpenedFilesPath",
+                "when": "terminalFocus",
+                "args": {
+                    "isSendToActiveTerminal": true
+                }
+            }
         ]
     },
     "scripts": {

@@ -161,23 +161,6 @@ Go to `Cursor Settings` -> `Tools & Integrations` -> `New MCP Server`. Name to y
 }
 ```
 
-## Recommended Keybindings
-
-The VSCode MCP Bridge extension provides useful commands that can be enhanced with custom keybindings. Add the following to your VSCode `keybindings.json`:
-
-```json
-{
-  "key": "alt+cmd+o",
-  "command": "vscode-mcp-bridge.copyOpenedFilesPath",
-  "when": "terminalFocus",
-  "args": {
-    "isSendToActiveTerminal": true
-  }
-}
-```
-
-This shortcuts will copies paths of all opened files and sends them directly to the active terminal,useful for claude code and other terminal ai agents.
-
 ## How It Works
 
 Once installed and configured, VSCode MCP works seamlessly with MCP-compatible clients:
