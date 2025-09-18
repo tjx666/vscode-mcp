@@ -20,6 +20,8 @@ import {
 } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
+import type {CopyCurrentSelectionReferenceOptions} from './commands/copy-current-selection-reference';
+import { copyCurrentSelectionReferenceCommand } from './commands/copy-current-selection-reference';
 import type {CopyOpenedFilesPathOptions} from './commands/copy-opened-files-path';
 import { copyOpenedFilesPathCommand  } from './commands/copy-opened-files-path';
 import { sleepCommand } from './commands/sleep';
@@ -136,6 +138,11 @@ export async function activate(context: vscode.ExtensionContext) {
             await copyOpenedFilesPathCommand(options);
         });
         context.subscriptions.push(copyOpenedFilesPathDisposable);
+
+        const copyCurrentSelectionReferenceDisposable = vscode.commands.registerCommand('vscode-mcp-bridge.copyCurrentSelectionReference', async (options?: CopyCurrentSelectionReferenceOptions) => {
+            await copyCurrentSelectionReferenceCommand(options);
+        });
+        context.subscriptions.push(copyCurrentSelectionReferenceDisposable);
 
         // Register cleanup on extension deactivation
         context.subscriptions.push({

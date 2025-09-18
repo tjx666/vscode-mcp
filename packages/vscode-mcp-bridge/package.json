@@ -68,6 +68,11 @@
                 "command": "vscode-mcp-bridge.copyOpenedFilesPath",
                 "title": "Copy Opened Files Path",
                 "category": "VSCode MCP Bridge"
+            },
+            {
+                "command": "vscode-mcp-bridge.copyCurrentSelectionReference",
+                "title": "Copy Current Selection Reference",
+                "category": "VSCode MCP Bridge"
             }
         ],
         "keybindings": [
@@ -76,7 +81,8 @@
                 "command": "vscode-mcp-bridge.copyOpenedFilesPath",
                 "when": "terminalFocus",
                 "args": {
-                    "isSendToActiveTerminal": true
+                    "isSendToActiveTerminal": true,
+                    "includeAtSymbol": true
                 }
             }
         ]
@@ -97,19 +103,19 @@
     },
     "dependencies": {
         "@vscode-mcp/vscode-mcp-ipc": "workspace:*",
-        "zod": "^3.25.74"
+        "zod": "^3.25.76"
     },
     "devDependencies": {
         "@types/glob": "^9.0.0",
-        "@types/mocha": "^10.0.7",
+        "@types/mocha": "^10.0.10",
         "@types/vscode": "1.99.1",
         "@vscode/test-electron": "^2.4.1",
         "@vscode/vsce": "^3.6.0",
-        "esbuild": "~0.25.5",
+        "esbuild": "~0.25.10",
         "esbuild-visualizer": "^0.7.0",
-        "glob": "^11.0.0",
-        "mocha": "^11.7.1",
-        "ovsx": "^0.10.4",
+        "glob": "^11.0.3",
+        "mocha": "^11.7.2",
+        "ovsx": "^0.10.5",
         "rimraf": "^6.0.1"
     }
 }

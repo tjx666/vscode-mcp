@@ -7,13 +7,14 @@ import * as vscode from 'vscode';
  */
 export interface CopyOpenedFilesPathOptions {
     isSendToActiveTerminal?: boolean;
+    includeAtSymbol?: boolean;
 }
 
 /**
  * Copy opened files path command implementation
  */
 export async function copyOpenedFilesPathCommand(options: CopyOpenedFilesPathOptions = {}): Promise<void> {
-    const { isSendToActiveTerminal = false } = options;
+    const { isSendToActiveTerminal = false, includeAtSymbol = false } = options;
     
     // Get workspace root path
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
@@ -50,7 +51,10 @@ export async function copyOpenedFilesPathCommand(options: CopyOpenedFilesPathOpt
     }
     
     // Format paths as text with single quotes (one per line)
-    const pathsText = openedFiles.map(file => `'${file}'`).join('\n');
+    const pathsText = openedFiles.map(file => {
+        const formattedPath = includeAtSymbol ? `@${file}` : file;
+        return `'${formattedPath}'`;
+    }).join('\n');
     
     if (isSendToActiveTerminal) {
         // Send to active terminal

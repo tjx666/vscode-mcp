@@ -30,9 +30,9 @@
         "dist"
     ],
     "peerDependencies": {
-        "type-fest": "^4.41.0"
+        "type-fest": "^5.0.0"
     },
     "dependencies": {
-        "zod": "^3.25.74"
+        "zod": "^3.25.76"
     }
 }

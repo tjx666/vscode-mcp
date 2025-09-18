@@ -35,8 +35,8 @@
         "dist"
     ],
     "dependencies": {
-        "@modelcontextprotocol/sdk": "^1.17.5",
+        "@modelcontextprotocol/sdk": "^1.18.1",
         "@vscode-mcp/vscode-mcp-ipc": "workspace:*",
-        "zod": "^3.25.74"
+        "zod": "^3.25.76"
     }
 }
