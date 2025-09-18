@@ -9,6 +9,7 @@ export interface CopyCurrentSelectionReferenceOptions {
     isSendToActiveTerminal?: boolean;
     includeRange?: boolean;
     includeAtSymbol?: boolean;
+    addSpaces?: boolean;
 }
 
 /**
@@ -18,7 +19,8 @@ export async function copyCurrentSelectionReferenceCommand(options: CopyCurrentS
     const {
         isSendToActiveTerminal = false,
         includeRange = true,
-        includeAtSymbol = true
+        includeAtSymbol = true,
+        addSpaces = false
     } = options;
 
     // Get active editor
@@ -76,11 +78,16 @@ export async function copyCurrentSelectionReferenceCommand(options: CopyCurrentS
         referenceText = `@${referenceText}`;
     }
 
+    // Add spaces if addSpaces is true
+    if (addSpaces) {
+        referenceText = ` ${referenceText} `;
+    }
+
     if (isSendToActiveTerminal) {
         // Send to active terminal
         const activeTerminal = vscode.window.activeTerminal;
         if (activeTerminal) {
-            activeTerminal.sendText(referenceText);
+            activeTerminal.sendText(referenceText, false);
         }
     } else {
         // Copy to clipboard
