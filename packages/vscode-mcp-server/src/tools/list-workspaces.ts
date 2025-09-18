@@ -1,8 +1,8 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { ListWorkspacesInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 
-import { discoverAvailableWorkspaces } from "../utils/workspace-discovery.js";
 import { formatToolCallError } from "../utils/format-tool-call-error.js";
+import { discoverAvailableWorkspaces } from "../utils/workspace-discovery.js";
 
 // MCP tools don't have workspace_path parameter for list_workspaces
 // since it discovers all workspaces

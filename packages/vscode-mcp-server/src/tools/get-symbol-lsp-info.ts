@@ -1,8 +1,8 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createDispatcher, GetSymbolLSPInfoInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
-import { z } from "zod";
 
 import { formatToolCallError } from "../utils/format-tool-call-error.js";
+import { workspacePathInputSchema } from "../utils/workspace-schema.js";
 
 /**
  * Format location info with optional code content
@@ -18,7 +18,7 @@ function formatLocationInfo(location: { uri: string; range: { start: { line: num
 }
 
 const inputSchema = {
-  workspace_path: z.string().describe("VSCode workspace path to target"),
+  ...workspacePathInputSchema,
   ...GetSymbolLSPInfoInputSchema.shape
 };
 

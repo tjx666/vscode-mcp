@@ -1,11 +1,11 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createDispatcher, ExecuteCommandInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
-import { z } from "zod";
 
 import { formatToolCallError } from "../utils/format-tool-call-error.js";
+import { workspacePathInputSchema } from "../utils/workspace-schema.js";
 
 const inputSchema = {
-  workspace_path: z.string().describe("VSCode workspace path to target"),
+  ...workspacePathInputSchema,
   ...ExecuteCommandInputSchema.shape
 };
 
