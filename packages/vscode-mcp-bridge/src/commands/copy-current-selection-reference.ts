@@ -10,6 +10,7 @@ export interface CopyCurrentSelectionReferenceOptions {
     includeRange?: boolean;
     includeAtSymbol?: boolean;
     addSpaces?: boolean;
+    focusTerminal?: boolean;
 }
 
 /**
@@ -20,7 +21,8 @@ export async function copyCurrentSelectionReferenceCommand(options: CopyCurrentS
         isSendToActiveTerminal = false,
         includeRange = true,
         includeAtSymbol = true,
-        addSpaces = false
+        addSpaces = false,
+        focusTerminal = false
     } = options;
 
     // Get active editor
@@ -88,6 +90,9 @@ export async function copyCurrentSelectionReferenceCommand(options: CopyCurrentS
         const activeTerminal = vscode.window.activeTerminal;
         if (activeTerminal) {
             activeTerminal.sendText(referenceText, false);
+            if (focusTerminal) {
+                activeTerminal.show();
+            }
         }
     } else {
         // Copy to clipboard

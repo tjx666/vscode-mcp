@@ -79,10 +79,11 @@
             {
                 "key": "alt+cmd+o",
                 "command": "vscode-mcp-bridge.copyOpenedFilesPath",
-                "when": "terminalFocus",
                 "args": {
                     "isSendToActiveTerminal": true,
-                    "includeAtSymbol": true
+                    "includeAtSymbol": true,
+                    "addQuotes": false,
+                    "focusTerminal": true
                 }
             }
         ]
