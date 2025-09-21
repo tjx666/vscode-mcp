@@ -12,6 +12,7 @@ const execAsync = promisify(exec);
 
 /**
  * Get all git modified files in the workspace (staged, unstaged, and untracked)
+ * Returns absolute file paths
  */
 async function getModifiedFiles(): Promise<string[]> {
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
@@ -70,11 +71,10 @@ async function getModifiedFiles(): Promise<string[]> {
             });
         }
 
-        // Convert relative paths to absolute file URIs
+        // Convert relative paths to absolute paths
         for (const relativePath of allFiles) {
             const absolutePath = path.resolve(workspaceRoot, relativePath);
-            const uri = vscode.Uri.file(absolutePath);
-            modifiedFiles.push(uri.toString());
+            modifiedFiles.push(absolutePath);
         }
 
         logger.info(`Found ${modifiedFiles.length} git modified files: ${modifiedFiles.map(f => path.basename(f)).join(', ')}`);
