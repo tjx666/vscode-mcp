@@ -1,6 +1,8 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createDispatcher, GetReferencesInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 
+import { VscodeMcpToolName } from "../constants.js";
+
 import { formatToolCallError } from "../utils/format-tool-call-error.js";
 import { workspacePathInputSchema } from "../utils/workspace-schema.js";
 
@@ -28,7 +30,7 @@ Array of reference locations with file paths and exact positions
 - Returns empty array if symbol not found or no references exist`;
 
 export function registerGetReferences(server: McpServer) {
-  server.registerTool("get_references", {
+  server.registerTool(VscodeMcpToolName.GET_REFERENCES, {
     title: "Get References",
     description: DESCRIPTION,
     inputSchema,

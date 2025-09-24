@@ -1,6 +1,8 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createDispatcher, HealthCheckInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 
+import { VscodeMcpToolName } from "../constants.js";
+
 import { formatToolCallError } from "../utils/format-tool-call-error.js";
 import { workspacePathInputSchema } from "../utils/workspace-schema.js";
 
@@ -25,7 +27,7 @@ JSON object with connection status and diagnostic details
 `;
 
 export function registerHealthCheck(server: McpServer, serverVersion: string) {
-  server.registerTool("health_check", {
+  server.registerTool(VscodeMcpToolName.HEALTH_CHECK, {
     title: "Health Check",
     description: DESCRIPTION,
     inputSchema,

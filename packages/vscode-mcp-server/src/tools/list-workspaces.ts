@@ -1,6 +1,8 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { ListWorkspacesInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 
+import { VscodeMcpToolName } from "../constants.js";
+
 import { formatToolCallError } from "../utils/format-tool-call-error.js";
 import { discoverAvailableWorkspaces } from "../utils/workspace-discovery.js";
 
@@ -28,7 +30,7 @@ Includes summary statistics about discovered workspaces.
 - Automatically cleans up zombie sockets by default`;
 
 export function registerListWorkspaces(server: McpServer) {
-  server.registerTool("list_workspaces", {
+  server.registerTool(VscodeMcpToolName.LIST_WORKSPACES, {
     title: "List Available Workspaces",
     description: DESCRIPTION,
     inputSchema,

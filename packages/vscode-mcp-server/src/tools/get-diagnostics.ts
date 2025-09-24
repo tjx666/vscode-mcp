@@ -1,6 +1,8 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createDispatcher, GetDiagnosticsInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 
+import { VscodeMcpToolName } from "../constants.js";
+
 import { formatToolCallError } from "../utils/format-tool-call-error.js";
 import { workspacePathInputSchema } from "../utils/workspace-schema.js";
 
@@ -36,7 +38,7 @@ Severity levels: 0=ERROR, 1=WARNING, 2=INFO, 3=HINT (matches VSCode DiagnosticSe
 `;
 
 export function registerGetDiagnostics(server: McpServer) {
-  server.registerTool("get_diagnostics", {
+  server.registerTool(VscodeMcpToolName.GET_DIAGNOSTICS, {
     title: "Get Diagnostics",
     description: DESCRIPTION,
     inputSchema,

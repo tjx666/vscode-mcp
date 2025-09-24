@@ -1,6 +1,8 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createDispatcher, RenameSymbolInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 
+import { VscodeMcpToolName } from "../constants.js";
+
 import { formatToolCallError } from "../utils/format-tool-call-error.js";
 import { workspacePathInputSchema } from "../utils/workspace-schema.js";
 
@@ -30,7 +32,7 @@ const DESCRIPTION = `Rename a symbol (variable, function, class, etc.) by name a
 - Some symbols may not be renameable (e.g., built-in types, external libraries)`;
 
 export function registerRenameSymbol(server: McpServer) {
-  server.registerTool("rename_symbol", {
+  server.registerTool(VscodeMcpToolName.RENAME_SYMBOL, {
     title: "⚠️ Rename Symbol",
     description: DESCRIPTION,
     inputSchema,

@@ -1,6 +1,8 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createDispatcher, GetSymbolLSPInfoInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 
+import { VscodeMcpToolName } from "../constants.js";
+
 import { formatToolCallError } from "../utils/format-tool-call-error.js";
 import { workspacePathInputSchema } from "../utils/workspace-schema.js";
 
@@ -47,7 +49,7 @@ Structured object containing requested LSP information:
 `;
 
 export function registerGetSymbolLSPInfo(server: McpServer) {
-  server.registerTool("get_symbol_lsp_info", {
+  server.registerTool(VscodeMcpToolName.GET_SYMBOL_LSP_INFO, {
     title: "Get Symbol LSP Info",
     description: DESCRIPTION,
     inputSchema,

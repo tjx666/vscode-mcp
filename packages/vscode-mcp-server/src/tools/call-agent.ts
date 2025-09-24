@@ -1,5 +1,7 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { CallAgentInputSchema,createDispatcher } from '@vscode-mcp/vscode-mcp-ipc';
+import { CallAgentInputSchema, createDispatcher } from '@vscode-mcp/vscode-mcp-ipc';
+
+import { VscodeMcpToolName } from '../constants.js';
 
 import { formatToolCallError } from '../utils/format-tool-call-error.js';
 import { workspacePathInputSchema } from '../utils/workspace-schema.js';
@@ -11,7 +13,7 @@ const inputSchema = {
 
 export function registerCallAgent(server: McpServer) {
   server.registerTool(
-    'call_agent',
+    VscodeMcpToolName.CALL_AGENT,
     {
       title: 'Call IDE Agent',
       description: `Call the AI agent in VSCode, Cursor, Windsurf, or other IDE forks with a prompt. 

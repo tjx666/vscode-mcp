@@ -1,6 +1,8 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createDispatcher, ExecuteCommandInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 
+import { VscodeMcpToolName } from "../constants.js";
+
 import { formatToolCallError } from "../utils/format-tool-call-error.js";
 import { workspacePathInputSchema } from "../utils/workspace-schema.js";
 
@@ -30,7 +32,7 @@ const DESCRIPTION = `⚠️ Execute VSCode commands with arguments - DANGEROUS t
 - Use with extreme caution`;
 
 export function registerExecuteCommand(server: McpServer) {
-  server.registerTool("execute_command", {
+  server.registerTool(VscodeMcpToolName.EXECUTE_COMMAND, {
     title: "⚠️ Execute VSCode Command",
     description: DESCRIPTION,
     inputSchema,
