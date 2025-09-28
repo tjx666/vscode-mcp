@@ -2,7 +2,6 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createDispatcher, HealthCheckInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 
 import { VscodeMcpToolName } from "../constants.js";
-
 import { formatToolCallError } from "../utils/format-tool-call-error.js";
 import { workspacePathInputSchema } from "../utils/workspace-schema.js";
 
@@ -11,20 +10,7 @@ const inputSchema = {
   ...HealthCheckInputSchema.shape
 };
 
-const DESCRIPTION = `Test connection to VSCode MCP Bridge extension
-
-**Core Function:**
-All VSCode MCP tools depend on VSCode MCP Bridge extension to function. This tool verifies the connection.
-
-**AI Coding Agent Use Cases:**
-- Troubleshoot when other VSCode MCP tools return connection errors or timeouts
-
-**Parameter Examples:**
-- Basic check: workspace_path: '/path/to/workspace'
-
-**Return Format:**
-JSON object with connection status and diagnostic details
-`;
+const DESCRIPTION = `Test connection to VSCode MCP Bridge extension. Troubleshoot when other VSCode MCP tools return connection errors or timeouts`;
 
 export function registerHealthCheck(server: McpServer, serverVersion: string) {
   server.registerTool(VscodeMcpToolName.HEALTH_CHECK, {

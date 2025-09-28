@@ -1,5 +1,5 @@
-import { 
-    ExecuteCommandInputSchema, 
+import {
+    ExecuteCommandInputSchema,
     ExecuteCommandOutputSchema,
     GetDiagnosticsInputSchema,
     GetDiagnosticsOutputSchema,
@@ -9,7 +9,6 @@ import {
     GetSymbolLSPInfoOutputSchema,
     HealthCheckInputSchema,
     HealthCheckOutputSchema,
-    ListWorkspacesInputSchema,
     ListWorkspacesOutputSchema,
     OpenFilesInputSchema,
     OpenFilesOutputSchema,
@@ -108,7 +107,6 @@ export async function activate(context: vscode.ExtensionContext) {
         
         socketServer.register('listWorkspaces', {
             handler: listWorkspaces,
-            payloadSchema: ListWorkspacesInputSchema,
             resultSchema: ListWorkspacesOutputSchema
         });
         

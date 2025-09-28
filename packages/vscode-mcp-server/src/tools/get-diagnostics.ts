@@ -2,7 +2,6 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createDispatcher, GetDiagnosticsInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 
 import { VscodeMcpToolName } from "../constants.js";
-
 import { formatToolCallError } from "../utils/format-tool-call-error.js";
 import { workspacePathInputSchema } from "../utils/workspace-schema.js";
 
@@ -11,31 +10,17 @@ const inputSchema = {
   ...GetDiagnosticsInputSchema.shape
 };
 
-const DESCRIPTION = `Get real-time diagnostic information from vscode language servers.
+const DESCRIPTION = `Get diagnostic information from vscode language servers.
 
-**AI Coding Agent Use Cases:**
-- Replace slow 'tsc --noEmit' and 'eslint .' commands with instant LSP diagnostics
-- Validate code changes immediately after Edit file without running full builds
-- Auto-check all git modified files to catch issues across entire changesets
-- Get precise error locations and messages for targeted code fixes
-- Monitor code health during iterative AI-assisted development
+Ideal quality-check tool for AI coding agents, much faster than 'tsc --noEmit' and 'eslint .'
 
 **Parameter Examples:**
-- Check modified files: filePaths: [] (auto-detects git changes, much faster than npm run build)
-- Validate specific files: filePaths: ['src/app.ts', 'src/utils.js']
-- Single file verification: filePaths: ['components/Button.tsx']
-- Absolute path: filePaths: ['/absolute/path/to/file.ts']
+- Check modified files: filePaths: [] (auto-detects git changes)
 - Filter ESLint errors only: sources: ['eslint'], severities: ['error']
-- TypeScript warnings only: sources: ['ts', 'typescript'], severities: ['warning']
-- All diagnostics: sources: [], severities: []
 
 **Return Format:**
 Structured diagnostic results with severity levels, positions, and detailed error messages.
-Severity levels: 0=ERROR, 1=WARNING, 2=INFO, 3=HINT (matches VSCode DiagnosticSeverity enum)
-
-**Important Notes:**
-- Empty filePaths array triggers Git integration to find all modified files
-`;
+Severity levels: 0=ERROR, 1=WARNING, 2=INFO, 3=HINT (matches VSCode DiagnosticSeverity enum)`;
 
 export function registerGetDiagnostics(server: McpServer) {
   server.registerTool(VscodeMcpToolName.GET_DIAGNOSTICS, {

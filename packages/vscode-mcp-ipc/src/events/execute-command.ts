@@ -10,7 +10,9 @@ import { z } from 'zod';
  */
 export const ExecuteCommandInputSchema = z.object({
   command: z.string().describe('VSCode command to execute (e.g., \'vscode.open\', \'editor.action.formatDocument\')'),
-  args: z.string().optional().describe('Optional JSON string of arguments array to pass to the command'),
+  args: z.string().optional().describe(`Optional JSON string of arguments array to pass to the command
+- args parameter must be a JSON string representing an array of arguments
+- For file paths: Use absolute paths like '["file:///absolute/path/to/file.ts"]' (VSCode commands still expect file:// URIs)`),
   saveAllEditors: z.boolean().optional().default(true).describe('Save all dirty editors after executing the command (default: true)'),
 }).strict();
 

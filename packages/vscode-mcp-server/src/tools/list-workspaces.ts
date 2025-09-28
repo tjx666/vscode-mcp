@@ -1,33 +1,22 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { ListWorkspacesInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 
 import { VscodeMcpToolName } from "../constants.js";
-
 import { formatToolCallError } from "../utils/format-tool-call-error.js";
 import { discoverAvailableWorkspaces } from "../utils/workspace-discovery.js";
 
 // MCP tools don't have workspace_path parameter for list_workspaces
 // since it discovers all workspaces
-const inputSchema = ListWorkspacesInputSchema.shape;
+const inputSchema = {};
 
 const DESCRIPTION = `List all available VSCode workspaces that can be connected to use vscode mcp tools
-
-**Parameter Examples:**
-- Basic listing: {} (uses all defaults)
-- Detailed info: include_details: true
-- Discovery only: clean_zombie_sockets: false, test_connection: false
-- Quick list: test_connection: false
 
 **Return Format:**
 Array of workspace objects with paths, names, status, and optional details.
 Includes summary statistics about discovered workspaces.
 
 **Important Notes:**
-- Workspace paths are hashed to generate socket names
-- Only shows workspaces where MCP Bridge extension is activated
-- Active status means successfully connected and verified
-- Available status means socket exists but not tested
-- Automatically cleans up zombie sockets by default`;
+- **Active status** means successfully connected and verified
+- **Available status** means socket exists but not tested`;
 
 export function registerListWorkspaces(server: McpServer) {
   server.registerTool(VscodeMcpToolName.LIST_WORKSPACES, {
@@ -41,13 +30,13 @@ export function registerListWorkspaces(server: McpServer) {
       idempotentHint: false, // May clean zombie sockets
       openWorldHint: false
     }
-  }, async (params) => {
+  }, async () => {
     try {
-      // Directly call the discovery function
+      // Directly call the discovery function with hardcoded true values
       const result = await discoverAvailableWorkspaces({
-        cleanZombieSockets: params.clean_zombie_sockets,
-        includeDetails: params.include_details,
-        testConnection: params.test_connection
+        cleanZombieSockets: true,
+        includeDetails: true,
+        testConnection: true
       });
       
       const workspaces = result.workspaces;
@@ -102,7 +91,7 @@ export function registerListWorkspaces(server: McpServer) {
             if (workspace.vscode_version) {
               response += `   💻 VSCode: v${workspace.vscode_version}\n`;
             }
-            if (params.include_details && workspace.socket_path) {
+            if (workspace.socket_path) {
               response += `   🔧 Socket: ${workspace.socket_path}\n`;
             }
           });
@@ -113,7 +102,7 @@ export function registerListWorkspaces(server: McpServer) {
           response += "\n📋 Available (not tested):\n";
           availableWorkspaces.forEach((workspace, index) => {
             response += `\n${activeWorkspaces.length + index + 1}. ${workspace.workspace_path}\n`;
-            if (params.include_details && workspace.socket_path) {
+            if (workspace.socket_path) {
               response += `   🔧 Socket: ${workspace.socket_path}\n`;
             }
           });

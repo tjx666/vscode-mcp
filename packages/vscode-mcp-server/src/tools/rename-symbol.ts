@@ -2,7 +2,6 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createDispatcher, RenameSymbolInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 
 import { VscodeMcpToolName } from "../constants.js";
-
 import { formatToolCallError } from "../utils/format-tool-call-error.js";
 import { workspacePathInputSchema } from "../utils/workspace-schema.js";
 
@@ -10,25 +9,15 @@ const inputSchema = {
   ...workspacePathInputSchema,
   ...RenameSymbolInputSchema.shape
 };
+const DESCRIPTION = `Rename a symbol with VSCode F2 ability
 
-const DESCRIPTION = `Rename a symbol (variable, function, class, etc.) by name across codebase
+Advantages over search and replace:
 
-**Parameter Examples:**
-- Rename variable: filePath: 'utils.ts', symbol: 'userData', codeSnippet: 'const userData =', newName: 'processedData'
-- Rename function: filePath: 'api.ts', symbol: 'handleRequest', codeSnippet: 'async function handleRequest', newName: 'handleUserRequest'
-- Rename class: filePath: 'models.ts', symbol: 'User', codeSnippet: 'class User extends', newName: 'UserModel'
-- Absolute path: filePath: '/absolute/path/service.ts', symbol: 'ApiService', newName: 'DataService'
-
-**Return Format:**
-- success: boolean indicating if rename was successful
-- symbolName: original symbol name that was renamed
-- modifiedFiles: array of files that were changed with change counts
-- totalChanges: total number of text changes made
-- error: detailed error message if rename failed
+- Faster
+- More accurate
+- Automatically updates imports and reference locations
 
 **Important Notes:**
-- codeSnippet helps precisely locate the symbol when multiple occurrences exist
-- Modifies files immediately - operation cannot be undone through this tool
 - Some symbols may not be renameable (e.g., built-in types, external libraries)`;
 
 export function registerRenameSymbol(server: McpServer) {

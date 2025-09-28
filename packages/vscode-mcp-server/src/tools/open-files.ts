@@ -2,7 +2,6 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createDispatcher, OpenFilesInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 
 import { VscodeMcpToolName } from "../constants.js";
-
 import { formatToolCallError } from "../utils/format-tool-call-error.js";
 import { workspacePathInputSchema } from "../utils/workspace-schema.js";
 
@@ -11,17 +10,7 @@ const inputSchema = {
   ...OpenFilesInputSchema.shape
 };
 
-const DESCRIPTION = `Open files in vscode
-
-**Parameter Examples:**
-- Background loading: files: [{ filePath: 'app.ts', showEditor: false }]
-- Open in editor: files: [{ filePath: 'main.js', showEditor: true }]
-- Absolute path: files: [{ filePath: '/absolute/path/config.ts', showEditor: true }]
-- Mixed mode: files: [{ filePath: 'config.ts', showEditor: true }, { filePath: 'utils.ts', showEditor: false }]
-
-**Return Format:**
-Success status with count of files processed and any errors encountered
-`
+const DESCRIPTION = `Open files in vscode`
 export function registerOpenFiles(server: McpServer) {
   server.registerTool(VscodeMcpToolName.OPEN_FILES, {
     title: "Open Files",

@@ -2,7 +2,6 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createDispatcher, ExecuteCommandInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 
 import { VscodeMcpToolName } from "../constants.js";
-
 import { formatToolCallError } from "../utils/format-tool-call-error.js";
 import { workspacePathInputSchema } from "../utils/workspace-schema.js";
 
@@ -11,13 +10,7 @@ const inputSchema = {
   ...ExecuteCommandInputSchema.shape
 };
 
-const DESCRIPTION = `⚠️ Execute VSCode commands with arguments - DANGEROUS tool that can modify workspace, settings, or trigger harmful operations.
-
-**Arguments Format:**
-- args parameter must be a JSON string representing an array of arguments
-- For file paths: Use absolute paths like '["file:///absolute/path/to/file.ts"]' (VSCode commands still expect file:// URIs)
-- Example: '[]' for commands without arguments
-
+const DESCRIPTION = `Execute VSCode commands with arguments
 **Common Use Cases:**
 - Format code: 'editor.action.formatDocument' with args: '[]'
 - Open files: 'vscode.open' with args: '["file:///absolute/path/to/file.ts"]'
@@ -26,10 +19,11 @@ const DESCRIPTION = `⚠️ Execute VSCode commands with arguments - DANGEROUS t
 - Restart TypeScript: 'typescript.restartTsServer' with args: '[]'
 - Restart ESLint: 'eslint.restart' with args: '[]'
 
-**⚠️ WARNING:**
-- Can cause irreversible changes
+**Important Notes:**
+- Commands and arguments may change with VSCode updates, it's recommended to search in the VSCode official repository to confirm the command and arguments are correct before use
 - Commands like 'reloadWindow', 'reloadExtensionHost' will interrupt conversation
-- Use with extreme caution`;
+- ⚠️ WARNING: May cause irreversible changes, use with caution
+`;
 
 export function registerExecuteCommand(server: McpServer) {
   server.registerTool(VscodeMcpToolName.EXECUTE_COMMAND, {

@@ -48,8 +48,7 @@ export async function discoverAvailableWorkspaces(options: {
 } = {}): Promise<{workspaces: WorkspaceInfo[], hasLegacyWorkspaces: boolean}> {
   const {
     cleanZombieSockets = true,
-    testConnection = true,
-    includeDetails = false
+    testConnection = true
   } = options;
   
   // Try new app directory first
@@ -99,10 +98,8 @@ export async function discoverAvailableWorkspaces(options: {
         last_seen: healthResult.timestamp
       };
       
-      // Add detailed info if requested
-      if (includeDetails) {
-        workspaceInfo.vscode_version = healthResult.system_info?.vscode_version;
-      }
+      // Always add detailed info
+      workspaceInfo.vscode_version = healthResult.system_info?.vscode_version;
       
       return workspaceInfo;
     } catch (error) {

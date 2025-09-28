@@ -2,7 +2,6 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createDispatcher, GetReferencesInputSchema } from "@vscode-mcp/vscode-mcp-ipc";
 
 import { VscodeMcpToolName } from "../constants.js";
-
 import { formatToolCallError } from "../utils/format-tool-call-error.js";
 import { workspacePathInputSchema } from "../utils/workspace-schema.js";
 
@@ -13,21 +12,9 @@ const inputSchema = {
 
 const DESCRIPTION = `Find all reference locations of a symbol (variable, function, class, etc.) across the codebase
 
-**Parameter Examples:**
-- Find function references: filePath: 'utils.ts', symbol: 'getUserName', codeSnippet: 'function getUserName', includeDeclaration: true
-- Check variable usage: filePath: 'config.js', symbol: 'API_URL', codeSnippet: 'const API_URL ='
-- Find imported symbol: filePath: 'app.ts', symbol: 'config', codeSnippet: 'import { config } from'
-- Absolute path: filePath: '/absolute/path/service.ts', symbol: 'ApiService'
-
 **Return Format:**
 Array of reference locations with file paths and exact positions
-
-**Important Notes:**
-- Files are automatically opened to ensure accurate LSP information
-- Uses smart text search to locate the symbol definition first
-- codeSnippet helps precisely locate the symbol when multiple occurrences exist
-- includeDeclaration: false excludes the symbol definition itself
-- Returns empty array if symbol not found or no references exist`;
+`;
 
 export function registerGetReferences(server: McpServer) {
   server.registerTool(VscodeMcpToolName.GET_REFERENCES, {

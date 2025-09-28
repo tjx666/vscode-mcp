@@ -1,5 +1,4 @@
 import type { EventParams, EventResult, WorkspaceInfo } from '@vscode-mcp/vscode-mcp-ipc';
-import { ListWorkspacesInputSchema } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
 import packageJson from '../../package.json';
@@ -70,12 +69,9 @@ function getWorkspaceFolders(): string[] | undefined {
  * Handle list workspaces request
  */
 export const listWorkspaces = async (
-    payload: EventParams<'listWorkspaces'>
+    _payload: EventParams<'listWorkspaces'>
 ): Promise<EventResult<'listWorkspaces'>> => {
     try {
-        // Parse payload with defaults from schema
-        ListWorkspacesInputSchema.parse(payload);
-        
         // For the VSCode extension, we can only return the current workspace
         const currentWorkspacePath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
         

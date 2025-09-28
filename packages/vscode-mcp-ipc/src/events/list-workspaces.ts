@@ -7,14 +7,7 @@ import { z } from 'zod';
 /**
  * List workspaces input schema
  */
-export const ListWorkspacesInputSchema = z.object({
-  clean_zombie_sockets: z.boolean().optional().default(true)
-    .describe('Whether to clean up zombie socket files (default: true)'),
-  include_details: z.boolean().optional().default(false)
-    .describe('Whether to include detailed workspace information (default: false)'),
-  test_connection: z.boolean().optional().default(true)
-    .describe('Whether to test socket connections (default: true)')
-}).strict();
+export const ListWorkspacesInputSchema = z.object({}).strict();
 
 /**
  * Workspace info schema

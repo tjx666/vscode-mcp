@@ -56,7 +56,7 @@ export const FilePathSchema = z.string().describe('File path (absolute or relati
 export const SymbolLocatorSchema = z.object({
   filePath: FilePathSchema,
   symbol: z.string().describe('Symbol name'),
-  codeSnippet: z.string().optional().describe('Optional code snippet to precisely locate the symbol when multiple occurrences exist'),
+  codeSnippet: z.string().optional().describe(`Optional code snippet to help precisely locate the symbol when there are multiple symbols with the same name. Eg: "function getUserName()" when locating the symbol "getUserName"`),
 }).strict();
 
 /**
