@@ -1,7 +1,7 @@
 {
     "name": "vscode-mcp-bridge",
     "displayName": "Vscode Mcp Bridge",
-    "version": "4.3.0",
+    "version": "4.4.0",
     "description": "A vscode extension which connect vscode and mcp",
     "publisher": "YuTengjing",
     "private": true,
