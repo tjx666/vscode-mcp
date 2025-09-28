@@ -1,9 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 import { VscodeMcpToolName } from "./constants.js";
-
 import {
-  registerCallAgent,
   registerExecuteCommand,
   registerGetDiagnostics,
   registerGetReferences,
@@ -18,7 +16,6 @@ import {
 type ToolRegistrationFunction = (server: McpServer, ...args: any[]) => void;
 
 const TOOL_REGISTRY: Record<string, ToolRegistrationFunction> = {
-  [VscodeMcpToolName.CALL_AGENT]: registerCallAgent,
   [VscodeMcpToolName.HEALTH_CHECK]: (server: McpServer, version: string) => registerHealthCheck(server, version),
   [VscodeMcpToolName.GET_DIAGNOSTICS]: registerGetDiagnostics,
   [VscodeMcpToolName.GET_SYMBOL_LSP_INFO]: registerGetSymbolLSPInfo,

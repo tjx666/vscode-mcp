@@ -38,7 +38,6 @@ These commands run slowly in large projects, severely impacting AI development e
 - **Access comprehensive LSP information** (`get-symbol-lsp-info`) - Get definition, hover, signatures, and type info in one call
 - **Navigate code efficiently** (`get-references`) - Understand code structure and dependencies with usage context
 - **Safe file operations** - Rename symbols across files with automatic import updates
-- **Call IDE AI agents** (`call-agent`) - Integrate with built-in AI assistants like Cursor Composer, GitHub Copilot, and others
 
 ### Core Advantages
 
@@ -46,7 +45,6 @@ These commands run slowly in large projects, severely impacting AI development e
 2. **Accuracy**: Precise analysis based on language servers, more reliable than static analysis
 3. **Efficiency**: Significantly reduce AI coding agent wait times
 4. **Integration**: Deep integration with VSCode ecosystem, supporting multiple languages and extensions
-5. **AI Collaboration**: Enable AI agents to work together by calling IDE-native AI assistants (Cursor Composer, GitHub Copilot, etc.)
 
 ## Available Tools
 
@@ -54,7 +52,6 @@ VSCode MCP provides the following tools through the MCP protocol:
 
 | Tool                    | Description                                                      |
 | ----------------------- | ---------------------------------------------------------------- |
-| **call_agent**          | Call IDE's AI agent with prompts and context                     |
 | **execute_command**     | ⚠️ Execute VSCode commands with JSON string arguments            |
 | **get_symbol_lsp_info** | Get comprehensive LSP info (definition, hover, signatures, etc.) |
 | **get_diagnostics**     | Get real-time diagnostics, replace slow tsc/eslint               |
@@ -62,35 +59,9 @@ VSCode MCP provides the following tools through the MCP protocol:
 | **health_check**        | Test connection to VSCode MCP Bridge extension                   |
 | **list_workspaces**     | List all available VSCode workspaces                             |
 | **open_files**          | Open multiple files with optional editor display                 |
-| **rename_symbol**       | ⚠️ Rename symbols across all files in workspace                  |
+| **rename_symbol**       | Rename symbols across all files in workspace                     |
 
 > **⚠️ Security Warning**: The `execute_command` tool can execute arbitrary VSCode commands and potentially trigger dangerous operations. Use with extreme caution and only with trusted AI models.
-
-### AI Agent Integration
-
-The `call_agent` tool enables seamless integration between external AI assistants and IDE-native AI agents. This creates a powerful collaborative AI ecosystem where different AI agents can work together on complex coding tasks.
-
-**Supported IDEs:**
-
-- **Cursor**: Integrates with Cursor Composer for advanced code generation
-- **VSCode**: Supports GitHub Copilot, Cline, Continue, and other popular extensions
-- **Windsurf**: Integrates with Windsurf's native AI capabilities
-
-**Supported AI Agents:**
-
-- **Cursor Composer**: Advanced code generation and refactoring
-- **GitHub Copilot**: Code completion and chat assistance
-- **Cline**: Interactive coding assistant with file management
-- **Continue**: Open-source coding assistant
-
-**Key Features:**
-
-- **Auto-detection**: Automatically detects your IDE and available AI extensions
-- **Flexible Input**: Supports text prompts, file attachments, and image inputs
-- **Smart Routing**: Chooses the best available AI agent based on capability and priority
-- **Cross-platform**: Works across different operating systems and IDE configurations
-
-All tools require the `workspace_path` parameter to target specific VSCode instances.
 
 ## Installation
 
@@ -118,30 +89,6 @@ This command will automatically configure the MCP server in your Claude Code env
 
 #### Cursor
 
-##### ⚠️ Gemini 2.5 Pro Compatibility Note
-
-The `execute_command` tool is currently not compatible with Gemini 2.5 Pro in Cursor due to potential security restrictions. If you plan to use Gemini 2.5 Pro, it is **highly recommended** to disable this tool to prevent any issues.
-
-You can disable it by adding a command-line argument to the MCP server configuration in Cursor's settings.
-
-1. Go to `Cursor Settings` -> `Tools & Integrations`.
-2. Find your `vscode-mcp` server configuration and click `Edit`.
-3. In the `args` array, add the following argument: `"--disable-tools=execute_command"`
-4. Your final config should look similar to this:
-
-```json
-{
-  "mcpServers": {
-    "vscode-mcp": {
-      "command": "npx",
-      "args": ["@vscode-mcp/vscode-mcp-server@latest", "--disable-tools=execute_command"]
-    }
-  }
-}
-```
-
-This will prevent the `execute_command` tool from being registered with the server, ensuring compatibility with Gemini 2.5 Pro.
-
 ##### Click the button to install
 
 [![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=vscode-mcp&config=eyJjb21tYW5kIjoibnB4IEB2c2NvZGUtbWNwL3ZzY29kZS1tY3Atc2VydmVyQGxhdGVzdCJ9)
@@ -161,7 +108,7 @@ Go to `Cursor Settings` -> `Tools & Integrations` -> `New MCP Server`. Name to y
 }
 ```
 
-## How It Works
+## Architecture
 
 Once installed and configured, VSCode MCP works seamlessly with MCP-compatible clients:
 

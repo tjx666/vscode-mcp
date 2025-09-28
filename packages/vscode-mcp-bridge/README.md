@@ -16,17 +16,7 @@ This extension provides several useful commands to enhance your development work
 
 **Command**: `VSCode MCP Bridge: Copy Opened Files Path`
 
-Collects all currently opened file paths with dual output modes:
-
-- **Copy to clipboard** (default): Copies paths for external use
-- **Send to terminal**: Use `isSendToActiveTerminal: true` parameter to send directly to active terminal
-
-Smart path handling:
-
-- Uses relative paths when files are within workspace
-- Falls back to absolute paths for files outside workspace
-- Automatically filters out non-file URIs (like untitled documents)
-- Sorts paths alphabetically
+use shortcut `alt+cmd+o` to send all opened files path to active terminal.
 
 ### ⏱️ Sleep
 

@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 
-import type { IDE } from './agent-types.js';
+export type IDE = 'vscode' | 'cursor' | 'windsurf' | 'trae' | 'unknown';
+
 
 /**
  * Get the current IDE type based on environment detection

@@ -1,6 +1,4 @@
 import { 
-    CallAgentInputSchema,
-    CallAgentOutputSchema,
     ExecuteCommandInputSchema, 
     ExecuteCommandOutputSchema,
     GetDiagnosticsInputSchema,
@@ -27,7 +25,6 @@ import { copyOpenedFilesPathCommand  } from './commands/copy-opened-files-path';
 import { sleepCommand } from './commands/sleep';
 import { logger } from './logger';
 import {
-    callAgent,
     executeCommand,
 getCurrentWorkspacePath,
     getDiagnostics,
@@ -61,14 +58,7 @@ export async function activate(context: vscode.ExtensionContext) {
     try {
         // Create socket server
         socketServer = new SocketServer(workspacePath);
-        
-        // Register all services with schema validation
-        socketServer.register('callAgent', {
-            handler: callAgent,
-            payloadSchema: CallAgentInputSchema,
-            resultSchema: CallAgentOutputSchema
-        });
-        
+    
         socketServer.register('health', {
             handler: health,
             payloadSchema: HealthCheckInputSchema,

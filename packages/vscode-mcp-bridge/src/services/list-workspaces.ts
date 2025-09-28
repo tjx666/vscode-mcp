@@ -3,7 +3,7 @@ import { ListWorkspacesInputSchema } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
 import packageJson from '../../package.json';
-import { detectIdeType } from './call-agent/ide-detection';
+import { detectIdeType } from '../utils/detect-ide';
 
 /**
  * Get workspace type

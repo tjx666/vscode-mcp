@@ -4,8 +4,8 @@ import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
 import packageJson from '../../package.json';
+import { detectIdeType } from '../utils/detect-ide';
 import { getCurrentWorkspacePath } from '../utils/workspace';
-import { detectIdeType } from './call-agent/ide-detection';
 
 /**
  * Handle health check
