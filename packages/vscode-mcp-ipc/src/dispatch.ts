@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync } from 'node:fs';
 import { Socket } from 'node:net';
 import { homedir, tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 
 import type { BaseRequest, BaseResponse, EventName, EventParams, EventResult } from './events/index.js';
 
@@ -289,7 +289,9 @@ export function createDispatcher(
   workspacePath: string,
   requestTimeout?: number,
 ): EventDispatcher {
-  return new EventDispatcher(workspacePath, requestTimeout);
+  // Convert relative paths to absolute paths to ensure consistent socket path generation
+  const absolutePath = resolve(workspacePath);
+  return new EventDispatcher(absolutePath, requestTimeout);
 }
 
 
