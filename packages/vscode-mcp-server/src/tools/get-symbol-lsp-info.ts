@@ -23,34 +23,16 @@ const inputSchema = {
   ...GetSymbolLSPInfoInputSchema.shape
 };
 
-const DESCRIPTION = `Get comprehensive LSP information for a symbol
-
-**Parameter Examples:**
-- Get all info: filePath: 'app.ts', symbol: 'getUserData', codeSnippet: 'async function getUserData('
-- Specific types: filePath: 'utils.js', symbol: 'processData', infoType: 'definition'
-- Interface analysis: filePath: 'types.ts', symbol: 'UserModel', infoType: 'type_definition'
-- Absolute path: filePath: '/absolute/path/service.ts', symbol: 'ApiService'
-
-**Info Types Available:**
-- **all**(default): Returns all available information
-- **hover**: Rich type information and documentation
-- **signature_help**: Function parameters and overloads
-- **type_definition**: Where the symbol's type is defined
-- **definition**: Where the symbol is defined
-- **implementation**: All implementations of interfaces/abstract classes
-
-**Return Format:**
-Structured object containing requested LSP information:
-- Each info type returns an array or object with relevant details
-- Location-based results include file paths and precise coordinates
-- Hover results include formatted documentation and type info
-- Signature help includes parameter details and active signature
-`;
-
 export function registerGetSymbolLSPInfo(server: McpServer) {
   server.registerTool(VscodeMcpToolName.GET_SYMBOL_LSP_INFO, {
     title: "Get Symbol LSP Info",
-    description: DESCRIPTION,
+    description: `Retrieve comprehensive LSP information for a symbol, including type definitions, documentation, and usage details.
+     Essential for fixing type errors and understanding symbol declarations.
+     Typical use cases:
+     - Fix TypeScript type checking errors
+     - Extract function parameters and return types from symbols when encapsulating code blocks into functions
+     - Obtain variable types from nearby code symbols when declaring variables or type assertions, avoiding the use of 'any'
+     `,
     inputSchema,
     annotations: {
       title: "Get Symbol LSP Info",

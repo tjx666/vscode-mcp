@@ -57,7 +57,14 @@ const SignatureHelpSchema = z.object({
  * Get symbol LSP info input schema
  */
 export const GetSymbolLSPInfoInputSchema = SymbolLocatorSchema.extend({
-  infoType: LSPInfoTypeSchema.optional().default('all').describe('Type of LSP information to retrieve. Defaults to "all" which includes all available information. Can specify individual types like "definition", "hover" for selective retrieval.'),
+  infoType: LSPInfoTypeSchema.optional().default('all').describe(`Type of LSP information to retrieve. 
+**Info Types Available:**
+- **all**(default): Returns all available information
+- **hover**: Rich type information and documentation
+- **signature_help**: Function parameters and overloads
+- **type_definition**: Where the symbol's type is defined
+- **definition**: Where the symbol is defined
+- **implementation**: All implementations of interfaces/abstract classes`),
 }).strict();
 
 /**
