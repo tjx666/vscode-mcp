@@ -1,4 +1,3 @@
-import { isAbsolute } from 'path';
 
 import { z } from 'zod';
 
@@ -8,13 +7,7 @@ import { z } from 'zod';
  */
 export const workspacePathSchema = z
   .string()
-  .describe('VSCode workspace path to target')
-  .refine(
-    (path) => isAbsolute(path),
-    {
-      message: 'Workspace path must be an absolute path. Relative paths like "." are not supported.',
-    }
-  );
+  .describe('Absolute path to the VSCode workspace. Relative paths like "." are not supported.')
 
 /**
  * Helper object for creating tool input schemas that include workspace_path
