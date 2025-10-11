@@ -92,10 +92,10 @@ Examples:
   ${PACKAGE_NAME}
 
   # Disable specific tools
-  ${PACKAGE_NAME} --disable-tools execute_command,call_agent
+  ${PACKAGE_NAME} --disable-tools execute_command,list_workspaces
 
   # Using environment variable
-  VSCODE_MCP_DISABLED_TOOLS="execute_command,call_agent" ${PACKAGE_NAME}
+  VSCODE_MCP_DISABLED_TOOLS="execute_command,list_workspaces" ${PACKAGE_NAME}
 
   # Show version
   ${PACKAGE_NAME} --version

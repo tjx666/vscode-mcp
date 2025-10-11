@@ -77,6 +77,18 @@ Or search for "VSCode MCP Bridge" in the VSCode Extensions marketplace.
 
 ### Step 2: Install MCP Server
 
+#### Codex
+
+Add the following configuration to your `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.vscode-mcp]
+command = "bunx"
+args = ["-y", "@vscode-mcp/vscode-mcp-server@latest"]
+env = { "VSCODE_MCP_DISABLED_TOOLS" = "health_check,list_workspaces,open_files" }
+startup_timeout_ms = 16_000
+```
+
 #### Claude Code
 
 Claude Code (claude.ai/code) provides built-in MCP support. Simply run:
@@ -103,6 +115,29 @@ Go to `Cursor Settings` -> `Tools & Integrations` -> `New MCP Server`. Name to y
     "vscode-mcp": {
       "command": "npx",
       "args": ["@vscode-mcp/vscode-mcp-server@latest"]
+    }
+  }
+}
+```
+
+#### Gemini CLI
+
+Add the following configuration to your `~/.gemini/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "vscode-mcp": {
+      "command": "npx",
+      "args": ["-y", "@vscode-mcp/vscode-mcp-server@latest"],
+      "env": {},
+      "includeTools": [
+        "get_symbol_lsp_info",
+        "get_diagnostics",
+        "get_references",
+        "health_check",
+        "rename_symbol"
+      ]
     }
   }
 }

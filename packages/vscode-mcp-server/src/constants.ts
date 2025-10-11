@@ -5,7 +5,6 @@
  * This enum ensures type safety and consistent naming across the codebase.
  */
 export enum VscodeMcpToolName {
-  CALL_AGENT = 'call_agent',
   EXECUTE_COMMAND = 'execute_command',
   GET_DIAGNOSTICS = 'get_diagnostics',
   GET_REFERENCES = 'get_references',
