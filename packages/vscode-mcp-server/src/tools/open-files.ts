@@ -24,8 +24,8 @@ export function registerOpenFiles(server: McpServer) {
       openWorldHint: false
     }
   }, async ({ workspace_path, files }) => {
-    const dispatcher = createDispatcher(workspace_path);
-    
+    const dispatcher = await createDispatcher(workspace_path);
+
     try {
       const result = await dispatcher.dispatch("openFiles", { files });
       

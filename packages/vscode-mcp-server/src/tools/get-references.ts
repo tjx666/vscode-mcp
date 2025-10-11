@@ -30,7 +30,7 @@ export function registerGetReferences(server: McpServer) {
     }
   }, async ({ workspace_path, filePath, symbol, codeSnippet, includeDeclaration, usageCodeLineRange }) => {
     try {
-      const dispatcher = createDispatcher(workspace_path);
+      const dispatcher = await createDispatcher(workspace_path);
       const result = await dispatcher.dispatch("getReferences", { 
         filePath, 
         symbol, 

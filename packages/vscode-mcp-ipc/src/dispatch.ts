@@ -1,10 +1,22 @@
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync } from 'node:fs';
+import { mkdir, stat } from 'node:fs/promises';
 import { Socket } from 'node:net';
 import { homedir, tmpdir } from 'node:os';
 import { isAbsolute, join } from 'node:path';
 
 import type { BaseRequest, BaseResponse, EventName, EventParams, EventResult } from './events/index.js';
+
+/**
+ * Check if a path exists
+ */
+async function pathExists(path: string): Promise<boolean> {
+  try {
+    await stat(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Get application data directory for storing socket files
@@ -44,13 +56,21 @@ export function getSocketPath(workspacePath: string): string {
 
   // Unix-like systems: Use socket files in app data directory
   const appDir = getAppDataDir();
-  
-  // Ensure directory exists
-  if (!existsSync(appDir)) {
-    mkdirSync(appDir, { recursive: true, mode: 0o700 });
-  }
-  
   return join(appDir, `vscode-mcp-${hash}.sock`);
+}
+
+/**
+ * Ensure socket directory exists
+ */
+async function ensureSocketDir(): Promise<void> {
+  if (process.platform === 'win32') {
+    return; // Windows uses named pipes, no directory needed
+  }
+
+  const appDir = getAppDataDir();
+  if (!(await pathExists(appDir))) {
+    await mkdir(appDir, { recursive: true, mode: 0o700 });
+  }
 }
 
 /**
@@ -169,6 +189,9 @@ export class EventDispatcher {
     params: EventParams<T>,
     socketPath: string,
   ): Promise<EventResult<T>> {
+    // Ensure socket directory exists before connecting
+    await ensureSocketDir();
+
     return new Promise((resolve, reject) => {
       const socket = new Socket();
       const requestId = generateRequestId();
@@ -285,15 +308,25 @@ export class EventDispatcher {
 /**
  * Create a new event dispatcher instance
  */
-export function createDispatcher(
+export async function createDispatcher(
   workspacePath: string,
   requestTimeout?: number,
-): EventDispatcher {
+): Promise<EventDispatcher> {
   // Validate that workspace path is absolute
   if (!isAbsolute(workspacePath)) {
     throw new Error(
-      `workspace_path must be an absolute path, got: ${workspacePath}` 
+      `workspace_path must be an absolute path, got: ${workspacePath}`
     );
+  }
+
+  // Validate that workspace path is a directory
+  if (await pathExists(workspacePath)) {
+    const stats = await stat(workspacePath);
+    if (!stats.isDirectory()) {
+      throw new Error(
+        `workspace_path must be a directory, got a file: ${workspacePath}`
+      );
+    }
   }
 
   return new EventDispatcher(workspacePath, requestTimeout);

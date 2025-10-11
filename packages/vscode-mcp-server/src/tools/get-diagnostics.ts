@@ -35,8 +35,8 @@ export function registerGetDiagnostics(server: McpServer) {
       openWorldHint: false
     }
   }, async ({ workspace_path, filePaths, sources, severities }) => {
-    const dispatcher = createDispatcher(workspace_path);
-    
+    const dispatcher = await createDispatcher(workspace_path);
+
     try {
       const result = await dispatcher.dispatch("getDiagnostics", { filePaths, sources, severities });
       

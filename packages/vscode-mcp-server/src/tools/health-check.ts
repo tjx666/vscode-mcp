@@ -26,7 +26,7 @@ export function registerHealthCheck(server: McpServer, serverVersion: string) {
     }
   }, async ({ workspace_path }) => {
     try {
-      const dispatcher = createDispatcher(workspace_path);
+      const dispatcher = await createDispatcher(workspace_path);
       const result = await dispatcher.dispatch("health", {});
       
       // Version compatibility check

@@ -7,7 +7,7 @@ import { z } from 'zod';
  */
 export const workspacePathSchema = z
   .string()
-  .describe('Absolute path to the VSCode workspace. Never use relative paths like ".".')
+  .describe('Absolute path to the VSCode workspace folder.')
 
 /**
  * Helper object for creating tool input schemas that include workspace_path

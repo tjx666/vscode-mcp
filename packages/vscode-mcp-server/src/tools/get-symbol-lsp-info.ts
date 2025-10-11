@@ -43,7 +43,7 @@ export function registerGetSymbolLSPInfo(server: McpServer) {
     }
   }, async ({ workspace_path, filePath, symbol, codeSnippet, infoType }) => {
     try {
-      const dispatcher = createDispatcher(workspace_path);
+      const dispatcher = await createDispatcher(workspace_path);
       const result = await dispatcher.dispatch("getSymbolLSPInfo", { filePath, symbol, codeSnippet, infoType });
       
       // Format the comprehensive results

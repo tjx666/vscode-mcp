@@ -33,8 +33,8 @@ export function registerRenameSymbol(server: McpServer) {
       openWorldHint: false
     }
   }, async ({ workspace_path, filePath, symbol, codeSnippet, newName }) => {
-    const dispatcher = createDispatcher(workspace_path);
-    
+    const dispatcher = await createDispatcher(workspace_path);
+
     try {
       const result = await dispatcher.dispatch("renameSymbol", { filePath, symbol, codeSnippet, newName });
       
