@@ -144,7 +144,7 @@ export const getDiagnostics = async (
             logger.info(`File ${path.basename(uri.fsPath)}: after filtering - ${filteredDiagnostics.length} diagnostics (sources: ${filteredDiagnostics.map(d => d.source || 'unknown').join(', ') || 'none'})`);
             
             return {
-                uri: uri.toString(),
+                uri: uri.fsPath,
                 diagnostics: filteredDiagnostics.map(diag => ({
                     range: {
                         start: { line: diag.range.start.line, character: diag.range.start.character },

@@ -20,7 +20,12 @@ Ideal quality-check tool for AI coding agents, much faster than 'tsc --noEmit' a
 
 **Return Format:**
 Structured diagnostic results with severity levels, positions, and detailed error messages.
-Severity levels: 0=ERROR, 1=WARNING, 2=INFO, 3=HINT (matches VSCode DiagnosticSeverity enum)`;
+Severity levels: 0=ERROR, 1=WARNING, 2=INFO, 3=HINT (matches VSCode DiagnosticSeverity enum)
+
+**Note:**
+  - In most cases, leave filePaths parameter empty to auto-detect git modified files. Modifying one file often causes diagnostics in other related files.
+
+`;
 
 export function registerGetDiagnostics(server: McpServer) {
   server.registerTool(VscodeMcpToolName.GET_DIAGNOSTICS, {
