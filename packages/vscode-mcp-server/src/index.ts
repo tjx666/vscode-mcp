@@ -12,6 +12,49 @@ const PACKAGE_VERSION = packageJson.version;
 
 
 /**
+ * Parse enabled tools from CLI arguments or environment variables
+ */
+function parseEnabledTools(args: string[]): string[] {
+  const enabledTools = new Set<string>();
+
+  // Check environment variable first
+  const envEnabled = process.env.VSCODE_MCP_ENABLED_TOOLS;
+  if (envEnabled) {
+    envEnabled.split(',').forEach(tool => {
+      const trimmed = tool.trim();
+      if (trimmed) enabledTools.add(trimmed);
+    });
+  }
+
+  // Check CLI arguments (overrides environment variable)
+  const enableToolsIndex = args.indexOf('--enable-tools');
+  if (enableToolsIndex !== -1 && enableToolsIndex + 1 < args.length) {
+    const toolsArg = args[enableToolsIndex + 1];
+    toolsArg.split(',').forEach(tool => {
+      const trimmed = tool.trim();
+      if (trimmed) enabledTools.add(trimmed);
+    });
+  }
+
+  // If no enabled tools specified, return empty array (all tools enabled by default)
+  if (enabledTools.size === 0) {
+    return [];
+  }
+
+  const availableTools = getAllToolNames();
+
+  // Validate tool names
+  const invalidTools = [...enabledTools].filter(tool => !availableTools.includes(tool));
+  if (invalidTools.length > 0) {
+    console.error(`Warning: Invalid tool names will be ignored: ${invalidTools.join(', ')}`);
+    console.error(`Available tools: ${availableTools.join(', ')}`);
+  }
+
+  // Return only valid tools
+  return [...enabledTools].filter(tool => availableTools.includes(tool));
+}
+
+/**
  * Parse disabled tools from CLI arguments or environment variables
  */
 function parseDisabledTools(args: string[]): string[] {
@@ -52,15 +95,16 @@ function parseDisabledTools(args: string[]): string[] {
 /**
  * Handle command line arguments
  */
-function handleCliArgs(): { shouldExit: boolean; disabledTools: string[] } {
+function handleCliArgs(): { shouldExit: boolean; enabledTools: string[]; disabledTools: string[] } {
   const args = process.argv.slice(2);
   const argSet = new Set(args);
 
+  const enabledTools = parseEnabledTools(args);
   const disabledTools = parseDisabledTools(args);
-  
+
   if (argSet.has("--version") || argSet.has("-v")) {
     console.log(`${PACKAGE_NAME} v${PACKAGE_VERSION}`);
-    return { shouldExit: true, disabledTools: [] };
+    return { shouldExit: true, enabledTools: [], disabledTools: [] };
   }
 
   if (argSet.has("--help") || argSet.has("-h")) {
@@ -75,7 +119,8 @@ Usage:
 Options:
   -v, --version        Show version information
   -h, --help           Show this help message
-  --disable-tools      Comma-separated list of tools to disable
+  --enable-tools       Comma-separated list of tools to enable (if specified, only these tools will be available)
+  --disable-tools      Comma-separated list of tools to disable (applied after --enable-tools)
 
 Description:
   This server communicates with VSCode extensions through Unix Domain Sockets
@@ -91,19 +136,23 @@ Examples:
   # Start the server (for MCP client usage)
   ${PACKAGE_NAME}
 
+  # Enable only specific tools
+  ${PACKAGE_NAME} --enable-tools get_diagnostics,get_symbol_lsp_info
+
   # Disable specific tools
   ${PACKAGE_NAME} --disable-tools execute_command,list_workspaces
 
-  # Using environment variable
+  # Using environment variables
+  VSCODE_MCP_ENABLED_TOOLS="get_diagnostics,get_symbol_lsp_info" ${PACKAGE_NAME}
   VSCODE_MCP_DISABLED_TOOLS="execute_command,list_workspaces" ${PACKAGE_NAME}
 
   # Show version
   ${PACKAGE_NAME} --version
 `);
-    return { shouldExit: true, disabledTools: [] };
+    return { shouldExit: true, enabledTools: [], disabledTools: [] };
   }
 
-  return { shouldExit: false, disabledTools };
+  return { shouldExit: false, enabledTools, disabledTools };
 }
 
 /**
@@ -111,18 +160,21 @@ Examples:
  */
 async function main(): Promise<void> {
   // Handle CLI arguments first
-  const { shouldExit, disabledTools } = handleCliArgs();
+  const { shouldExit, enabledTools, disabledTools } = handleCliArgs();
   if (shouldExit) {
     return;
   }
 
-  // Log disabled tools if any
+  // Log enabled/disabled tools if any
+  if (enabledTools.length > 0) {
+    console.error(`Enabled tools: ${enabledTools.join(', ')}`);
+  }
   if (disabledTools.length > 0) {
     console.error(`Disabled tools: ${disabledTools.join(', ')}`);
   }
 
   // Create the server using the new architecture
-  const server = createVSCodeMCPServer(PACKAGE_NAME, PACKAGE_VERSION, disabledTools);
+  const server = createVSCodeMCPServer(PACKAGE_NAME, PACKAGE_VERSION, enabledTools, disabledTools);
 
   // Start the server
   const transport = new StdioServerTransport();

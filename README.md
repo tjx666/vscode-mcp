@@ -143,6 +143,20 @@ Add the following configuration to your `~/.gemini/settings.json`:
 }
 ```
 
+## Tool Filtering
+
+You can control which tools are available using command-line arguments or environment variables:
+
+**Command-line arguments:**
+
+- `--enable-tools` - Comma-separated list of tools to enable (whitelist mode). If specified, only these tools will be available.
+- `--disable-tools` - Comma-separated list of tools to disable (blacklist mode). Applied after `--enable-tools`.
+
+**Environment variables:**
+
+- `VSCODE_MCP_ENABLED_TOOLS` - Same as `--enable-tools`
+- `VSCODE_MCP_DISABLED_TOOLS` - Same as `--disable-tools`
+
 ## Architecture
 
 Once installed and configured, VSCode MCP works seamlessly with MCP-compatible clients:

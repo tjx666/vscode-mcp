@@ -32,6 +32,7 @@ const TOOL_REGISTRY: Record<string, ToolRegistrationFunction> = {
 export function createVSCodeMCPServer(
   name: string,
   version: string,
+  enabledTools: string[] = [],
   disabledTools: string[] = []
 ): McpServer {
   const server = new McpServer({
@@ -39,13 +40,20 @@ export function createVSCodeMCPServer(
     version
   });
 
+  const enabledSet = new Set(enabledTools);
   const disabledSet = new Set(disabledTools);
   const registeredTools: string[] = [];
   const skippedTools: string[] = [];
 
   // Register tools conditionally
   for (const [toolName, registerFunction] of Object.entries(TOOL_REGISTRY)) {
-    if (disabledSet.has(toolName)) {
+    // If enabledTools is specified, only register those tools
+    // Then exclude disabledTools
+    const shouldRegister =
+      (enabledTools.length === 0 || enabledSet.has(toolName)) &&
+      !disabledSet.has(toolName);
+
+    if (!shouldRegister) {
       skippedTools.push(toolName);
     } else {
       if (toolName === VscodeMcpToolName.HEALTH_CHECK) {
