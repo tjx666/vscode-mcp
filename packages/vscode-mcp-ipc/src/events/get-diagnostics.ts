@@ -29,7 +29,7 @@ const FileDiagnosticSchema = z.object({
  * Get diagnostics input schema
  */
 export const GetDiagnosticsInputSchema = z.object({
-  filePaths: z.array(FilePathSchema).describe('Array of file paths to get diagnostics for. If empty array is provided, will get diagnostics for all git modified files (staged and unstaged) in the workspace.'),
+  __NOT_RECOMMEND__filePaths: z.array(FilePathSchema).describe('Array of file paths to get diagnostics for. If empty array is provided, will get diagnostics for all git modified files (staged and unstaged) in the workspace.'),
   sources: z.array(z.string()).optional().default([]).describe('Array of diagnostic sources to include (e.g., "eslint", "ts", "typescript"). If empty array provided, includes all sources.'),
   severities: z.array(z.enum(['error', 'warning', 'info', 'hint'])).optional().default(['error', 'warning', 'info', 'hint']).describe('Array of severity levels to include. Supported values: "error", "warning", "info", "hint".'),
 }).strict();
