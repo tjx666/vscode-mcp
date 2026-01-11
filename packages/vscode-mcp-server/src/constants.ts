@@ -6,6 +6,7 @@
  */
 export enum VscodeMcpToolName {
   EXECUTE_COMMAND = 'execute_command',
+  GET_COMMANDS = 'get_commands',
   GET_DIAGNOSTICS = 'get_diagnostics',
   GET_REFERENCES = 'get_references',
   GET_SYMBOL_LSP_INFO = 'get_symbol_lsp_info',
