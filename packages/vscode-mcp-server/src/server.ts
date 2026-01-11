@@ -4,6 +4,7 @@ import { VscodeMcpToolName } from "./constants.js";
 import {
   registerExecuteCommand,
   registerGetCommands,
+  registerGetCompletions,
   registerGetDiagnostics,
   registerGetReferences,
   registerGetSymbolLSPInfo,
@@ -19,6 +20,7 @@ type ToolRegistrationFunction = (server: McpServer, ...args: any[]) => void;
 const TOOL_REGISTRY: Record<string, ToolRegistrationFunction> = {
   [VscodeMcpToolName.HEALTH_CHECK]: (server: McpServer, version: string) => registerHealthCheck(server, version),
   [VscodeMcpToolName.GET_COMMANDS]: registerGetCommands,
+  [VscodeMcpToolName.GET_COMPLETIONS]: registerGetCompletions,
   [VscodeMcpToolName.GET_DIAGNOSTICS]: registerGetDiagnostics,
   [VscodeMcpToolName.GET_SYMBOL_LSP_INFO]: registerGetSymbolLSPInfo,
   [VscodeMcpToolName.GET_REFERENCES]: registerGetReferences,

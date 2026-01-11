@@ -1,6 +1,7 @@
 // Export service functions
 export { executeCommand } from './execute-command';
 export { getCommands } from './get-commands';
+export { getCompletions } from './get-completions';
 export { getDiagnostics } from './get-diagnostics';
 export { getReferences } from './get-references';
 export { getSymbolLSPInfo } from './get-symbol-lsp-info';

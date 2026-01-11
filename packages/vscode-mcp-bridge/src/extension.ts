@@ -3,6 +3,8 @@ import {
     ExecuteCommandOutputSchema,
     GetCommandsInputSchema,
     GetCommandsOutputSchema,
+    GetCompletionsInputSchema,
+    GetCompletionsOutputSchema,
     GetDiagnosticsInputSchema,
     GetDiagnosticsOutputSchema,
     GetReferencesInputSchema,
@@ -28,6 +30,7 @@ import { logger } from './logger';
 import {
     executeCommand,
     getCommands,
+    getCompletions,
     getCurrentWorkspacePath,
     getDiagnostics,
     getReferences,
@@ -117,6 +120,12 @@ export async function activate(context: vscode.ExtensionContext) {
             handler: getCommands,
             payloadSchema: GetCommandsInputSchema,
             resultSchema: GetCommandsOutputSchema
+        });
+
+        socketServer.register('getCompletions', {
+            handler: getCompletions,
+            payloadSchema: GetCompletionsInputSchema,
+            resultSchema: GetCompletionsOutputSchema
         });
 
         // Start socket server
