@@ -70,12 +70,22 @@ export const GetSymbolLSPInfoInputSchema = SymbolLocatorSchema.extend({
 /**
  * Get symbol LSP info output schema
  */
+/**
+ * Symbol occurrence schema for disambiguation when multiple matches are found
+ */
+const SymbolOccurrenceSchema = z.object({
+  line: z.number().describe('0-indexed line number'),
+  character: z.number().describe('0-indexed character offset'),
+  lineContent: z.string().describe('Full text content of the line containing the match'),
+}).strict();
+
 export const GetSymbolLSPInfoOutputSchema = z.object({
   hover: z.array(HoverSchema).optional().describe('Hover information for the symbol'),
   signature_help: SignatureHelpSchema.nullable().optional().describe('Function signature help information'),
   type_definition: z.array(LocationSchema).optional().describe('Symbol type definition locations'),
   definition: z.array(LocationSchema).optional().describe('Symbol definition locations'),
   implementation: z.array(LocationSchema).optional().describe('Symbol implementation locations'),
+  multipleOccurrences: z.array(SymbolOccurrenceSchema).optional().describe('When multiple matches are found, lists all occurrences with context for disambiguation. Use codeSnippet parameter to select the correct one.'),
 }).strict();
 
 /**
