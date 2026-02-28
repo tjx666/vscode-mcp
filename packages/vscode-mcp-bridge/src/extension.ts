@@ -14,6 +14,8 @@ import {
     OpenFilesOutputSchema,
     RenameSymbolInputSchema,
     RenameSymbolOutputSchema,
+    SearchWorkspaceSymbolsInputSchema,
+    SearchWorkspaceSymbolsOutputSchema,
 } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
@@ -33,6 +35,7 @@ getCurrentWorkspacePath,
     listWorkspaces,
     openFiles,
     renameSymbol,
+    searchWorkspaceSymbols,
 } from './services';
 import { SocketServer } from './socket-server';
 
@@ -108,6 +111,12 @@ export async function activate(context: vscode.ExtensionContext) {
         socketServer.register('listWorkspaces', {
             handler: listWorkspaces,
             resultSchema: ListWorkspacesOutputSchema
+        });
+
+        socketServer.register('searchWorkspaceSymbols', {
+            handler: searchWorkspaceSymbols,
+            payloadSchema: SearchWorkspaceSymbolsInputSchema,
+            resultSchema: SearchWorkspaceSymbolsOutputSchema
         });
         
         // Start socket server

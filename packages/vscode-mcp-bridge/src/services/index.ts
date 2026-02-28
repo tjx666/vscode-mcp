@@ -7,6 +7,7 @@ export { health } from './health';
 export { listWorkspaces } from './list-workspaces';
 export { openFiles } from './open-files';
 export { renameSymbol } from './rename-symbol';
+export { searchWorkspaceSymbols } from './workspace-symbol';
 
 // Export utilities
 export { getCurrentWorkspacePath } from '../utils/workspace.js'; 

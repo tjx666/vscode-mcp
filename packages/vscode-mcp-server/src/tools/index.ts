@@ -16,3 +16,4 @@ export { registerHealthCheck } from "./health-check.js";
 export { registerListWorkspaces } from "./list-workspaces.js";
 export { registerOpenFiles } from "./open-files.js";
 export { registerRenameSymbol } from "./rename-symbol.js";
+export { registerSearchWorkspaceSymbols } from "./search-workspace-symbols.js";
