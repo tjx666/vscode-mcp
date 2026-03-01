@@ -5,6 +5,7 @@ import type { BaseRequest, BaseResponse, EventName } from '@vscode-mcp/vscode-mc
 import { getSocketPath } from '@vscode-mcp/vscode-mcp-ipc';
 import { z } from 'zod';
 
+import type { DynamicToolDefinition } from './extension-api';
 import { logger } from './logger';
 
 type ServiceFunction = (
@@ -36,6 +37,7 @@ export class SocketServer {
     private server: net.Server | null = null;
     private socketPath: string | null = null;
     private services: Map<string, ServiceRegistration> = new Map();
+    private dynamicTools: Map<string, DynamicToolDefinition> = new Map();
 
     constructor(workspacePath: string) {
         this.socketPath = getSocketPath(workspacePath);
@@ -53,6 +55,20 @@ export class SocketServer {
         logger.info(`Registered service: ${method}`);
     }
 
+    registerDynamicTool(tool: DynamicToolDefinition): void {
+        this.dynamicTools.set(tool.name, tool);
+        logger.info(`Registered dynamic tool: ${tool.name}`);
+    }
+
+    unregisterDynamicTool(name: string): void {
+        this.dynamicTools.delete(name);
+        logger.info(`Unregistered dynamic tool: ${name}`);
+    }
+
+    getDynamicTools(): Map<string, DynamicToolDefinition> {
+        return this.dynamicTools;
+    }
+
     /**
      * Handle incoming request and route to appropriate service
      */
@@ -60,7 +76,7 @@ export class SocketServer {
         const { id, method, params } = request;
         
         logger.info(`Processing request: ${method}`);
-        
+
         // Look up service registration
         const registration = this.services.get(method);
         if (!registration) {

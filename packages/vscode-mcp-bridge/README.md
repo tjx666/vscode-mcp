@@ -24,6 +24,35 @@ use shortcut `alt+cmd+o` to send all opened files path to active terminal.
 
 Utility command that pauses execution for a specified duration (in seconds). Designed for use in VSCode shortcuts.json `runCommands` sequences to add delays between multiple commands.
 
+## Extension API
+
+Other VSCode extensions can register custom tools that become accessible via the MCP server. Acquire the API through the standard VSCode extension API:
+
+```typescript
+const ext = vscode.extensions.getExtension<VscodeMcpBridgeAPI>('yutengjing.vscode-mcp-bridge');
+const api = await ext?.activate();
+
+api?.registerTool({
+    name: 'my_tool',
+    description: 'Description of what the tool does',
+    inputSchema: {
+        type: 'object',
+        properties: {
+            param: { type: 'string', description: 'A parameter' },
+        },
+        required: ['param'],
+    },
+    handler: async (input) => {
+        return { result: `processed: ${input.param}` };
+    },
+});
+
+// Unregister when no longer needed
+api?.unregisterTool('my_tool');
+```
+
+Registered tools are exposed via the `list_extension_tools` and `call_extension_tool` MCP tools.
+
 ## My extensions
 
 - [Open in External App](https://github.com/tjx666/open-in-external-app)

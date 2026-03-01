@@ -1,5 +1,6 @@
 // Import all event modules
 import type { ExecuteCommandPayload, ExecuteCommandResult } from './execute-command.js';
+import type { CallExtensionToolPayload, CallExtensionToolResult, ListExtensionToolsPayload, ListExtensionToolsResult } from './extension-tool.js';
 import type { GetDiagnosticsPayload, GetDiagnosticsResult } from './get-diagnostics.js';
 import type { GetReferencesPayload, GetReferencesResult } from './get-references.js';
 import type { GetSymbolLSPInfoPayload, GetSymbolLSPInfoResult } from './get-symbol-lsp-info.js';
@@ -11,6 +12,7 @@ import type { RenameSymbolPayload, RenameSymbolResult } from './rename-symbol.js
 // Re-export all event types and schemas
 export * from '../common.js';
 export * from './execute-command.js';
+export * from './extension-tool.js';
 export * from './get-diagnostics.js';
 export * from './get-references.js';
 export * from './get-symbol-lsp-info.js';
@@ -96,6 +98,18 @@ export interface EventMap {
     params: ListWorkspacesPayload;
     result: ListWorkspacesResult;
   };
+
+  /** List tools registered by other extensions */
+  listExtensionTools: {
+    params: ListExtensionToolsPayload;
+    result: ListExtensionToolsResult;
+  };
+
+  /** Call a tool registered by another extension */
+  callExtensionTool: {
+    params: CallExtensionToolPayload;
+    result: CallExtensionToolResult;
+  };
 }
 
 /**
@@ -111,4 +125,4 @@ export type EventParams<T extends EventName> = EventMap[T]['params'];
 /**
  * Event result type
  */
-export type EventResult<T extends EventName> = EventMap[T]['result']; 
+export type EventResult<T extends EventName> = EventMap[T]['result'];

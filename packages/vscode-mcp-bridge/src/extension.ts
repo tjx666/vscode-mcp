@@ -1,4 +1,6 @@
 import {
+    CallExtensionToolInputSchema,
+    CallExtensionToolOutputSchema,
     ExecuteCommandInputSchema,
     ExecuteCommandOutputSchema,
     GetDiagnosticsInputSchema,
@@ -9,6 +11,8 @@ import {
     GetSymbolLSPInfoOutputSchema,
     HealthCheckInputSchema,
     HealthCheckOutputSchema,
+    ListExtensionToolsInputSchema,
+    ListExtensionToolsOutputSchema,
     ListWorkspacesOutputSchema,
     OpenFilesInputSchema,
     OpenFilesOutputSchema,
@@ -17,15 +21,18 @@ import {
 } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
-import type {CopyCurrentSelectionReferenceOptions} from './commands/copy-current-selection-reference';
+import type { CopyCurrentSelectionReferenceOptions } from './commands/copy-current-selection-reference';
 import { copyCurrentSelectionReferenceCommand } from './commands/copy-current-selection-reference';
-import type {CopyOpenedFilesPathOptions} from './commands/copy-opened-files-path';
-import { copyOpenedFilesPathCommand  } from './commands/copy-opened-files-path';
+import type { CopyOpenedFilesPathOptions } from './commands/copy-opened-files-path';
+import { copyOpenedFilesPathCommand } from './commands/copy-opened-files-path';
 import { sleepCommand } from './commands/sleep';
+import type { VscodeMcpBridgeAPI } from './extension-api';
 import { logger } from './logger';
 import {
+    createCallExtensionTool,
+    createListExtensionTools,
     executeCommand,
-getCurrentWorkspacePath,
+    getCurrentWorkspacePath,
     getDiagnostics,
     getReferences,
     getSymbolLSPInfo,
@@ -40,82 +47,94 @@ import { SocketServer } from './socket-server';
 let socketServer: SocketServer | null = null;
 
 /**
- * Extension activation
+ * Extension activation — returns the public API for other extensions to consume.
  */
-export async function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext): Promise<VscodeMcpBridgeAPI | undefined> {
     logger.info('VSCode MCP Bridge extension is being activated');
-    
+
     // Get current workspace path
     const workspacePath = getCurrentWorkspacePath();
     if (!workspacePath) {
         logger.info('No workspace folder found, extension will not start socket server');
-        return;
+        return undefined;
     }
-    
+
     logger.info(`Current workspace: ${workspacePath}`);
-    
+
     try {
         // Create socket server
         socketServer = new SocketServer(workspacePath);
-    
+
         socketServer.register('health', {
             handler: health,
             payloadSchema: HealthCheckInputSchema,
             resultSchema: HealthCheckOutputSchema
         });
-        
-        
+
+
         socketServer.register('getDiagnostics', {
             handler: getDiagnostics,
             payloadSchema: GetDiagnosticsInputSchema,
             resultSchema: GetDiagnosticsOutputSchema
         });
-        
+
         socketServer.register('getSymbolLSPInfo', {
             handler: getSymbolLSPInfo,
             payloadSchema: GetSymbolLSPInfoInputSchema,
             resultSchema: GetSymbolLSPInfoOutputSchema
         });
-        
-        
+
+
         socketServer.register('getReferences', {
             handler: getReferences,
             payloadSchema: GetReferencesInputSchema,
             resultSchema: GetReferencesOutputSchema
         });
-        
+
         socketServer.register('executeCommand', {
             handler: executeCommand,
             payloadSchema: ExecuteCommandInputSchema,
             resultSchema: ExecuteCommandOutputSchema
         });
-        
-        
+
+
         socketServer.register('openFiles', {
             handler: openFiles,
             payloadSchema: OpenFilesInputSchema,
             resultSchema: OpenFilesOutputSchema
         });
-        
-        
-        
+
+
+
         socketServer.register('renameSymbol', {
             handler: renameSymbol,
             payloadSchema: RenameSymbolInputSchema,
             resultSchema: RenameSymbolOutputSchema
         });
-        
+
         socketServer.register('listWorkspaces', {
             handler: listWorkspaces,
             resultSchema: ListWorkspacesOutputSchema
         });
-        
+
+        const dynamicTools = socketServer.getDynamicTools();
+        socketServer.register('listExtensionTools', {
+            handler: createListExtensionTools(dynamicTools),
+            payloadSchema: ListExtensionToolsInputSchema,
+            resultSchema: ListExtensionToolsOutputSchema,
+        });
+        socketServer.register('callExtensionTool', {
+            handler: createCallExtensionTool(dynamicTools),
+            payloadSchema: CallExtensionToolInputSchema,
+            resultSchema: CallExtensionToolOutputSchema,
+        });
+
         // Start socket server
         await socketServer.start();
-        
+
         logger.info(`Socket server started successfully at: ${socketServer.getSocketPath()}`);
         logger.info(`Registered ${socketServer.getServicesCount()} services`);
-        
+
         // Register VSCode commands
         const sleepCommandDisposable = vscode.commands.registerCommand('vscode-mcp-bridge.sleep', async (duration: number) => {
             await sleepCommand(duration);
@@ -141,10 +160,17 @@ export async function activate(context: vscode.ExtensionContext) {
                 }
             }
         });
-        
+
+        const api: VscodeMcpBridgeAPI = {
+            registerTool: (tool) => socketServer!.registerDynamicTool(tool),
+            unregisterTool: (name) => socketServer!.unregisterDynamicTool(name),
+        };
+
+        return api;
     } catch (error) {
         logger.error(`Failed to start socket server: ${error}`);
         vscode.window.showErrorMessage(`VSCode MCP Bridge: Failed to start socket server - ${error}`);
+        return undefined;
     }
 }
 
@@ -153,11 +179,11 @@ export async function activate(context: vscode.ExtensionContext) {
  */
 export function deactivate() {
     logger.info('VSCode MCP Bridge extension is being deactivated');
-    
+
     if (socketServer) {
         socketServer.cleanup();
         socketServer = null;
     }
 
     logger.dispose();
-} 
+}

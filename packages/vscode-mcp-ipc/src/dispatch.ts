@@ -111,9 +111,13 @@ export class EventDispatcher {
   private requestTimeout: number;
 
   constructor(workspacePath: string, requestTimeout: number = 30000) {
-    this.workspacePath = workspacePath;
-    this.socketPath = getSocketPath(workspacePath);
-    this.legacySocketPath = getLegacySocketPath(workspacePath);
+    // Normalize path to handle double slashes (e.g., //home/... -> /home/...)
+    const normalizedPath = process.platform !== 'win32'
+      ? workspacePath.replace(/^\/+/, '/')
+      : workspacePath;
+    this.workspacePath = normalizedPath;
+    this.socketPath = getSocketPath(normalizedPath);
+    this.legacySocketPath = getLegacySocketPath(normalizedPath);
     this.requestTimeout = requestTimeout;
   }
 

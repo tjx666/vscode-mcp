@@ -93,18 +93,36 @@ function parseDisabledTools(args: string[]): string[] {
 }
 
 /**
+ * Parse workspace path from CLI arguments or environment variables
+ */
+function parseWorkspacePath(args: string[]): string | undefined {
+  const envPath = process.env.VSCODE_MCP_WORKSPACE_PATH;
+  if (envPath) {
+    return envPath;
+  }
+
+  const idx = args.indexOf('--workspace-path');
+  if (idx !== -1 && idx + 1 < args.length) {
+    return args[idx + 1];
+  }
+
+  return undefined;
+}
+
+/**
  * Handle command line arguments
  */
-function handleCliArgs(): { shouldExit: boolean; enabledTools: string[]; disabledTools: string[] } {
+function handleCliArgs(): { shouldExit: boolean; enabledTools: string[]; disabledTools: string[]; workspacePath: string | undefined } {
   const args = process.argv.slice(2);
   const argSet = new Set(args);
 
   const enabledTools = parseEnabledTools(args);
   const disabledTools = parseDisabledTools(args);
+  const workspacePath = parseWorkspacePath(args);
 
   if (argSet.has("--version") || argSet.has("-v")) {
     console.log(`${PACKAGE_NAME} v${PACKAGE_VERSION}`);
-    return { shouldExit: true, enabledTools: [], disabledTools: [] };
+    return { shouldExit: true, enabledTools: [], disabledTools: [], workspacePath: undefined };
   }
 
   if (argSet.has("--help") || argSet.has("-h")) {
@@ -121,6 +139,7 @@ Options:
   -h, --help           Show this help message
   --enable-tools       Comma-separated list of tools to enable (if specified, only these tools will be available)
   --disable-tools      Comma-separated list of tools to disable (applied after --enable-tools)
+  --workspace-path     Bind to a specific VSCode workspace to expose extension-registered tools
 
 Description:
   This server communicates with VSCode extensions through Unix Domain Sockets
@@ -136,6 +155,9 @@ Examples:
   # Start the server (for MCP client usage)
   ${PACKAGE_NAME}
 
+  # Bind to a workspace to include tools registered by other extensions
+  ${PACKAGE_NAME} --workspace-path /path/to/workspace
+
   # Enable only specific tools
   ${PACKAGE_NAME} --enable-tools get_diagnostics,get_symbol_lsp_info
 
@@ -145,14 +167,15 @@ Examples:
   # Using environment variables
   VSCODE_MCP_ENABLED_TOOLS="get_diagnostics,get_symbol_lsp_info" ${PACKAGE_NAME}
   VSCODE_MCP_DISABLED_TOOLS="execute_command,list_workspaces" ${PACKAGE_NAME}
+  VSCODE_MCP_WORKSPACE_PATH="/path/to/workspace" ${PACKAGE_NAME}
 
   # Show version
   ${PACKAGE_NAME} --version
 `);
-    return { shouldExit: true, enabledTools: [], disabledTools: [] };
+    return { shouldExit: true, enabledTools: [], disabledTools: [], workspacePath: undefined };
   }
 
-  return { shouldExit: false, enabledTools, disabledTools };
+  return { shouldExit: false, enabledTools, disabledTools, workspacePath };
 }
 
 /**
@@ -160,7 +183,7 @@ Examples:
  */
 async function main(): Promise<void> {
   // Handle CLI arguments first
-  const { shouldExit, enabledTools, disabledTools } = handleCliArgs();
+  const { shouldExit, enabledTools, disabledTools, workspacePath } = handleCliArgs();
   if (shouldExit) {
     return;
   }
@@ -174,7 +197,7 @@ async function main(): Promise<void> {
   }
 
   // Create the server using the new architecture
-  const server = createVSCodeMCPServer(PACKAGE_NAME, PACKAGE_VERSION, enabledTools, disabledTools);
+  const server = createVSCodeMCPServer(PACKAGE_NAME, PACKAGE_VERSION, enabledTools, disabledTools, workspacePath);
 
   // Start the server
   const transport = new StdioServerTransport();
@@ -197,4 +220,4 @@ process.on('SIGTERM', async () => {
 main().catch((error) => {
   console.error("Fatal error:", error);
   process.exit(1);
-}); 
+});

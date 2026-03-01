@@ -11,6 +11,7 @@ import {
   registerOpenFiles,
   registerRenameSymbol,
 } from "./tools/index.js";
+import { startExtensionToolsSync } from "./utils/extension-tools-sync.js";
 
 // Tool registration mapping
 type ToolRegistrationFunction = (server: McpServer, ...args: any[]) => void;
@@ -33,7 +34,8 @@ export function createVSCodeMCPServer(
   name: string,
   version: string,
   enabledTools: string[] = [],
-  disabledTools: string[] = []
+  disabledTools: string[] = [],
+  workspacePath?: string,
 ): McpServer {
   const server = new McpServer({
     name,
@@ -71,5 +73,13 @@ export function createVSCodeMCPServer(
     console.error(`⏭️  Skipped tools: ${skippedTools.join(', ')}`);
   }
 
+  // When a workspace is bound, start background sync for extension-registered tools.
+  if (workspacePath) {
+    startExtensionToolsSync(server, workspacePath);
+  } else {
+    console.error(`ℹ️  No --workspace-path provided. Extension-registered tools will not be available.\n`
+    + `   To enable them: vscode-mcp-server --workspace-path /path/to/workspace\n`);
+  }
+
   return server;
-} 
+}

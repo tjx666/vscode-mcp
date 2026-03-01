@@ -1,5 +1,6 @@
 // Export service functions
 export { executeCommand } from './execute-command';
+export { createCallExtensionTool, createListExtensionTools } from './extension-tools';
 export { getDiagnostics } from './get-diagnostics';
 export { getReferences } from './get-references';
 export { getSymbolLSPInfo } from './get-symbol-lsp-info';
