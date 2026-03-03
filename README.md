@@ -12,6 +12,8 @@
   <a href="#design-motivation">Design Motivation</a> •
   <a href="#available-tools">Available Tools</a> •
   <a href="#installation">Installation</a> •
+  <a href="#tool-filtering">Tool Filtering</a> •
+  <a href="#extension-api">Extension API</a> •
   <a href="#architecture">Architecture</a> •
   <a href="#license">License</a>
 </p>
@@ -114,7 +116,7 @@ Go to `Cursor Settings` -> `Tools & Integrations` -> `New MCP Server`. Name to y
   "mcpServers": {
     "vscode-mcp": {
       "command": "npx",
-      "args": ["@vscode-mcp/vscode-mcp-server@latest"]
+      "args": ["@vscode-mcp/vscode-mcp-server@latest --workspace-path", "${workspaceFolder}"]
     }
   }
 }
@@ -156,6 +158,81 @@ You can control which tools are available using command-line arguments or enviro
 
 - `VSCODE_MCP_ENABLED_TOOLS` - Same as `--enable-tools`
 - `VSCODE_MCP_DISABLED_TOOLS` - Same as `--disable-tools`
+
+## Extension API
+
+VSCode MCP Bridge provides a public API that other VSCode extensions can use to register their own tools into the MCP server. This makes it easy to expose any VSCode extension capability to MCP clients like Cursor.
+
+### How It Works
+
+When the MCP server starts with `--workspace-path`, it connects to that workspace's extension and discovers all dynamically registered tools. These tools then appear alongside the built-in tools in `tools/list`, so MCP clients can call them directly.
+
+```
+Other Extension → registerTool() → vscode-mcp-bridge → MCP Server → MCP Client
+```
+
+### Registering a Tool from Another Extension
+
+In your extension's `activate()` function, get the VSCode MCP Bridge API and register your tools:
+
+```typescript
+import type { VscodeMcpBridgeAPI } from 'vscode-mcp-bridge';
+
+export async function activate(context: vscode.ExtensionContext) {
+  const bridgeExt = vscode.extensions.getExtension('YuTengjing.vscode-mcp-bridge');
+  const api: VscodeMcpBridgeAPI | undefined = await bridgeExt?.activate();
+
+  api?.registerTool({
+    name: 'docker_list_containers',
+    description: 'List all Docker containers in the current workspace',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        all: { type: 'boolean', description: 'Include stopped containers' },
+      },
+    },
+    handler: async (input) => {
+      const all = input['all'] as boolean | undefined;
+      // ... your implementation
+      return { containers: [] };
+    },
+  });
+
+  // Unregister when the extension is deactivated
+  context.subscriptions.push({
+    dispose: () => api?.unregisterTool('docker_list_containers'),
+  });
+}
+```
+
+The `inputSchema` field is a standard [JSON Schema](https://json-schema.org/) object — no dependency on Zod is required.
+
+### Starting the MCP Server with a Bound Workspace
+
+To expose extension-registered tools, start the MCP server with `--workspace-path`:
+
+```json
+{
+  "mcpServers": {
+    "vscode-mcp": {
+      "command": "npx",
+      "args": [
+        "@vscode-mcp/vscode-mcp-server@latest",
+        "--workspace-path",
+        "${workspaceFolder}"
+      ]
+    }
+  }
+}
+```
+
+Or use the environment variable:
+
+```bash
+VSCODE_MCP_WORKSPACE_PATH=/path/to/workspace npx @vscode-mcp/vscode-mcp-server@latest
+```
+
+When the server starts, it queries the extension for all registered tools and makes them available to MCP clients. Tools registered by other extensions will appear naturally in `tools/list` alongside the built-in tools.
 
 ## Architecture
 
