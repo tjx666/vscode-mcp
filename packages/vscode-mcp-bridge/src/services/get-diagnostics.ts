@@ -11,7 +11,81 @@ import { ensureFileIsOpen, resolveFilePaths } from '../utils/workspace.js';
 const execAsync = promisify(exec);
 
 /**
+ * Get all git submodule paths in the workspace
+ * Returns relative paths to submodules
+ */
+async function getSubmodulePaths(workspaceRoot: string): Promise<string[]> {
+    try {
+        const { stdout } = await execAsync("git submodule --quiet foreach 'echo $sm_path'", {
+            cwd: workspaceRoot,
+        });
+        if (!stdout.trim()) {
+            return [];
+        }
+        const paths = stdout
+            .trim()
+            .split('\n')
+            .filter((p) => p.trim());
+        logger.info(`Found ${paths.length} submodules: ${paths.join(', ')}`);
+        return paths;
+    } catch {
+        // No submodules or git command failed
+        return [];
+    }
+}
+
+/**
+ * Get git modified files in a specific directory
+ * Returns absolute file paths
+ */
+async function getGitModifiedFilesInDir(dir: string): Promise<string[]> {
+    const modifiedFiles: string[] = [];
+
+    try {
+        // Get unstaged changes
+        const { stdout: unstagedFiles } = await execAsync('git diff --name-only', {
+            cwd: dir,
+        });
+
+        // Get staged changes
+        const { stdout: stagedFiles } = await execAsync('git diff --cached --name-only', {
+            cwd: dir,
+        });
+
+        // Get untracked files (new files not yet added to git)
+        const { stdout: untrackedFiles } = await execAsync(
+            'git ls-files --others --exclude-standard',
+            { cwd: dir },
+        );
+
+        // Combine and process file paths
+        const allFiles = new Set<string>();
+
+        for (const output of [unstagedFiles, stagedFiles, untrackedFiles]) {
+            if (output.trim()) {
+                for (const filePath of output.trim().split('\n')) {
+                    if (filePath.trim()) {
+                        allFiles.add(filePath.trim());
+                    }
+                }
+            }
+        }
+
+        // Convert relative paths to absolute paths (relative to workspaceRoot)
+        for (const relativePath of allFiles) {
+            const absolutePath = path.resolve(dir, relativePath);
+            modifiedFiles.push(absolutePath);
+        }
+    } catch (error) {
+        logger.error(`Error getting git modified files in ${dir}: ${error}`);
+    }
+
+    return modifiedFiles;
+}
+
+/**
  * Get all git modified files in the workspace (staged, unstaged, and untracked)
+ * Including files in submodules
  * Returns absolute file paths
  */
 async function getModifiedFiles(): Promise<string[]> {
@@ -23,67 +97,25 @@ async function getModifiedFiles(): Promise<string[]> {
 
     const workspaceRoot = workspaceFolder.uri.fsPath;
     logger.info(`Getting git modified files from workspace: ${workspaceRoot}`);
-    const modifiedFiles: string[] = [];
 
-    try {
-        // Get unstaged changes
-        const { stdout: unstagedFiles } = await execAsync('git diff --name-only', {
-            cwd: workspaceRoot
-        });
+    // Get modified files from main repo
+    const mainRepoFiles = await getGitModifiedFilesInDir(workspaceRoot);
 
-        // Get staged changes
-        const { stdout: stagedFiles } = await execAsync('git diff --cached --name-only', {
-            cwd: workspaceRoot
-        });
+    // Get submodule paths and their modified files
+    const submodulePaths = await getSubmodulePaths(workspaceRoot);
+    const submoduleFilePromises = submodulePaths.map((submodulePath) => {
+        const absoluteSubmodulePath = path.resolve(workspaceRoot, submodulePath);
+        return getGitModifiedFilesInDir(absoluteSubmodulePath);
+    });
+    const submoduleFilesArrays = await Promise.all(submoduleFilePromises);
 
-        // Get untracked files (new files not yet added to git)
-        const { stdout: untrackedFiles } = await execAsync('git ls-files --others --exclude-standard', {
-            cwd: workspaceRoot
-        });
+    // Merge all files and deduplicate
+    const allFiles = new Set<string>([...mainRepoFiles, ...submoduleFilesArrays.flat()]);
+    const modifiedFiles = [...allFiles];
 
-        // Combine and process file paths
-        const allFiles = new Set<string>();
-        
-        // Process unstaged files
-        if (unstagedFiles.trim()) {
-            unstagedFiles.trim().split('\n').forEach(filePath => {
-                if (filePath.trim()) {
-                    allFiles.add(filePath.trim());
-                }
-            });
-        }
-
-        // Process staged files
-        if (stagedFiles.trim()) {
-            stagedFiles.trim().split('\n').forEach(filePath => {
-                if (filePath.trim()) {
-                    allFiles.add(filePath.trim());
-                }
-            });
-        }
-
-        // Process untracked files
-        if (untrackedFiles.trim()) {
-            untrackedFiles.trim().split('\n').forEach(filePath => {
-                if (filePath.trim()) {
-                    allFiles.add(filePath.trim());
-                }
-            });
-        }
-
-        // Convert relative paths to absolute paths
-        for (const relativePath of allFiles) {
-            const absolutePath = path.resolve(workspaceRoot, relativePath);
-            modifiedFiles.push(absolutePath);
-        }
-
-        logger.info(`Found ${modifiedFiles.length} git modified files: ${modifiedFiles.map(f => path.basename(f)).join(', ')}`);
-
-    } catch (error) {
-        logger.error(`Error getting git modified files: ${error}`);
-        // Fallback: return empty array if git commands fail
-        return [];
-    }
+    logger.info(
+        `Found ${modifiedFiles.length} git modified files: ${modifiedFiles.map((f) => path.basename(f)).join(', ')}`,
+    );
 
     return modifiedFiles;
 }
