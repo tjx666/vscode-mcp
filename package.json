@@ -5,6 +5,11 @@
     "main": "index.js",
     "private": true,
     "scripts": {
+        "typecheck": "pnpm -r run typecheck",
+        "lint": "eslint .",
+        "build": "pnpm -r run build",
+        "test": "pnpm -r --if-present run test",
+        "check": "pnpm run typecheck && pnpm run lint && pnpm run build && pnpm run test",
         "release": "bumpp -c \"release: v%s\" -r && pnpm -r publish"
     },
     "keywords": [],

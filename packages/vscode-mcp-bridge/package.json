@@ -94,6 +94,8 @@
         "esbuild:base": "tsx scripts/esbuild.ts",
         "esbuild:watch": "pnpm esbuild:base --sourcemap --watch",
         "esbuild:analyze": "pnpm esbuild:base --minify --metafile --analyze && esbuild-visualizer --metadata ./meta.json --open",
+        "typecheck": "tsc --noEmit -p src/tsconfig.json",
+        "build": "pnpm esbuild:base",
         "compile:test": "pnpm clean && tsc -b ./test/tsconfig.json",
         "lint": "eslint src --ext ts",
         "test": "pnpm compile:test && node ./out/test/runTests.js",
