@@ -34,7 +34,7 @@
     "main": "./out/src/extension.js",
     "icon": "assets/logo.png",
     "engines": {
-        "vscode": "^1.99.1"
+        "vscode": "^1.102.0"
     },
     "badges": [
         {
@@ -104,19 +104,19 @@
     },
     "dependencies": {
         "@vscode-mcp/vscode-mcp-ipc": "workspace:*",
-        "zod": "^3.25.76"
+        "zod": "^4.3.6"
     },
     "devDependencies": {
         "@types/glob": "^9.0.0",
         "@types/mocha": "^10.0.10",
-        "@types/vscode": "1.99.1",
-        "@vscode/test-electron": "^2.4.1",
-        "@vscode/vsce": "^3.6.0",
-        "esbuild": "~0.25.10",
+        "@types/vscode": "1.102.0",
+        "@vscode/test-electron": "^2.5.2",
+        "@vscode/vsce": "^3.7.1",
+        "esbuild": "~0.27.3",
         "esbuild-visualizer": "^0.7.0",
-        "glob": "^11.0.3",
-        "mocha": "^11.7.2",
-        "ovsx": "^0.10.5",
-        "rimraf": "^6.0.1"
+        "glob": "^13.0.6",
+        "mocha": "^11.7.5",
+        "ovsx": "^0.10.9",
+        "rimraf": "^6.1.3"
     }
 }
