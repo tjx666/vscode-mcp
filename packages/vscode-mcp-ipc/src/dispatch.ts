@@ -51,7 +51,7 @@ export function getSocketPath(workspacePath: string): string {
 
   if (process.platform === 'win32') {
     // Windows: Use named pipes
-    return `\\\\.\\pipe\\vscode-mcp-${hash}`;
+    return String.raw`\\.\pipe\vscode-mcp-${hash}`;
   }
 
   // Unix-like systems: Use socket files in app data directory
@@ -90,7 +90,7 @@ function getLegacySocketPath(workspacePath: string): string {
   const hash = createHash('md5').update(workspacePath).digest('hex').slice(0, 8);
 
   return process.platform === 'win32'
-    ? `\\\\.\\pipe\\vscode-mcp-${hash}`
+    ? String.raw`\\.\pipe\vscode-mcp-${hash}`
     : join(tmpdir(), `vscode-mcp-${hash}.sock`);
 }
 
@@ -167,7 +167,8 @@ export class EventDispatcher {
           `Please ensure:\n` +
           `  1. VSCode MCP Bridge extension is installed and activated\n` +
           `  2. A workspace is open in VSCode\n` +
-          `  3. Extension is updated to the latest version`
+          `  3. Extension is updated to the latest version`,
+          { cause: legacyPathError },
         );
       }
     }

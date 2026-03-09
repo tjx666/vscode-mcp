@@ -130,10 +130,7 @@ export async function activate(context: vscode.ExtensionContext) {
         const copyCurrentSelectionReferenceDisposable = vscode.commands.registerCommand('vscode-mcp-bridge.copyCurrentSelectionReference', async (options?: CopyCurrentSelectionReferenceOptions) => {
             await copyCurrentSelectionReferenceCommand(options);
         });
-        context.subscriptions.push(copyCurrentSelectionReferenceDisposable);
-
-        // Register cleanup on extension deactivation
-        context.subscriptions.push({
+        context.subscriptions.push(copyCurrentSelectionReferenceDisposable, {
             dispose: () => {
                 if (socketServer) {
                     socketServer.cleanup();

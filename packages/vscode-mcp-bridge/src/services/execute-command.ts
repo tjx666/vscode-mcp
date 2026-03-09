@@ -86,7 +86,7 @@ export const executeCommand = async (
                     throw new TypeError('Args must be an array');
                 }
             } catch (parseError) {
-                throw new Error(`Invalid JSON in args parameter: ${parseError instanceof Error ? parseError.message : String(parseError)}`);
+                throw new Error(`Invalid JSON in args parameter: ${parseError instanceof Error ? parseError.message : String(parseError)}`, { cause: parseError });
             }
         }
         

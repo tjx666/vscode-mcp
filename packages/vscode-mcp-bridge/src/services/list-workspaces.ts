@@ -114,6 +114,6 @@ export const listWorkspaces = async (
             }
         };
     } catch (error) {
-        throw new Error(`Failed to list workspaces: ${error instanceof Error ? error.message : String(error)}`);
+        throw new Error(`Failed to list workspaces: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
     }
 };

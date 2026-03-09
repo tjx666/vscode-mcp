@@ -46,7 +46,7 @@ export async function copyOpenedFilesPathCommand(options: CopyOpenedFilesPathOpt
         }
     }
     
-    const openedFiles = [...new Set(visibleFiles)].sort(); // Remove duplicates and sort
+    const openedFiles = [...new Set(visibleFiles)].toSorted(); // Remove duplicates and sort
     
     if (openedFiles.length === 0) {
         return;

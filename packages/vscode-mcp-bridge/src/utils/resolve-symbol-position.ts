@@ -68,7 +68,7 @@ function findSymbolInCodeSnippet(text: string, symbol: string, codeSnippet: stri
     const snippetRange = snippetMatches[0];
     const snippetText = text.slice(snippetRange.start, snippetRange.end);
     
-    const symbolRegex = new RegExp(`\\b${escapeRegExp(symbol)}\\b`, 'g');
+    const symbolRegex = new RegExp(String.raw`\b${escapeRegExp(symbol)}\b`, 'g');
     const symbolMatches: vscode.Position[] = [];
     let match: RegExpExecArray | null = symbolRegex.exec(snippetText);
     
@@ -94,7 +94,7 @@ function findSymbolInCodeSnippet(text: string, symbol: string, codeSnippet: stri
  */
 function findAllSymbolMatches(text: string, symbol: string, document: vscode.TextDocument): vscode.Position[] {
     const matches: vscode.Position[] = [];
-    const regex = new RegExp(`\\b${escapeRegExp(symbol)}\\b`, 'g');
+    const regex = new RegExp(String.raw`\b${escapeRegExp(symbol)}\b`, 'g');
     let match: RegExpExecArray | null = regex.exec(text);
     
     while (match !== null) {

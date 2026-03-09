@@ -85,8 +85,8 @@ export class SocketServer {
                         error: {
                             code: 400,
                             message: `Invalid payload for ${method}`,
-                            details: validationError instanceof z.ZodError 
-                                ? validationError.errors.map((e: z.ZodIssue) => `${e.path.join('.')}: ${e.message}`).join(', ')
+                            details: validationError instanceof z.ZodError
+                                ? validationError.issues.map((e) => `${e.path.join('.')}: ${e.message}`).join(', ')
                                 : String(validationError)
                         }
                     };
@@ -111,7 +111,7 @@ export class SocketServer {
                             code: 500,
                             message: `Invalid result from ${method}`,
                             details: validationError instanceof z.ZodError 
-                                ? validationError.errors.map((e: z.ZodIssue) => `${e.path.join('.')}: ${e.message}`).join(', ')
+                                ? validationError.issues.map((e) => `${e.path.join('.')}: ${e.message}`).join(', ')
                                 : String(validationError)
                         }
                     };
@@ -198,7 +198,7 @@ export class SocketServer {
                 logger.error(`Error removing existing socket file: ${error}`);
                 // If the file is in use by another process, fail fast
                 if ((error as NodeJS.ErrnoException).code === 'EBUSY' || (error as NodeJS.ErrnoException).code === 'EADDRINUSE') {
-                    throw new Error('Socket is already in use by another VSCode instance');
+                    throw new Error('Socket is already in use by another VSCode instance', { cause: error });
                 }
             }
         }

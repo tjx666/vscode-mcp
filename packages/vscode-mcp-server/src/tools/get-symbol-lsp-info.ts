@@ -71,10 +71,7 @@ export function registerGetSymbolLSPInfo(server: McpServer) {
       
       // Signature Help results
       if (result.signature_help) {
-        sections.push(`**✍️ Signature Help**:`);
-        sections.push(`  Active Signature: ${result.signature_help.activeSignature ?? 'N/A'}`);
-        sections.push(`  Active Parameter: ${result.signature_help.activeParameter ?? 'N/A'}`);
-        sections.push(`  Signatures (${result.signature_help.signatures.length}):`);
+        sections.push(`**✍️ Signature Help**:`, `  Active Signature: ${result.signature_help.activeSignature ?? 'N/A'}`, `  Active Parameter: ${result.signature_help.activeParameter ?? 'N/A'}`, `  Signatures (${result.signature_help.signatures.length}):`);
         result.signature_help.signatures.forEach((sig, index) => {
           sections.push(`    ${index + 1}. \`${sig.label}\``);
           if (sig.documentation) {

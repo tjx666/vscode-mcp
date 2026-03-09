@@ -96,10 +96,9 @@ export async function discoverAvailableWorkspaces(options: {
         socket_path: socketPath,
         extension_version: healthResult.extension_version,
         last_seen: healthResult.timestamp
-      };
+      , vscode_version: healthResult.system_info?.vscode_version,};
       
       // Always add detailed info
-      workspaceInfo.vscode_version = healthResult.system_info?.vscode_version;
       
       return workspaceInfo;
     } catch (error) {
