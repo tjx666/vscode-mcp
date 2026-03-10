@@ -10,6 +10,7 @@ import {
   registerListWorkspaces,
   registerOpenFiles,
   registerRenameSymbol,
+  registerSearchWorkspaceSymbols,
 } from "./tools/index.js";
 
 // Tool registration mapping
@@ -24,6 +25,7 @@ const TOOL_REGISTRY: Record<string, ToolRegistrationFunction> = {
   [VscodeMcpToolName.OPEN_FILES]: registerOpenFiles,
   [VscodeMcpToolName.RENAME_SYMBOL]: registerRenameSymbol,
   [VscodeMcpToolName.LIST_WORKSPACES]: registerListWorkspaces,
+  [VscodeMcpToolName.SEARCH_WORKSPACE_SYMBOLS]: registerSearchWorkspaceSymbols,
 };
 
 /**

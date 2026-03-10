@@ -13,6 +13,7 @@ export enum VscodeMcpToolName {
   LIST_WORKSPACES = 'list_workspaces',
   OPEN_FILES = 'open_files',
   RENAME_SYMBOL = 'rename_symbol',
+  SEARCH_WORKSPACE_SYMBOLS = 'search_workspace_symbols',
 }
 
 /**

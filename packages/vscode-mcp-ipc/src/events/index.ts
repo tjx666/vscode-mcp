@@ -7,6 +7,7 @@ import type { HealthCheckPayload, HealthCheckResult } from './health-check.js';
 import type { ListWorkspacesPayload, ListWorkspacesResult } from './list-workspaces.js';
 import type { OpenFilesPayload, OpenFilesResult } from './open-file.js';
 import type { RenameSymbolPayload, RenameSymbolResult } from './rename-symbol.js';
+import type { SearchWorkspaceSymbolsPayload, SearchWorkspaceSymbolsResult } from './workspace-symbol.js';
 
 // Re-export all event types and schemas
 export * from '../common.js';
@@ -18,6 +19,7 @@ export * from './health-check.js';
 export * from './list-workspaces.js';
 export * from './open-file.js';
 export * from './rename-symbol.js';
+export * from './workspace-symbol.js';
 
 /**
  * Base request structure
@@ -95,6 +97,12 @@ export interface EventMap {
   listWorkspaces: {
     params: ListWorkspacesPayload;
     result: ListWorkspacesResult;
+  };
+
+  /** Search workspace symbols by name/pattern */
+  searchWorkspaceSymbols: {
+    params: SearchWorkspaceSymbolsPayload;
+    result: SearchWorkspaceSymbolsResult;
   };
 }
 
