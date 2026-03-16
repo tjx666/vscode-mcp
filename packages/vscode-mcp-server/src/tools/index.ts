@@ -8,7 +8,9 @@
 export { formatToolCallError } from "../utils/format-tool-call-error.js";
 
 // 工具注册函数
-export { registerExecuteCommand } from "./execute-command.js"; 
+export { registerExecuteCommand } from "./execute-command.js";
+export { registerGetCommands } from "./get-commands.js";
+export { registerGetCompletions } from "./get-completions.js";
 export { registerGetDiagnostics } from "./get-diagnostics.js";
 export { registerGetReferences } from "./get-references.js";
 export { registerGetSymbolLSPInfo } from "./get-symbol-lsp-info.js";

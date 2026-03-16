@@ -1,6 +1,10 @@
 import {
     ExecuteCommandInputSchema,
     ExecuteCommandOutputSchema,
+    GetCommandsInputSchema,
+    GetCommandsOutputSchema,
+    GetCompletionsInputSchema,
+    GetCompletionsOutputSchema,
     GetDiagnosticsInputSchema,
     GetDiagnosticsOutputSchema,
     GetReferencesInputSchema,
@@ -25,7 +29,9 @@ import { sleepCommand } from './commands/sleep';
 import { logger } from './logger';
 import {
     executeCommand,
-getCurrentWorkspacePath,
+    getCommands,
+    getCompletions,
+    getCurrentWorkspacePath,
     getDiagnostics,
     getReferences,
     getSymbolLSPInfo,
@@ -109,7 +115,19 @@ export async function activate(context: vscode.ExtensionContext) {
             handler: listWorkspaces,
             resultSchema: ListWorkspacesOutputSchema
         });
-        
+
+        socketServer.register('getCommands', {
+            handler: getCommands,
+            payloadSchema: GetCommandsInputSchema,
+            resultSchema: GetCommandsOutputSchema
+        });
+
+        socketServer.register('getCompletions', {
+            handler: getCompletions,
+            payloadSchema: GetCompletionsInputSchema,
+            resultSchema: GetCompletionsOutputSchema
+        });
+
         // Start socket server
         await socketServer.start();
         
