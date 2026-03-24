@@ -14,6 +14,8 @@ import {
     OpenFilesOutputSchema,
     RenameSymbolInputSchema,
     RenameSymbolOutputSchema,
+    RevertFilesInputSchema,
+    RevertFilesOutputSchema,
 } from '@vscode-mcp/vscode-mcp-ipc';
 import * as vscode from 'vscode';
 
@@ -33,6 +35,7 @@ getCurrentWorkspacePath,
     listWorkspaces,
     openFiles,
     renameSymbol,
+    revertFiles,
 } from './services';
 import { SocketServer } from './socket-server';
 
@@ -104,7 +107,13 @@ export async function activate(context: vscode.ExtensionContext) {
             payloadSchema: RenameSymbolInputSchema,
             resultSchema: RenameSymbolOutputSchema
         });
-        
+
+        socketServer.register('revertFiles', {
+            handler: revertFiles,
+            payloadSchema: RevertFilesInputSchema,
+            resultSchema: RevertFilesOutputSchema
+        });
+
         socketServer.register('listWorkspaces', {
             handler: listWorkspaces,
             resultSchema: ListWorkspacesOutputSchema
