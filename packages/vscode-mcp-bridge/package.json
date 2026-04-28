@@ -46,6 +46,15 @@
     "activationEvents": [
         "onStartupFinished"
     ],
+    "capabilities": {
+        "untrustedWorkspaces": {
+            "supported": "limited",
+            "description": "In untrusted workspaces, terminal launcher entries from workspace settings are ignored to prevent arbitrary command execution.",
+            "restrictedConfigurations": [
+                "vscode-mcp-bridge.terminalLauncher.items"
+            ]
+        }
+    },
     "contributes": {
         "configuration": {
             "type": "object",
@@ -55,6 +64,37 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Enable logging for VSCode MCP Bridge operations"
+                },
+                "vscode-mcp-bridge.terminalLauncher.items": {
+                    "type": "array",
+                    "default": [],
+                    "restricted": true,
+                    "markdownDescription": "Quick-launch entries shown as icon buttons on the terminal toolbar. Pick an `icon` from the bundled pool; each icon can only be bound to one entry (first wins on duplicates). Ignored in untrusted workspaces.",
+                    "items": {
+                        "type": "object",
+                        "required": ["label", "icon"],
+                        "additionalProperties": false,
+                        "properties": {
+                            "label": {
+                                "type": "string",
+                                "description": "Display name for the terminal tab and button tooltip."
+                            },
+                            "icon": {
+                                "type": "string",
+                                "enum": ["claude", "codex", "gemini"],
+                                "description": "Which bundled SVG to show on the terminal toolbar."
+                            },
+                            "command": {
+                                "type": "string",
+                                "default": "",
+                                "description": "Shell command sent to the terminal after creation. Empty string opens a plain shell."
+                            },
+                            "color": {
+                                "type": "string",
+                                "description": "Theme color id for the terminal tab icon, e.g. \"terminal.ansiBlue\"."
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -73,8 +113,45 @@
                 "command": "vscode-mcp-bridge.copyCurrentSelectionReference",
                 "title": "Copy Current Selection Reference",
                 "category": "VSCode MCP Bridge"
+            },
+            {
+                "command": "vscode-mcp-bridge.terminalLauncher.icon.claude",
+                "title": "Terminal Launcher: Claude",
+                "category": "VSCode MCP Bridge",
+                "icon": "resources/launcher-icons/claude.svg"
+            },
+            {
+                "command": "vscode-mcp-bridge.terminalLauncher.icon.codex",
+                "title": "Terminal Launcher: Codex",
+                "category": "VSCode MCP Bridge",
+                "icon": "resources/launcher-icons/codex.svg"
+            },
+            {
+                "command": "vscode-mcp-bridge.terminalLauncher.icon.gemini",
+                "title": "Terminal Launcher: Gemini",
+                "category": "VSCode MCP Bridge",
+                "icon": "resources/launcher-icons/gemini.svg"
             }
         ],
+        "menus": {
+            "view/title": [
+                {
+                    "command": "vscode-mcp-bridge.terminalLauncher.icon.claude",
+                    "when": "view == terminal && vscodeMcpBridge.launcher.icon.claude.visible",
+                    "group": "navigation@-3"
+                },
+                {
+                    "command": "vscode-mcp-bridge.terminalLauncher.icon.codex",
+                    "when": "view == terminal && vscodeMcpBridge.launcher.icon.codex.visible",
+                    "group": "navigation@-2"
+                },
+                {
+                    "command": "vscode-mcp-bridge.terminalLauncher.icon.gemini",
+                    "when": "view == terminal && vscodeMcpBridge.launcher.icon.gemini.visible",
+                    "group": "navigation@-1"
+                }
+            ]
+        },
         "keybindings": [
             {
                 "key": "alt+cmd+o",
