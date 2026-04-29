@@ -17,6 +17,7 @@ Ideal quality-check tool for AI coding agents, much faster than 'tsc --noEmit' a
 **Parameter Examples:**
 - Check modified files: __NOT_RECOMMEND__filePaths: [] (auto-detects git changes)
 - Filter ESLint errors only: sources: ['eslint'], severities: ['error']
+- Include editor hints: severities: ['error', 'warning', 'info', 'hint']
 
 **Return Format:**
 Structured diagnostic results with severity levels, positions, and detailed error messages.
@@ -24,6 +25,7 @@ Severity levels: 0=ERROR, 1=WARNING, 2=INFO, 3=HINT (matches VSCode DiagnosticSe
 
 **Note:**
   - In most cases, leave __NOT_RECOMMEND__filePaths parameter empty to auto-detect git modified files. Modifying one file often causes diagnostics in other related files.
+  - The severities parameter defaults to ["error", "warning", "info"]. "hint" is excluded by default because it usually represents editor suggestions (e.g., unused-var fade-out) rather than real issues. Pass it explicitly when you need hints.
 
 `;
 
