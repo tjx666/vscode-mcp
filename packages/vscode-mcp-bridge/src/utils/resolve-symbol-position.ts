@@ -111,3 +111,50 @@ function findAllSymbolMatches(text: string, symbol: string, document: vscode.Tex
 function escapeRegExp(string: string): string {
     return string.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 }
+
+/**
+ * Result of symbol resolution that may contain multiple matches
+ */
+export type SymbolResolutionResult =
+    | { type: 'resolved'; position: vscode.Position }
+    | { type: 'multiple'; matches: Array<{ line: number; character: number; lineContent: string }> };
+
+/**
+ * Resolve symbol position, but instead of throwing on multiple matches,
+ * return all matches with their line context for disambiguation.
+ * Used by get_symbol_lsp_info to provide helpful responses.
+ */
+export async function resolveSymbolPositionOrListMatches(
+    uri: vscode.Uri,
+    symbol: string,
+    codeSnippet?: string
+): Promise<SymbolResolutionResult> {
+    const document = await vscode.workspace.openTextDocument(uri);
+    const text = document.getText();
+
+    if (codeSnippet) {
+        // With codeSnippet: delegate to existing logic (it throws on ambiguity, which is fine)
+        const position = findSymbolInCodeSnippet(text, symbol, codeSnippet, document);
+        return { type: 'resolved', position };
+    }
+
+    // No codeSnippet: find all matches
+    const positions = findAllSymbolMatches(text, symbol, document);
+
+    if (positions.length === 0) {
+        throw new Error(`Symbol "${symbol}" not found in file`);
+    }
+
+    if (positions.length === 1) {
+        return { type: 'resolved', position: positions[0] };
+    }
+
+    // Multiple matches: return them all with line context
+    const matches = positions.map(pos => ({
+        line: pos.line,
+        character: pos.character,
+        lineContent: document.lineAt(pos.line).text,
+    }));
+
+    return { type: 'multiple', matches };
+}
