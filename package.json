@@ -1,6 +1,6 @@
 {
     "name": "vscode-mcp",
-    "version": "4.7.5",
+    "version": "4.7.6",
     "description": "",
     "main": "index.js",
     "private": true,
