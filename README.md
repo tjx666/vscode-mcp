@@ -164,7 +164,7 @@ Once installed and configured, VSCode MCP works seamlessly with MCP-compatible c
 1. **VSCode Extension**: Runs in your VSCode instance and provides access to LSP data
 2. **MCP Server**: Translates MCP protocol calls to VSCode extension requests
 
-All tools require the `workspace_path` parameter to target specific VSCode instances. Each VSCode workspace gets its own socket connection for multi-window support.
+All tools require the `workspace_path` parameter to target a specific open VSCode instance. This must be the workspace folder reported by `list_workspaces` or the extension activation log, because each VSCode workspace gets its own socket connection. If you need diagnostics for files inside a child project or git submodule, keep `workspace_path` set to the open VSCode workspace root and pass child paths as tool-specific file parameters.
 
 ## License
 

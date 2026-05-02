@@ -15,7 +15,8 @@ const DESCRIPTION = `Get diagnostic information from vscode language servers.
 Ideal quality-check tool for AI coding agents, much faster than 'tsc --noEmit' and 'eslint .'
 
 **Parameter Examples:**
-- Check modified files: __NOT_RECOMMEND__filePaths: [] (auto-detects git changes)
+- Check modified files: workspace_path: '/path/to/open-vscode-workspace', __NOT_RECOMMEND__filePaths: [] (auto-detects git changes, including submodules)
+- Check submodule files explicitly: keep workspace_path at the open VSCode workspace root and pass file paths relative to that root, for example ['submodule/path/src/file.ts']
 - Filter ESLint errors only: sources: ['eslint'], severities: ['error']
 - Include editor hints: severities: ['error', 'warning', 'info', 'hint']
 
@@ -24,7 +25,8 @@ Structured diagnostic results with severity levels, positions, and detailed erro
 Severity levels: 0=ERROR, 1=WARNING, 2=INFO, 3=HINT (matches VSCode DiagnosticSeverity enum)
 
 **Note:**
-  - In most cases, leave __NOT_RECOMMEND__filePaths parameter empty to auto-detect git modified files. Modifying one file often causes diagnostics in other related files.
+  - workspace_path selects the VSCode instance/socket, not the repository whose files you want to inspect. Use list_workspaces if unsure, and do not pass a child project or submodule path unless VSCode is opened there.
+  - In most cases, pass __NOT_RECOMMEND__filePaths: [] to auto-detect git modified files. If the open workspace contains git submodules, modified files inside those submodules are included.
   - The severities parameter defaults to ["error", "warning", "info"]. "hint" is excluded by default because it usually represents editor suggestions (e.g., unused-var fade-out) rather than real issues. Pass it explicitly when you need hints.
 
 `;
@@ -100,4 +102,4 @@ export function registerGetDiagnostics(server: McpServer) {
       return formatToolCallError("Get Diagnostics", error);
     }
   });
-} 
+}
