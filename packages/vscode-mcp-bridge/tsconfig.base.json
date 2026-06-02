@@ -5,7 +5,9 @@
 
         /* Basic Options */
         "target": "ES2023",
-        "module": "CommonJS",
+        // `module` only affects tsc type-checking; production code is bundled
+        // to CommonJS by esbuild (see scripts/esbuild.ts).
+        "module": "ESNext",
 
         /* Strict Type-Checking Options */
         "strict": true,
@@ -15,7 +17,7 @@
         "noFallthroughCasesInSwitch": true,
 
         /* Module Resolution Options */
-        "moduleResolution": "Node",
+        "moduleResolution": "Bundler",
         "esModuleInterop": true,
         "resolveJsonModule": true,
 
