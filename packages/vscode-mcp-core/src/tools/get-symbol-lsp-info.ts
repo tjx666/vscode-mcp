@@ -45,6 +45,19 @@ export const getSymbolLspInfoTool: ToolDefinition<typeof GetSymbolLSPInfoInputSc
     const dispatcher = await createDispatcher(workspacePath);
     const result = await dispatcher.dispatch('getSymbolLSPInfo', { filePath, symbol, codeSnippet, infoType });
 
+    if (result.multipleOccurrences && result.multipleOccurrences.length > 0) {
+      let disambig = `⚠️ **Multiple occurrences of \`${symbol}\` found** (${result.multipleOccurrences.length} matches)\n\n`;
+      disambig += `📍 **File**: ${filePath}\n\n`;
+      disambig += `Use the \`codeSnippet\` parameter with a unique code fragment from the correct occurrence to disambiguate.\n\n`;
+      disambig += `**Occurrences:**\n`;
+      result.multipleOccurrences.forEach((match, index) => {
+        const lineNum = match.line + 1;
+        disambig += `\n  **${index + 1}.** Line ${lineNum}:\n`;
+        disambig += `    \`${match.lineContent.trim()}\`\n`;
+      });
+      return disambig;
+    }
+
     let output = `🔍 **Symbol LSP Information: \`${symbol}\`**\n\n`;
     output += `📍 **File**: ${filePath}\n`;
     if (codeSnippet) {
