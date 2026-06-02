@@ -126,10 +126,10 @@ async function getModifiedFiles(): Promise<string[]> {
 export const getDiagnostics = async (
     payload: EventParams<'getDiagnostics'>
 ): Promise<EventResult<'getDiagnostics'>> => {
-    logger.info(`getDiagnostics called with ${payload.__NOT_RECOMMEND__filePaths.length} file paths, sources: [${payload.sources.join(', ')}], severities: [${payload.severities.join(', ')}]`);
+    logger.info(`getDiagnostics called with ${payload.__NOT_RECOMMEND__filePaths.length} file paths, sources: [${payload.sources.join(', ')}], severities: [${payload.__NOT_RECOMMEND__severities.join(', ')}]`);
 
     let targetFilePaths = payload.__NOT_RECOMMEND__filePaths;
-    const { sources, severities } = payload;
+    const { sources, __NOT_RECOMMEND__severities: severities } = payload;
     
     // If empty array is provided, get all git modified files
     if (targetFilePaths.length === 0) {

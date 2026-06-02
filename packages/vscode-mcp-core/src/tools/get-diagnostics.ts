@@ -9,8 +9,8 @@ Ideal quality-check tool for AI coding agents, much faster than 'tsc --noEmit' a
 **Parameter Examples:**
 - Check modified files: workspace_path: '/path/to/open-vscode-workspace', __NOT_RECOMMEND__filePaths: [] (auto-detects git changes, including submodules)
 - Check submodule files explicitly: keep workspace_path at the open VSCode workspace root and pass file paths relative to that root, for example ['submodule/path/src/file.ts']
-- Filter ESLint errors only: sources: ['eslint'], severities: ['error']
-- Include editor hints: severities: ['error', 'warning', 'info', 'hint']
+- Filter to ESLint findings only: sources: ['eslint']
+- Errors only (rarely useful): __NOT_RECOMMEND__severities: ['error']
 
 **Return Format:**
 Structured diagnostic results with severity levels, positions, and detailed error messages.
@@ -19,7 +19,7 @@ Severity levels: 0=ERROR, 1=WARNING, 2=INFO, 3=HINT (matches VSCode DiagnosticSe
 **Note:**
   - workspace_path selects the VSCode instance/socket, not the repository whose files you want to inspect. Use list_workspaces if unsure, and do not pass a child project or submodule path unless VSCode is opened there.
   - In most cases, pass __NOT_RECOMMEND__filePaths: [] to auto-detect git modified files. If the open workspace contains git submodules, modified files inside those submodules are included.
-  - The severities parameter defaults to ["error", "warning", "info"]. "hint" is excluded by default because it usually represents editor suggestions (e.g., unused-var fade-out) rather than real issues. Pass it explicitly when you need hints.
+  - __NOT_RECOMMEND__severities defaults to all four levels. Narrowing it almost always hides real ESLint/TS findings (many rules surface at info or hint) — leave it alone unless you have a specific reason.
 
 `;
 
@@ -37,12 +37,12 @@ export const getDiagnosticsTool: ToolDefinition<typeof GetDiagnosticsInputSchema
     openWorldHint: false,
   },
   async handler(params, { workspacePath }) {
-    const { __NOT_RECOMMEND__filePaths, sources, severities } = params;
+    const { __NOT_RECOMMEND__filePaths, sources, __NOT_RECOMMEND__severities } = params;
     const dispatcher = await createDispatcher(workspacePath);
     const result = await dispatcher.dispatch('getDiagnostics', {
       __NOT_RECOMMEND__filePaths,
       sources,
-      severities,
+      __NOT_RECOMMEND__severities,
     });
 
     if (result.files.length === 0) {
