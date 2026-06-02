@@ -12,6 +12,7 @@
   <a href="#design-motivation">Design Motivation</a> •
   <a href="#available-tools">Available Tools</a> •
   <a href="#installation">Installation</a> •
+  <a href="#cli-no-mcp-config-required">CLI</a> •
   <a href="#architecture">Architecture</a> •
   <a href="#license">License</a>
 </p>
@@ -143,6 +144,56 @@ Add the following configuration to your `~/.gemini/settings.json`:
 }
 ```
 
+## CLI (no MCP config required)
+
+If your agent can shell out but you don't want to register an MCP server, install `@vscode-mcp/vscode-mcp-cli`. It exposes the **same** tools as the MCP server as plain subcommands, talking to the VSCode Bridge extension over the same socket.
+
+```bash
+# Run directly without install
+bunx --bun @vscode-mcp/vscode-mcp-cli --help
+
+# Or install globally
+npm i -g @vscode-mcp/vscode-mcp-cli
+vscode-cli --help
+```
+
+### Subcommands
+
+One subcommand per MCP tool, kebab-case:
+
+```
+vscode-cli get-diagnostics      # real-time LSP diagnostics
+vscode-cli get-symbol-lsp-info  # hover / signatures / definitions
+vscode-cli get-references       # references with usage context
+vscode-cli rename-symbol        # workspace-wide rename
+vscode-cli open-files           # open one or more files
+vscode-cli execute-command      # ⚠️ run arbitrary VSCode commands
+vscode-cli health-check         # ping the bridge
+vscode-cli list-workspaces      # enumerate open VSCode windows
+```
+
+### Workspace targeting
+
+CLI defaults `--workspace` to `process.cwd()`. Override with `--workspace <path>` when you need to target a different open VSCode window (must match a workspace from `list-workspaces`).
+
+### Examples
+
+```bash
+# Diagnostics on git-modified files in the current workspace
+vscode-cli get-diagnostics
+
+# Find references to `myFunction` in src/utils.ts at line 42
+vscode-cli get-references --file-path src/utils.ts --line 42 --character 10
+
+# Open multiple files in background (no editor focus)
+vscode-cli open-files --files src/a.ts src/b.ts --no-show-editor
+
+# Target a different VSCode window
+vscode-cli get-diagnostics --workspace /Users/me/other-project
+```
+
+The text output is byte-identical to what the MCP server returns — every flag is auto-generated from the IPC zod schema, so anything the MCP tool accepts has a `--kebab-case` flag here.
+
 ## Tool Filtering
 
 You can control which tools are available using command-line arguments or environment variables:
@@ -162,7 +213,7 @@ You can control which tools are available using command-line arguments or enviro
 Once installed and configured, VSCode MCP works seamlessly with MCP-compatible clients:
 
 1. **VSCode Extension**: Runs in your VSCode instance and provides access to LSP data
-2. **MCP Server**: Translates MCP protocol calls to VSCode extension requests
+2. **MCP Server / CLI**: Translates MCP calls (or CLI subcommands) to VSCode extension requests over a per-workspace Unix socket
 
 All tools require the `workspace_path` parameter to target a specific open VSCode instance. This must be the workspace folder reported by `list_workspaces` or the extension activation log, because each VSCode workspace gets its own socket connection. If you need diagnostics for files inside a child project or git submodule, keep `workspace_path` set to the open VSCode workspace root and pass child paths as tool-specific file parameters.
 
