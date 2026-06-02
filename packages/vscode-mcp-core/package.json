@@ -1,13 +1,10 @@
 {
-    "name": "@vscode-mcp/vscode-mcp-server",
+    "name": "@vscode-mcp/vscode-mcp-core",
     "version": "4.7.6",
     "type": "module",
-    "description": "MCP Server that connects to VSCode Extension via Unix Socket",
+    "description": "Shared tool definitions and formatters for VSCode MCP server and CLI",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
-    "bin": {
-        "vscode-mcp-server": "dist/index.js"
-    },
     "publishConfig": {
         "registry": "https://registry.npmjs.org/",
         "access": "public"
@@ -16,16 +13,13 @@
         "build": "tsc",
         "build:watch": "tsc --watch",
         "clean": "rm -rf dist",
-        "dev": "tsx src/index.ts",
-        "start": "node dist/index.js",
         "typecheck": "tsgo --noEmit",
         "prepublishOnly": "pnpm run clean && pnpm run build"
     },
     "keywords": [
-        "mcp",
         "vscode",
-        "server",
-        "model-context-protocol"
+        "mcp",
+        "core"
     ],
     "author": {
         "name": "YuTengjing",
@@ -35,8 +29,6 @@
         "dist"
     ],
     "dependencies": {
-        "@modelcontextprotocol/sdk": "^1.27.1",
-        "@vscode-mcp/vscode-mcp-core": "workspace:*",
         "@vscode-mcp/vscode-mcp-ipc": "workspace:*",
         "zod": "^4.3.6"
     }

@@ -1,12 +1,12 @@
 {
-    "name": "@vscode-mcp/vscode-mcp-server",
+    "name": "@vscode-mcp/vscode-mcp-cli",
     "version": "4.7.6",
     "type": "module",
-    "description": "MCP Server that connects to VSCode Extension via Unix Socket",
+    "description": "CLI that calls VSCode MCP Bridge capabilities directly (no MCP client needed)",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "bin": {
-        "vscode-mcp-server": "dist/index.js"
+        "vscode-cli": "dist/index.js"
     },
     "publishConfig": {
         "registry": "https://registry.npmjs.org/",
@@ -22,10 +22,10 @@
         "prepublishOnly": "pnpm run clean && pnpm run build"
     },
     "keywords": [
-        "mcp",
         "vscode",
-        "server",
-        "model-context-protocol"
+        "cli",
+        "agent",
+        "mcp"
     ],
     "author": {
         "name": "YuTengjing",
@@ -35,9 +35,9 @@
         "dist"
     ],
     "dependencies": {
-        "@modelcontextprotocol/sdk": "^1.27.1",
         "@vscode-mcp/vscode-mcp-core": "workspace:*",
         "@vscode-mcp/vscode-mcp-ipc": "workspace:*",
+        "commander": "^14.0.1",
         "zod": "^4.3.6"
     }
 }
