@@ -63,19 +63,32 @@ MCP Client ↔ MCP Server ↔ IPC Layer ↔ VSCode Extension ↔ VSCode API
 - **生命周期管理**: 扩展激活/停用和资源清理
 - **日志记录**: 结构化日志记录，用于调试和监控服务调用
 
-**3. vscode-mcp-server** (MCP 服务器):
+**3. vscode-mcp-core** (共享工具定义):
+
+- **ToolDefinition 抽象**: 框架无关的工具定义（name、schema、handler、annotations 等），不依赖 MCP SDK
+- **格式化逻辑**: dispatch 调用 + 文本输出格式化集中在 handler 内
+- **复用基础**: server (MCP) 和 cli 两个 adapter 都基于 core
+- **依赖最小**: 只依赖 ipc + zod，便于在新 adapter 中复用
+
+**4. vscode-mcp-server** (MCP 服务器):
 
 - **MCP 协议**: 实现标准 MCP 协议，使用 stdio 传输
-- **工具注册**: 注册所有可用工具并定义适当的 Schema
-- **请求转换**: 将 MCP 工具调用转换为 VSCode 扩展请求
-- **Schema 复用**: 使用 `...InputSchema.shape` 模式复用 IPC Schema
-- **错误处理**: 优雅的错误处理和用户友好的错误信息
-- **输出格式化**: 使用状态图标和结构化输出格式化响应
+- **薄 adapter**: 把 core 的 ToolDefinition 包装成 `McpServer.registerTool` 调用
+- **Schema 复用**: 通过 `...InputSchema.shape` 复用 IPC schema 并补 `workspace_path`
+- **错误处理**: try/catch 转 `{ isError: true, content: [...] }` 响应
+
+**5. vscode-mcp-cli** (CLI):
+
+- **不装 MCP**: 让 agent 通过 bash 直接调 VSCode 能力，无需配置 MCP client
+- **bin: vscode-cli**: 基于 commander
+- **自动 flag 生成**: 从 zod schema.shape 推导 `--kebab-case` flags
+- **workspace 默认 cwd**: `--workspace` 覆盖
+- **输出对齐 MCP**: 调用 core handler,文本输出与 MCP 工具完全一致
 
 ### 通信协议
 
 - **MCP Client ↔ MCP Server**: stdio + JSON-RPC 2.0
-- **MCP Server ↔ IPC Layer**: TypeScript 导入和函数调用
+- **MCP Server / CLI ↔ IPC Layer**: TypeScript 导入和函数调用
 - **IPC Layer ↔ VSCode Extension**: Unix Domain Sockets + JSON (无认证)
 
 ## 多窗口支持
@@ -101,7 +114,7 @@ export function getSocketPath(workspacePath: string): string {
 
 ### 工作区定位
 
-所有 MCP 工具都需要 `workspace_path` 参数来定位特定的 VSCode 实例。
+所有 MCP 工具都需要 `workspace_path` 参数来定位特定的 VSCode 实例。CLI 默认用 `process.cwd()`，可通过 `--workspace` 覆盖。
 
 ## 开发工作流程
 
@@ -112,17 +125,17 @@ export function getSocketPath(workspacePath: string): string {
 1. **IPC 层** ([packages/vscode-mcp-ipc/](mdc:packages/vscode-mcp-ipc/))
    - 定义 Schema 和类型
    - 更新 EventMap
-   - 构建包: `npm run build`
+   - 构建包: `pnpm run build`
 
 2. **Extension 层** ([packages/vscode-mcp-bridge/](mdc:packages/vscode-mcp-bridge/))
    - 实现服务逻辑
    - 注册并验证
-   - 类型检查: `npx tsc --noEmit --project src/tsconfig.json`
 
-3. **MCP Server 层** ([packages/vscode-mcp-server/](mdc:packages/vscode-mcp-server/))
-   - 实现工具并复用 Schema
-   - 在服务器中注册
-   - 类型检查: `npx tsc --noEmit --project tsconfig.json`
+3. **Core 层** ([packages/vscode-mcp-core/](mdc:packages/vscode-mcp-core/))
+   - 实现 ToolDefinition：dispatch + 文本格式化都放进 handler
+   - 在 `getAllTools()` 中导出
+
+4. **Server / CLI 层** 通常无需改动 — adapter 会自动注册 core 中新增的 tool。仅当工具需要特殊 CLI 行为（如 `open-files`）时，在 ToolDefinition 上加 `cli.options` + `cli.transform`。
 
 ## 安全考虑
 
