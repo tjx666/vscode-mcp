@@ -1,7 +1,12 @@
 {
     "extends": "../tsconfig.base.json",
     "compilerOptions": {
-        "outDir": "../out/test"
+        "outDir": "../out/test",
+        // Tests are loaded by the VSCode extension host as CommonJS. Base
+        // config uses ESNext+Bundler for production (esbuild bundles to CJS);
+        // test files are emitted directly by tsc so they must stay CJS.
+        "module": "CommonJS",
+        "moduleResolution": "Node10"
     },
     "include": ["**/*.ts"],
     "references": [
