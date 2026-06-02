@@ -1,6 +1,6 @@
 {
     "name": "@vscode-mcp/vscode-mcp-core",
-    "version": "4.8.1",
+    "version": "4.8.2",
     "type": "module",
     "description": "Shared tool definitions and formatters for VSCode MCP server and CLI",
     "main": "dist/index.js",
