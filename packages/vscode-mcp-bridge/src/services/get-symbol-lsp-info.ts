@@ -2,7 +2,7 @@ import type { EventParams, EventResult, LSPInfoType } from '@vscode-mcp/vscode-m
 import * as vscode from 'vscode';
 
 import { getUsageCode } from '../utils/get-usage-code.js';
-import { resolveSymbolPosition } from '../utils/resolve-symbol-position.js';
+import { resolveSymbolPosition, resolveSymbolPositionOrListMatches } from '../utils/resolve-symbol-position.js';
 import { ensureFileIsOpen, resolveFilePath } from '../utils/workspace.js';
 
 /**
@@ -50,9 +50,16 @@ export const getSymbolLSPInfo = async (
     // Ensure file is open to get accurate LSP information
     await ensureFileIsOpen(vscodeUri.toString());
     
-    // Resolve symbol to position
-    const position = await resolveSymbolPosition(vscodeUri, symbol, codeSnippet);
-    
+    // Resolve symbol to position (may return multiple matches for disambiguation)
+    const resolution = await resolveSymbolPositionOrListMatches(vscodeUri, symbol, codeSnippet);
+
+    // If multiple matches found, return them for disambiguation instead of erroring
+    if (resolution.type === 'multiple') {
+        return { multipleOccurrences: resolution.matches };
+    }
+
+    const position = resolution.position;
+
     const result: EventResult<'getSymbolLSPInfo'> = {};
     
     /**

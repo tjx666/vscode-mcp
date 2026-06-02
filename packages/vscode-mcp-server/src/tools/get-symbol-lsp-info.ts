@@ -45,7 +45,26 @@ export function registerGetSymbolLSPInfo(server: McpServer) {
     try {
       const dispatcher = await createDispatcher(workspace_path);
       const result = await dispatcher.dispatch("getSymbolLSPInfo", { filePath, symbol, codeSnippet, infoType });
-      
+
+      // Handle multiple occurrences disambiguation
+      if (result.multipleOccurrences && result.multipleOccurrences.length > 0) {
+        let output = `⚠️ **Multiple occurrences of \`${symbol}\` found** (${result.multipleOccurrences.length} matches)\n\n`;
+        output += `📍 **File**: ${filePath}\n\n`;
+        output += `Use the \`codeSnippet\` parameter with a unique code fragment from the correct occurrence to disambiguate.\n\n`;
+        output += `**Occurrences:**\n`;
+        result.multipleOccurrences.forEach((match, index) => {
+          const lineNum = match.line + 1; // display as 1-indexed
+          output += `\n  **${index + 1}.** Line ${lineNum}:\n`;
+          output += `    \`${match.lineContent.trim()}\`\n`;
+        });
+        return {
+          content: [{
+            type: "text" as const,
+            text: output
+          }]
+        };
+      }
+
       // Format the comprehensive results
       let output = `🔍 **Symbol LSP Information: \`${symbol}\`**\n\n`;
       output += `📍 **File**: ${filePath}\n`;
