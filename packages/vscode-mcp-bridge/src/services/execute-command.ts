@@ -20,13 +20,84 @@ function isJsonifiable(value: unknown): value is Jsonifiable {
 }
 
 /**
+ * Serialize a VSCode Range to a plain object
+ */
+function serializeRange(range: any): { start: { line: number; character: number }; end: { line: number; character: number } } {
+    return {
+        start: { line: range.start.line, character: range.start.character },
+        end: { line: range.end.line, character: range.end.character },
+    };
+}
+
+/**
+ * Recursively serialize VSCode objects that have non-enumerable properties
+ * (e.g. DocumentSymbol.children is a getter that gets lost during JSON.stringify/structuredClone)
+ */
+function serializeVscodeValue(value: unknown): unknown {
+    if (value == null || typeof value !== 'object') {
+        return value;
+    }
+
+    if (Array.isArray(value)) {
+        return value.map(serializeVscodeValue);
+    }
+
+    const obj = value as Record<string, any>;
+
+    // DocumentSymbol: has name, kind, range, selectionRange, children
+    if ('name' in obj && 'kind' in obj && 'range' in obj && 'selectionRange' in obj) {
+        return {
+            name: obj.name,
+            detail: obj.detail,
+            kind: obj.kind,
+            tags: obj.tags,
+            range: serializeRange(obj.range),
+            selectionRange: serializeRange(obj.selectionRange),
+            children: Array.isArray(obj.children)
+                ? obj.children.map(serializeVscodeValue)
+                : [],
+        };
+    }
+
+    // SymbolInformation: has name, kind, location, containerName (flat provider format)
+    if ('name' in obj && 'kind' in obj && 'location' in obj && 'containerName' in obj) {
+        return {
+            name: obj.name,
+            kind: obj.kind,
+            containerName: obj.containerName,
+            location: {
+                uri: obj.location.uri?.toString?.() ?? obj.location.uri,
+                range: serializeRange(obj.location.range),
+            },
+        };
+    }
+
+    // Range: has start.line and end.line
+    if ('start' in obj && 'end' in obj && typeof obj.start?.line === 'number') {
+        return serializeRange(obj);
+    }
+
+    // Location: has uri and range
+    if ('uri' in obj && 'range' in obj && typeof obj.range?.start?.line === 'number') {
+        return {
+            uri: obj.uri?.toString?.() ?? obj.uri,
+            range: serializeRange(obj.range),
+        };
+    }
+
+    return value;
+}
+
+/**
  * Convert unknown value to Jsonifiable, with fallback for non-serializable values
  */
 function toJsonifiable(value: unknown): Jsonifiable {
-    if (isJsonifiable(value)) {
-        return value;
+    // Pre-pass: handle VSCode objects with non-enumerable properties (e.g. DocumentSymbol.children)
+    const serialized = serializeVscodeValue(value);
+    if (isJsonifiable(serialized)) {
+        return serialized;
     }
-    
+
     // Fallback for non-serializable values
     if (typeof value === 'function') {
         return '[Function]';
@@ -37,7 +108,7 @@ function toJsonifiable(value: unknown): Jsonifiable {
     if (value === undefined) {
         return null;
     }
-    
+
     // Try to convert objects to a serializable format
     try {
         // Use structuredClone to create a deep copy, then verify it's JSON serializable
