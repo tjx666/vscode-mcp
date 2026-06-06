@@ -1,4 +1,6 @@
 import {
+    CloseEditorsInputSchema,
+    CloseEditorsOutputSchema,
     ExecuteCommandInputSchema,
     ExecuteCommandOutputSchema,
     GetDiagnosticsInputSchema,
@@ -26,6 +28,7 @@ import { copyOpenedFilesPathCommand } from './commands/copy-opened-files-path';
 import { sleepCommand } from './commands/sleep';
 import { logger } from './logger';
 import {
+    closeEditors,
     executeCommand,
     getCurrentWorkspacePath,
     getDiagnostics,
@@ -117,6 +120,12 @@ export async function activate(context: vscode.ExtensionContext) {
             handler: listOpenEditors,
             payloadSchema: ListOpenEditorsInputSchema,
             resultSchema: ListOpenEditorsOutputSchema,
+        });
+
+        socketServer.register('closeEditors', {
+            handler: closeEditors,
+            payloadSchema: CloseEditorsInputSchema,
+            resultSchema: CloseEditorsOutputSchema,
         });
 
         // Start socket server

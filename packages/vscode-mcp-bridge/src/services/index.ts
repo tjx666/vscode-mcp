@@ -1,4 +1,5 @@
 // Export service functions
+export { closeEditors } from './close-editors';
 export { executeCommand } from './execute-command';
 export { getDiagnostics } from './get-diagnostics';
 export { getReferences } from './get-references';

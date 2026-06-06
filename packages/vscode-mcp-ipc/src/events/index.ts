@@ -1,4 +1,5 @@
 // Import all event modules
+import type { CloseEditorsPayload, CloseEditorsResult } from './close-editors.js';
 import type { ExecuteCommandPayload, ExecuteCommandResult } from './execute-command.js';
 import type { GetDiagnosticsPayload, GetDiagnosticsResult } from './get-diagnostics.js';
 import type { GetReferencesPayload, GetReferencesResult } from './get-references.js';
@@ -11,6 +12,7 @@ import type { RenameSymbolPayload, RenameSymbolResult } from './rename-symbol.js
 
 // Re-export all event types and schemas
 export * from '../common.js';
+export * from './close-editors.js';
 export * from './execute-command.js';
 export * from './get-diagnostics.js';
 export * from './get-references.js';
@@ -104,6 +106,13 @@ export interface EventMap {
   listOpenEditors: {
     params: ListOpenEditorsPayload;
     result: ListOpenEditorsResult;
+  };
+
+
+  /** Close editor tabs by path */
+  closeEditors: {
+    params: CloseEditorsPayload;
+    result: CloseEditorsResult;
   };
 }
 

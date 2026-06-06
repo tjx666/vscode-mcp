@@ -1,4 +1,5 @@
 import type { AnyToolDefinition } from '../types.js';
+import { closeEditorsTool } from './close-editors.js';
 import { executeCommandTool } from './execute-command.js';
 import { getDiagnosticsTool } from './get-diagnostics.js';
 import { getReferencesTool } from './get-references.js';
@@ -13,6 +14,7 @@ export { executeCommandTool } from './execute-command.js';
 export { getDiagnosticsTool } from './get-diagnostics.js';
 export { getReferencesTool } from './get-references.js';
 export { getSymbolLspInfoTool } from './get-symbol-lsp-info.js';
+export { closeEditorsTool } from './close-editors.js';
 export { createHealthCheckTool } from './health-check.js';
 export { listOpenEditorsTool } from './list-open-editors.js';
 export { listWorkspacesTool } from './list-workspaces.js';
@@ -34,5 +36,6 @@ export function getAllTools(opts: { clientVersion: string }): AnyToolDefinition[
     renameSymbolTool as AnyToolDefinition,
     listWorkspacesTool as AnyToolDefinition,
     listOpenEditorsTool as AnyToolDefinition,
+    closeEditorsTool as AnyToolDefinition,
   ];
 }
