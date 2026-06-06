@@ -4,6 +4,7 @@ import type { GetDiagnosticsPayload, GetDiagnosticsResult } from './get-diagnost
 import type { GetReferencesPayload, GetReferencesResult } from './get-references.js';
 import type { GetSymbolLSPInfoPayload, GetSymbolLSPInfoResult } from './get-symbol-lsp-info.js';
 import type { HealthCheckPayload, HealthCheckResult } from './health-check.js';
+import type { ListOpenEditorsPayload, ListOpenEditorsResult } from './list-open-editors.js';
 import type { ListWorkspacesPayload, ListWorkspacesResult } from './list-workspaces.js';
 import type { OpenFilesPayload, OpenFilesResult } from './open-file.js';
 import type { RenameSymbolPayload, RenameSymbolResult } from './rename-symbol.js';
@@ -15,6 +16,7 @@ export * from './get-diagnostics.js';
 export * from './get-references.js';
 export * from './get-symbol-lsp-info.js';
 export * from './health-check.js';
+export * from './list-open-editors.js';
 export * from './list-workspaces.js';
 export * from './open-file.js';
 export * from './rename-symbol.js';
@@ -95,6 +97,13 @@ export interface EventMap {
   listWorkspaces: {
     params: ListWorkspacesPayload;
     result: ListWorkspacesResult;
+  };
+
+
+  /** List open editor tabs */
+  listOpenEditors: {
+    params: ListOpenEditorsPayload;
+    result: ListOpenEditorsResult;
   };
 }
 

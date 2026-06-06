@@ -9,6 +9,8 @@ import {
     GetSymbolLSPInfoOutputSchema,
     HealthCheckInputSchema,
     HealthCheckOutputSchema,
+    ListOpenEditorsInputSchema,
+    ListOpenEditorsOutputSchema,
     ListWorkspacesOutputSchema,
     OpenFilesInputSchema,
     OpenFilesOutputSchema,
@@ -30,6 +32,7 @@ import {
     getReferences,
     getSymbolLSPInfo,
     health,
+    listOpenEditors,
     listWorkspaces,
     openFiles,
     renameSymbol,
@@ -108,6 +111,12 @@ export async function activate(context: vscode.ExtensionContext) {
         socketServer.register('listWorkspaces', {
             handler: listWorkspaces,
             resultSchema: ListWorkspacesOutputSchema,
+        });
+
+        socketServer.register('listOpenEditors', {
+            handler: listOpenEditors,
+            payloadSchema: ListOpenEditorsInputSchema,
+            resultSchema: ListOpenEditorsOutputSchema,
         });
 
         // Start socket server
