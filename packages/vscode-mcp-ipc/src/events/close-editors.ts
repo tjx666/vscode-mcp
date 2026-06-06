@@ -28,10 +28,12 @@ export const CloseEditorsInputSchema = z
  */
 export const CloseEditorsOutputSchema = z
   .object({
-    closed: z.array(z.string()).describe('Paths whose tab(s) were closed'),
+    closed: z.array(z.string()).describe('Paths for which at least one tab was closed'),
     skipped_dirty: z
       .array(z.string())
-      .describe('Paths left open because they had unsaved changes and forceCloseDirty was false'),
+      .describe(
+        'Paths that still have at least one unsaved tab left open (forceCloseDirty was false). A path may also appear in `closed` if a clean copy in another tab group was closed.',
+      ),
     not_found: z.array(z.string()).describe('Requested paths that had no matching open tab'),
     summary: z
       .object({

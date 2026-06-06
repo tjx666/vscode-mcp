@@ -5,8 +5,8 @@ import type { ToolDefinition } from '../types.js';
 const DESCRIPTION = `List all open editor tabs in a VSCode window as structured data.
 
 Returns every tab across all tab groups (editor columns) — not just text files,
-but also diffs, notebooks, custom editors, untitled buffers, interactive
-windows, webviews and terminals. Each entry reports its label, resource URI
+but also diffs, notebooks, custom editors, untitled buffers, webviews and
+terminals. Each entry reports its label, resource URI
 (when it has one), kind, tab group index, and active/dirty/pinned/preview flags.
 
 **When to use:**

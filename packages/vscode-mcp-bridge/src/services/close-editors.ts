@@ -41,7 +41,11 @@ export const closeEditors = async (
   const tabsToClose: vscode.Tab[] = [];
 
   for (const requested of paths) {
-    const matching = allTabs.filter((tab) => tabFsPath(tab.input) === requested);
+    // Normalize the requested path the way VSCode stores tab URIs (separators,
+    // `.`-segments, trailing slash) so matching is robust. Case is left as-is —
+    // we match VSCode's stored on-disk case.
+    const target = vscode.Uri.file(requested).fsPath;
+    const matching = allTabs.filter((tab) => tabFsPath(tab.input) === target);
     if (matching.length === 0) {
       notFound.push(requested);
       continue;
@@ -50,8 +54,11 @@ export const closeEditors = async (
     if (closeable.length > 0) {
       tabsToClose.push(...closeable);
       closed.push(requested);
-    } else {
-      // every matching tab is dirty and forceCloseDirty is false
+    }
+    // Flag a path that still has ANY unsaved tab left open — even if a clean
+    // copy in another group was closed — so a partial close never silently
+    // hides an unsaved tab. A path may therefore appear in both lists.
+    if (!forceCloseDirty && matching.some((tab) => tab.isDirty)) {
       skippedDirty.push(requested);
     }
   }
