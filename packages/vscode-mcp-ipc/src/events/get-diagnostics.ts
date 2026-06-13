@@ -31,6 +31,7 @@ const FileDiagnosticSchema = z.object({
 export const GetDiagnosticsInputSchema = z.object({
   __NOT_RECOMMEND__filePaths: z.array(FilePathSchema).describe('Array of file paths to get diagnostics for. If empty array is provided, will get diagnostics for all git modified files (staged and unstaged) in the workspace.'),
   sources: z.array(z.string()).optional().default([]).describe('Array of diagnostic sources to include (e.g., "eslint", "ts", "typescript"). If empty array provided, includes all sources.'),
+  excludeSources: z.array(z.string()).optional().default(['cspell']).describe('Diagnostic sources to exclude (case-insensitive substring match). Defaults to ["cspell"] to drop noisy spell-checker reports; pass [] to keep them. Applied after `sources`, so an excluded source is dropped even when it also matches `sources`.'),
   __NOT_RECOMMEND__severities: z.array(z.enum(['error', 'warning', 'info', 'hint'])).optional().default(['error', 'warning', 'info', 'hint']).describe('Severity levels to include. Default includes all four (error, warning, info, hint) so ESLint rules that surface as hints are not silently dropped.'),
 }).strict();
 

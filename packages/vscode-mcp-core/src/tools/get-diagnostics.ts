@@ -37,11 +37,12 @@ export const getDiagnosticsTool: ToolDefinition<typeof GetDiagnosticsInputSchema
     openWorldHint: false,
   },
   async handler(params, { workspacePath }) {
-    const { __NOT_RECOMMEND__filePaths, sources, __NOT_RECOMMEND__severities } = params;
+    const { __NOT_RECOMMEND__filePaths, sources, excludeSources, __NOT_RECOMMEND__severities } = params;
     const dispatcher = await createDispatcher(workspacePath);
     const result = await dispatcher.dispatch('getDiagnostics', {
       __NOT_RECOMMEND__filePaths,
       sources,
+      excludeSources,
       __NOT_RECOMMEND__severities,
     });
 

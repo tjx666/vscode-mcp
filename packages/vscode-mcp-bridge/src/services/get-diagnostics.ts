@@ -126,10 +126,10 @@ async function getModifiedFiles(): Promise<string[]> {
 export const getDiagnostics = async (
     payload: EventParams<'getDiagnostics'>
 ): Promise<EventResult<'getDiagnostics'>> => {
-    logger.info(`getDiagnostics called with ${payload.__NOT_RECOMMEND__filePaths.length} file paths, sources: [${payload.sources.join(', ')}], severities: [${payload.__NOT_RECOMMEND__severities.join(', ')}]`);
+    logger.info(`getDiagnostics called with ${payload.__NOT_RECOMMEND__filePaths.length} file paths, sources: [${payload.sources.join(', ')}], excludeSources: [${payload.excludeSources.join(', ')}], severities: [${payload.__NOT_RECOMMEND__severities.join(', ')}]`);
 
     let targetFilePaths = payload.__NOT_RECOMMEND__filePaths;
-    const { sources, __NOT_RECOMMEND__severities: severities } = payload;
+    const { sources, excludeSources, __NOT_RECOMMEND__severities: severities } = payload;
     
     // If empty array is provided, get all git modified files
     if (targetFilePaths.length === 0) {
@@ -163,14 +163,20 @@ export const getDiagnostics = async (
             // Filter diagnostics based on sources and severities
             const filteredDiagnostics = allDiagnostics.filter(diag => {
                 // Filter by source (empty array means include all sources)
-                const sourceMatches = sources.length === 0 || 
+                const sourceMatches = sources.length === 0 ||
                     (diag.source ? sources.some(s => diag.source!.toLowerCase().includes(s.toLowerCase())) : false);
-                
-                // Filter by severity (empty array means include all severities) 
+
+                // Exclude unwanted sources (defaults to cspell). Applied after the include
+                // filter, so an excluded source is dropped even when it also matches `sources`.
+                const sourceExcluded = excludeSources.length > 0 && diag.source
+                    ? excludeSources.some(s => diag.source!.toLowerCase().includes(s.toLowerCase()))
+                    : false;
+
+                // Filter by severity (empty array means include all severities)
                 const diagSeverityString = severityNumberToString[diag.severity];
                 const severityMatches = severities.length === 0 || severities.includes(diagSeverityString);
-                
-                return sourceMatches && severityMatches;
+
+                return sourceMatches && !sourceExcluded && severityMatches;
             });
             
             logger.info(`File ${path.basename(uri.fsPath)}: after filtering - ${filteredDiagnostics.length} diagnostics (sources: ${filteredDiagnostics.map(d => d.source || 'unknown').join(', ') || 'none'})`);
