@@ -1,330 +1,117 @@
 ---
 name: vscode-mcp-tool-development
-description: End-to-end workflow for adding or modifying a tool in the VSCode MCP Bridge project — IPC schema → bridge service → core ToolDefinition → MCP/CLI adapters auto-pick-up. Covers schema design with zod, the `__NOT_RECOMMEND__` field-naming pattern for steering LLM agents, error handling conventions, and tool annotations. Use whenever the task touches code under `packages/vscode-mcp-{ipc,bridge,core,server,cli}/src/` — adding a new capability, changing an existing tool's params or output, or debugging an end-to-end mismatch.
+description: End-to-end workflow for adding, modifying, or debugging VSCode MCP tools in this repo — IPC zod schema and EventMap, bridge service registration, core ToolDefinition and tool constants, MCP/CLI adapter behavior, workspace_path semantics, CLI flag generation, validation, and regression testing.
 ---
 
-# VSCode MCP 工具开发指南
+# VSCode MCP Tool Development
 
-本指南总结了在 VSCode MCP Bridge 项目中开发和维护工具的完整流程，包括从基础实现到质量优化的全套最佳实践。
+Use this when a change touches tool contracts, service behavior, tool output, or adapter exposure under `packages/vscode-mcp-{ipc,bridge,core,server,cli}/src/`.
 
-## 开发流程
-
-### 核心原则
-
-**开发顺序**：
+## Golden Path
 
 ```plaintext
-接口定义 (IPC) → 实现层 (Bridge Extension) → 工具层 (Core) → 质量优化
+IPC schema/EventMap -> bridge service -> core ToolDefinition/constants -> validation
 ```
 
-Server 和 CLI 包都是 core 的薄 adapter，循环注册 `getAllTools()`，新增 tool **不需要改 server 或 cli**（除非要给 CLI 自定义 flag mapping）。
+Server and CLI are thin adapters around `vscode-mcp-core`. Do not edit them for ordinary tools unless adapter behavior itself changes.
 
-**为什么要按这个顺序？**
+## 1. IPC Contract
 
-- IPC 层定义了类型契约，必须最先完成
-- Bridge Extension 依赖 IPC 的类型定义
-- Core 调用 Bridge 的服务，复用 IPC schema
-- Server / CLI adapter 自动拾取 Core 中的 ToolDefinition
+Add or update the event in `packages/vscode-mcp-ipc/src/events/`.
 
-**重要提醒**: 每个开发阶段完成后，都必须进行 **编译和构建验证**，确保代码质量和依赖关系正确。
+- Use a kebab-case file name and camelCase IPC event name.
+- Export `InputSchema`, `OutputSchema`, payload type, and result type.
+- Use `.strict()` on object schemas.
+- Put shared path/location/position fields in `packages/vscode-mcp-ipc/src/common.ts` when they are reused.
+- Update `packages/vscode-mcp-ipc/src/events/index.ts`:
+  - import payload/result types
+  - export the event module
+  - add the event to `EventMap`
 
-## 工具架构
+Keep `ToolDefinition.schema` compatible with `.shape`. If a schema needs `.refine()` or another wrapper that hides `.shape`, expose a base `z.object(...).strict()` schema for core/adapter usage and apply refined validation in the layer that needs it.
 
-### 五层架构
+## 2. Bridge Service
 
-```plaintext
-MCP Client ↔ MCP Server ↔ Core ↔ IPC Layer ↔ VSCode Extension ↔ VSCode API
-              CLI       ───┘
-```
+Implement the VSCode API behavior in `packages/vscode-mcp-bridge/src/services/`.
 
-**职责分工**：
+- Type service payloads as `EventParams<'eventName'>` and results as `EventResult<'eventName'>`.
+- Register the service in `packages/vscode-mcp-bridge/src/extension.ts` with payload and result schemas.
+- Keep VSCode API objects inside the bridge layer. Return plain JSON-compatible data that passes the IPC output schema.
+- Throw errors for true failures. Include `cause` when it helps debugging.
+- For command-style operations that intentionally surface command failure as data, follow the existing `executeCommand` pattern.
 
-- **IPC Layer**: 定义类型契约和通信协议（zod schema + EventMap）
-- **Bridge Extension**: 实现具体的 VSCode 操作逻辑
-- **Core**: 框架无关的 ToolDefinition（schema + handler + 格式化），server/cli 共享
-- **MCP Server / CLI**: 薄 adapter，把 Core 的 ToolDefinition 映射到对应入口
+## 3. Core Tool
 
-## 开发步骤
+Create or update `packages/vscode-mcp-core/src/tools/<tool-name>.ts`.
 
-### 1. IPC 层：定义接口
+- Reuse the IPC input schema directly: `schema: SomeInputSchema`.
+- Use snake_case for MCP `name`, kebab-case for CLI `cliName`, and kebab-case file names.
+- Set `requiresWorkspace: true` unless the tool is genuinely global, like `list_workspaces`.
+- In `handler`, create a dispatcher with `createDispatcher(workspacePath)`, dispatch the camelCase IPC event, and return the final human-readable text.
+- Let unexpected errors throw. MCP and CLI adapters add the `❌ <title> failed` wrapper.
+- Use `errorTips` only for extra operator guidance, such as extension installation or version mismatch hints.
 
-#### 1.1 创建事件定义文件
+Then update:
 
-在 [packages/vscode-mcp-ipc/src/events/](mdc:packages/vscode-mcp-ipc/src/events/) 目录中创建事件定义文件：
+- `packages/vscode-mcp-core/src/tools/index.ts`: export the tool and add it to `getAllTools({ clientVersion })`.
+- `packages/vscode-mcp-core/src/constants.ts`: add the tool name to `VscodeMcpToolName` so server filtering validates it.
 
-```typescript
-// packages/vscode-mcp-ipc/src/events/your-tool.ts
-import { z } from 'zod';
+## 4. CLI Exposure
 
-export const YourToolInputSchema = z
-  .object({
-    param1: z.string().describe('参数描述'),
-    param2: z.boolean().optional().default(true).describe('可选参数'),
-  })
-  .strict();
+The CLI auto-generates one flag per zod object field.
 
-export const YourToolOutputSchema = z
-  .object({
-    result: z.string().describe('结果描述'),
-  })
-  .strict();
+- Simple string/number/boolean/enum/array-of-primitive fields need no CLI code.
+- Arrays of objects and other non-flat shapes require `tool.cli.options` plus `tool.cli.transform`.
+- Boolean defaults of `true` become `--no-<flag>`.
+- `__NOT_RECOMMEND__filePaths` becomes `--not-recommend-file-paths`; the CLI rebuilds the original zod key before parsing.
 
-export type YourToolPayload = z.infer<typeof YourToolInputSchema>;
-export type YourToolResult = z.infer<typeof YourToolOutputSchema>;
-```
+## 5. Descriptions And Agent Steering
 
-#### 1.2 注册到事件映射
+Tool descriptions are prompt surface. Include only operational guidance that helps an agent use the tool correctly.
 
-更新 [packages/vscode-mcp-ipc/src/events/index.ts](mdc:packages/vscode-mcp-ipc/src/events/index.ts)：
+- Say that `workspace_path` selects a VSCode socket, not an arbitrary repository root.
+- Tell agents to run `list_workspaces` when unsure which workspace path to use.
+- For git-modified diagnostics, preserve the existing empty-array behavior of `__NOT_RECOMMEND__filePaths`.
+- Use `__NOT_RECOMMEND__` field names for params that are technically configurable but usually should be left at defaults.
+- Mark dangerous tools accurately. `execute_command` is destructive/open-ended unless the specific command is proven safe.
 
-```typescript
-import type { YourToolPayload, YourToolResult } from './your-tool.js';
+## 6. Validation
 
-export * from './your-tool.js';
-
-export interface EventMap {
-  yourTool: {
-    params: YourToolPayload;
-    result: YourToolResult;
-  };
-}
-```
-
-#### 1.3 构建 IPC 包
+Prefer targeted validation matching the layer changed.
 
 ```bash
-cd packages/vscode-mcp-ipc && pnpm run build
+# IPC schema/type changes
+cd packages/vscode-mcp-ipc && bun run build
+
+# Bridge service or extension registration
+cd packages/vscode-mcp-bridge && bun run compile:test
+
+# Core tool definitions, descriptions, constants, or formatting
+cd packages/vscode-mcp-core && bun run build
+
+# Adapter behavior changes
+cd packages/vscode-mcp-server && bun run build
+cd packages/vscode-mcp-cli && bun run build
 ```
 
-### 2. Bridge Extension：实现服务
-
-#### 2.1 创建服务实现
-
-在 [packages/vscode-mcp-bridge/src/services/](mdc:packages/vscode-mcp-bridge/src/services/) 目录中实现服务：
-
-```typescript
-// packages/vscode-mcp-bridge/src/services/your-tool.ts
-import type { EventParams, EventResult } from '@vscode-mcp/vscode-mcp-ipc';
-
-export const yourTool = async (
-  payload: EventParams<'yourTool'>,
-): Promise<EventResult<'yourTool'>> => {
-  try {
-    const result = await someVSCodeOperation(payload.param1);
-    return { result };
-  } catch (error) {
-    throw new Error(`操作失败: ${error}`);
-  }
-};
-```
-
-#### 2.2 注册服务
-
-更新 [packages/vscode-mcp-bridge/src/extension.ts](mdc:packages/vscode-mcp-bridge/src/extension.ts)：
-
-```typescript
-import { YourToolInputSchema, YourToolOutputSchema } from '@vscode-mcp/vscode-mcp-ipc';
-import { yourTool } from './services';
-
-socketServer.register('yourTool', {
-  handler: yourTool,
-  payloadSchema: YourToolInputSchema,
-  resultSchema: YourToolOutputSchema,
-});
-```
-
-### 3. Core：创建 ToolDefinition
-
-在 [packages/vscode-mcp-core/src/tools/](mdc:packages/vscode-mcp-core/src/tools/) 创建工具定义：
-
-```typescript
-// packages/vscode-mcp-core/src/tools/your-tool.ts
-import { createDispatcher, YourToolInputSchema } from '@vscode-mcp/vscode-mcp-ipc';
-import type { ToolDefinition } from '../types.js';
-
-const DESCRIPTION = `Detailed description with usage scenarios and examples`;
-
-export const yourTool: ToolDefinition<typeof YourToolInputSchema> = {
-  name: 'your_tool',           // snake_case，MCP tool name
-  cliName: 'your-tool',         // kebab-case，CLI 子命令
-  title: 'Your Tool Title',
-  description: DESCRIPTION,
-  schema: YourToolInputSchema,
-  requiresWorkspace: true,
-  annotations: {
-    readOnlyHint: true,
-    destructiveHint: false,
-    idempotentHint: true,
-    openWorldHint: false,
-  },
-  async handler(params, { workspacePath }) {
-    const { param1, param2 } = params;
-    const dispatcher = await createDispatcher(workspacePath);
-    const result = await dispatcher.dispatch('yourTool', { param1, param2 });
-    return `✅ Done: ${result.result}`;
-  },
-};
-```
-
-然后在 [packages/vscode-mcp-core/src/tools/index.ts](mdc:packages/vscode-mcp-core/src/tools/index.ts) 导出并加入 `getAllTools()`。Server / CLI 都自动拾取。
-
-### 4. (可选) CLI 自定义 flag mapping
-
-当工具参数包含嵌套对象或数组对象时（如 `OpenFilesInputSchema.files` 是 `Array<{filePath, showEditor}>`），无法自动生成扁平 CLI flags。这时在 ToolDefinition 上加 `cli`：
-
-```typescript
-cli: {
-  options: [
-    { flags: '--files <paths...>', description: 'One or more file paths' },
-    { flags: '--no-show-editor', description: 'Open in background' },
-  ],
-  transform: (cliArgs) => ({
-    files: (cliArgs.files as string[]).map((filePath) => ({
-      filePath,
-      showEditor: cliArgs.showEditor !== false,
-    })),
-  }),
-},
-```
-
-## 质量标准
-
-### 错误处理标准
-
-handler 抛错 → adapter 接住并按 MCP/CLI 规范转换：
-
-- **MCP adapter**: 返回 `{ isError: true, content: [{ type: 'text', text: '❌ ${title} failed: ...' }] }`
-- **CLI adapter**: 打到 stderr 并 `process.exit(1)`
-
-`handler` 内部不必 wrap try/catch，让异常自然抛即可；如果需要附加排错提示（如 health-check 的扩展安装链接），在 ToolDefinition 上加 `errorTips: string`。
-
-### Tool Annotations 标准
-
-根据 MCP 官方规范配置：
-
-| Annotation        | 类型    | 默认值 | 描述               |
-| ----------------- | ------- | ------ | ------------------ |
-| `title`           | string  | -      | 人性化标题         |
-| `readOnlyHint`    | boolean | false  | 是否只读操作       |
-| `destructiveHint` | boolean | true   | 是否可能破坏性操作 |
-| `idempotentHint`  | boolean | false  | 是否幂等操作       |
-| `openWorldHint`   | boolean | true   | 是否与外部世界交互 |
-
-## 最佳实践
-
-### 1. 命名规范
-
-- **IPC 事件名**: camelCase (`getDiagnostics`, `openFiles`)
-- **MCP 工具名**: snake_case (`get_diagnostics`, `open_files`)
-- **CLI 子命令名**: kebab-case (`get-diagnostics`, `open-files`)
-- **文件名**: kebab-case (`get-diagnostics.ts`, `open-files.ts`)
-
-### 2. `__NOT_RECOMMEND__` 字段命名
-
-当某个字段虽然技术上可配，但**绝大多数情况下应使用默认值**时（agent 经常误用 narrowing 反而漏掉信息），用 `__NOT_RECOMMEND__` 前缀做"naming-as-warning"：
-
-- `__NOT_RECOMMEND__filePaths`：默认 `[]` 让 bridge 自动检测 git modified files
-- `__NOT_RECOMMEND__severities`：默认包含全部四级 severity，narrowing 通常会漏报
-
-字段名本身是给 LLM 的反提示信号，比 description 里的劝阻更可靠。
-
-### 3. Schema 设计
-
-- 使用 `.describe()` 为所有参数添加描述（精炼，关键信号塞进字段名）
-- 设置合理的默认值（默认应当对应"最常见、最有用"的语义）
-- 使用 `.strict()` 确保类型安全
-- Core 工具层必须复用 IPC 层的 Schema，不要重写
-
-### 4. 构建验证
-
-每个开发阶段完成后必须进行验证（VSCode 用 `mcp__vscode-mcp__get_diagnostics` 检查，避免反复跑 `pnpm run lint`）：
+For repo diagnostics, run from the VSCode workspace root:
 
 ```bash
-# IPC 层
-cd packages/vscode-mcp-ipc && pnpm run build
-
-# Bridge 层
-cd packages/vscode-mcp-bridge && pnpm run compile:test
-
-# Core 层
-cd packages/vscode-mcp-core && pnpm run build
-
-# Server / CLI 层
-cd packages/vscode-mcp-server && pnpm run build
-cd packages/vscode-mcp-cli && pnpm run build
+vscode-cli get-diagnostics
 ```
 
-## 开发检查清单
+If the extension is available, smoke-test the changed tool through `vscode-cli` because it exercises the same core handler and socket path as MCP. Use `vscode-cli list-workspaces` first when the workspace path is uncertain.
 
-### 新工具开发
+## Regression Tests
 
-**基础实现:**
+- Add or update a regression test when fixing a bug.
+- Prefer the smallest testable unit. For bridge VSCode API behavior, use the existing extension test harness only when the logic cannot be isolated.
+- Avoid changing server/CLI tests for a new ordinary tool unless adapter behavior changes; core registration plus a CLI smoke test is usually enough.
 
-- [ ] 在 IPC 层定义 Schema 和类型
-- [ ] 添加到 EventMap 并导出
-- [ ] 构建 IPC 包
-- [ ] 实现 Bridge 服务逻辑
-- [ ] 在 Bridge `extension.ts` 中注册服务
-- [ ] Bridge 编译验证
-- [ ] 在 Core 创建 ToolDefinition（复用 IPC Schema）
-- [ ] 在 `core/src/tools/index.ts` 导出并加入 `getAllTools()`
-- [ ] Core / Server / CLI 构建
+## Common Failure Modes
 
-**质量优化:**
-
-- [ ] handler 抛错让 adapter 处理（除非有业务态需要返 text）
-- [ ] 配置合适的 Tool Annotations
-- [ ] 优化 Description
-- [ ] 易被 LLM 误用的字段考虑 `__NOT_RECOMMEND__` 前缀
-- [ ] 验证符合 MCP 官方标准
-
-**验证测试:**
-
-- [ ] 编译检查所有包
-- [ ] MCP / CLI 两边都跑一次，输出对齐
-- [ ] 错误处理测试
-- [ ] LLM 使用效果验证
-
-## 常见问题解决
-
-### 问题 1: 类型错误
-
-**症状**: `Property 'xxx' does not exist on type`
-
-**解决方案**:
-
-1. 确保已构建 IPC 包: `cd packages/vscode-mcp-ipc && pnpm run build`
-2. 检查事件是否已添加到 `EventMap`
-3. 确保导入了正确的类型
-
-### 问题 2: Schema 重复定义
-
-**症状**: Core 工具层重新定义了 IPC 层已有的参数
-
-**解决方案**: 直接 `schema: SomeIpcInputSchema` 复用，不要重写。MCP adapter 会自动 spread 进 `workspace_path`。
-
-### 问题 3: 带 `.refine()` 的 Schema 没有 `.shape`
-
-**症状**: 使用 `.refine()` 的 Schema 变成 `ZodEffects` 类型，没有 `.shape` 属性
-
-**解决方案**: 分离基础 Schema 和验证 Schema
-
-```typescript
-// IPC 层：分离基础 Schema 和验证 Schema
-export const YourToolBaseInputSchema = z
-  .object({
-    param1: z.string().describe('参数1'),
-    param2: z.string().optional().describe('参数2'),
-  })
-  .strict();
-
-export const YourToolInputSchema = YourToolBaseInputSchema.refine(
-  (data) => data.param1 && data.param2,
-  { message: '验证失败' },
-);
-
-// Core 层：复用基础 Schema
-schema: YourToolBaseInputSchema,
-```
-
-遵循这个指南可以确保工具开发的一致性、可维护性和符合 MCP 官方标准。
+- `Unknown method`: missing `EventMap` entry or bridge `socketServer.register`.
+- Tool not available through server filtering: missing `VscodeMcpToolName` entry.
+- CLI crashes during registration: schema field is not representable as flat flags and needs `cli.options`/`cli.transform`.
+- Connection points at the wrong VSCode window: `workspace_path` is a child folder or submodule path instead of the open workspace.
+- Result validation fails: bridge service returned a VSCode object or non-JSON shape instead of schema-compatible data.
