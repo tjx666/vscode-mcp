@@ -24,16 +24,16 @@ async function pathExists(path: string): Promise<boolean> {
 export function getAppDataDir(): string {
   const appName = 'YuTengjing.vscode-mcp';
   const homeDir = homedir();
-  
+
   switch (process.platform) {
     case 'darwin':
       // macOS: Use Application Support directory
       return join(homeDir, 'Library', 'Application Support', appName);
-      
+
     case 'win32':
       // Windows: Using named pipes, no directory needed
       return '';
-      
+
     default: {
       // Linux and other Unix-like: Follow XDG Base Directory spec
       const linuxAppName = appName.toLowerCase().replaceAll('.', '-');
@@ -130,17 +130,17 @@ export class EventDispatcher {
     } catch (newPathError) {
       // Check if this is a connection error or business error
       const isConnectionError = this.isConnectionError(newPathError as Error);
-      
+
       if (!isConnectionError) {
         // This is a business error (e.g., file not found, invalid params), not connection issue
         // Don't retry, let outer layer handle it
         throw newPathError;
       }
-      
+
       // This is a connection error, try legacy path
       try {
         const result = await this.tryConnect(eventName, params, this.legacySocketPath);
-        
+
         // If legacy path works, show upgrade warning
         console.warn(
           `⚠️  Connected using legacy socket path. Please upgrade your VSCode MCP Bridge extension to the latest version.\n` +
@@ -149,16 +149,16 @@ export class EventDispatcher {
           `   Expected new path: ${this.socketPath}\n` +
           `   Workspace: ${this.workspacePath}`
         );
-        
+
         return result;
       } catch (legacyPathError) {
         const isLegacyConnectionError = this.isConnectionError(legacyPathError as Error);
-        
+
         if (!isLegacyConnectionError) {
           // Legacy path connected but returned business error, throw it
           throw legacyPathError;
         }
-        
+
         // Both paths failed with connection errors
         throw new Error(
           `Failed to connect to VSCode extension at both locations:\n` +
@@ -197,6 +197,48 @@ export class EventDispatcher {
       const socket = new Socket();
       const requestId = generateRequestId();
       let responseReceived = false;
+      let responseBuffer = '';
+
+      const finishWithResponse = (response: BaseResponse): boolean => {
+        if (response.id !== requestId) {
+          return false;
+        }
+
+        responseReceived = true;
+        clearTimeout(timeoutId);
+        socket.destroy();
+
+        if (response.error) {
+          reject(
+            new Error(
+              `VSCode extension error: ${response.error.message}${
+                response.error.details ? ` - ${response.error.details}` : ''
+              }`,
+            ),
+          );
+        } else {
+          resolve(response.result);
+        }
+
+        return true;
+      };
+
+      const parseResponse = (raw: string, waitForMore: boolean): boolean => {
+        try {
+          const response: BaseResponse = JSON.parse(raw);
+          return finishWithResponse(response);
+        } catch (error) {
+          if (waitForMore) {
+            return false;
+          }
+
+          responseReceived = true;
+          clearTimeout(timeoutId);
+          socket.destroy();
+          reject(new Error(`Failed to parse response: ${error instanceof Error ? error.message : String(error)}`));
+          return true;
+        }
+      };
 
       // Set timeout
       const timeoutId = setTimeout(() => {
@@ -223,31 +265,22 @@ export class EventDispatcher {
 
       // Handle socket data
       socket.on('data', (data) => {
-        try {
-          const response: BaseResponse = JSON.parse(data.toString());
+        responseBuffer += data.toString();
 
-          if (response.id === requestId) {
-            responseReceived = true;
-            clearTimeout(timeoutId);
-            socket.destroy();
+        let newlineIndex = responseBuffer.indexOf('\n');
+        while (newlineIndex !== -1) {
+          const rawLine = responseBuffer.slice(0, newlineIndex).trim();
+          responseBuffer = responseBuffer.slice(newlineIndex + 1);
 
-            if (response.error) {
-              reject(
-                new Error(
-                  `VSCode extension error: ${response.error.message}${
-                    response.error.details ? ` - ${response.error.details}` : ''
-                  }`,
-                ),
-              );
-            } else {
-              resolve(response.result);
-            }
+          if (rawLine && parseResponse(rawLine, false)) {
+            return;
           }
-        } catch (error) {
-          responseReceived = true;
-          clearTimeout(timeoutId);
-          socket.destroy();
-          reject(new Error(`Failed to parse response: ${error instanceof Error ? error.message : String(error)}`));
+
+          newlineIndex = responseBuffer.indexOf('\n');
+        }
+
+        if (responseBuffer.trim()) {
+          parseResponse(responseBuffer, true);
         }
       });
 
@@ -265,6 +298,10 @@ export class EventDispatcher {
       // Handle socket close
       socket.on('close', () => {
         if (!responseReceived) {
+          if (responseBuffer.trim() && parseResponse(responseBuffer, false)) {
+            return;
+          }
+
           clearTimeout(timeoutId);
           reject(
             new Error(
@@ -334,4 +371,4 @@ export async function createDispatcher(
 }
 
 
- 
+

@@ -13,6 +13,7 @@
         "build": "tsc",
         "build:watch": "tsc --watch",
         "clean": "rm -rf dist",
+        "test": "node --import tsx --test test/dispatch.test.ts",
         "typecheck": "tsgo --noEmit",
         "prepublishOnly": "pnpm run clean && pnpm run build"
     },

@@ -9,6 +9,16 @@ import { logger } from '../logger.js';
 import { ensureFileIsOpen, resolveFilePaths } from '../utils/workspace.js';
 
 const execAsync = promisify(exec);
+const MAX_DIAGNOSTIC_MESSAGE_LENGTH = 2000;
+
+function truncateDiagnosticMessage(message: string): string {
+    if (message.length <= MAX_DIAGNOSTIC_MESSAGE_LENGTH) {
+        return message;
+    }
+
+    const omittedCharacters = message.length - MAX_DIAGNOSTIC_MESSAGE_LENGTH;
+    return `${message.slice(0, MAX_DIAGNOSTIC_MESSAGE_LENGTH)}\n[Diagnostic message truncated: ${omittedCharacters} characters omitted]`;
+}
 
 /**
  * Get all git submodule paths in the workspace
@@ -130,16 +140,16 @@ export const getDiagnostics = async (
 
     let targetFilePaths = payload.__NOT_RECOMMEND__filePaths;
     const { sources, excludeSources, __NOT_RECOMMEND__severities: severities } = payload;
-    
+
     // If empty array is provided, get all git modified files
     if (targetFilePaths.length === 0) {
         logger.info('No file paths provided, getting git modified files');
         targetFilePaths = await getModifiedFiles();
     }
-    
+
     // Convert file paths to URIs
     const targetUris = resolveFilePaths(targetFilePaths);
-    
+
     // Severity mapping from VSCode number to string
     const severityNumberToString = {
         0: 'error',
@@ -147,19 +157,19 @@ export const getDiagnostics = async (
         2: 'info',
         3: 'hint'
     } as const;
-    
+
     logger.info(`Processing diagnostics for ${targetUris.length} files`);
-    
+
     const files = await Promise.all(
         targetUris.map(async (uri: vscode.Uri) => {
             // Ensure file is open to get accurate diagnostics
             await ensureFileIsOpen(uri.toString());
-            
+
             // uri is already a VSCode Uri object
             const allDiagnostics = vscode.languages.getDiagnostics(uri);
-            
+
             logger.info(`File ${path.basename(uri.fsPath)}: found ${allDiagnostics.length} total diagnostics`);
-            
+
             // Filter diagnostics based on sources and severities
             const filteredDiagnostics = allDiagnostics.filter(diag => {
                 // Filter by source (empty array means include all sources)
@@ -178,9 +188,9 @@ export const getDiagnostics = async (
 
                 return sourceMatches && !sourceExcluded && severityMatches;
             });
-            
+
             logger.info(`File ${path.basename(uri.fsPath)}: after filtering - ${filteredDiagnostics.length} diagnostics (sources: ${filteredDiagnostics.map(d => d.source || 'unknown').join(', ') || 'none'})`);
-            
+
             return {
                 uri: uri.fsPath,
                 diagnostics: filteredDiagnostics.map(diag => ({
@@ -188,7 +198,7 @@ export const getDiagnostics = async (
                         start: { line: diag.range.start.line, character: diag.range.start.character },
                         end: { line: diag.range.end.line, character: diag.range.end.character }
                     },
-                    message: diag.message,
+                    message: truncateDiagnosticMessage(diag.message),
                     severity: severityNumberToString[diag.severity],
                     source: diag.source,
                     code: typeof diag.code === 'object' ? diag.code.value : diag.code
@@ -201,4 +211,4 @@ export const getDiagnostics = async (
     logger.info(`getDiagnostics completed: ${totalDiagnostics} total diagnostics across ${files.length} files`);
 
     return { files };
-}; 
+};

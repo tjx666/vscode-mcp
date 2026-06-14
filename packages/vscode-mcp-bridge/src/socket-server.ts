@@ -58,9 +58,9 @@ export class SocketServer {
      */
     private async handleRequest(request: BaseRequest): Promise<BaseResponse> {
         const { id, method, params } = request;
-        
+
         logger.info(`Processing request: ${method}`);
-        
+
         // Look up service registration
         const registration = this.services.get(method);
         if (!registration) {
@@ -110,22 +110,22 @@ export class SocketServer {
                         error: {
                             code: 500,
                             message: `Invalid result from ${method}`,
-                            details: validationError instanceof z.ZodError 
+                            details: validationError instanceof z.ZodError
                                 ? validationError.issues.map((e) => `${e.path.join('.')}: ${e.message}`).join(', ')
                                 : String(validationError)
                         }
                     };
                 }
             }
-            
+
             // Log successful service call
             logger.logServiceCall(method, params, result);
-            
+
             return { id, result };
         } catch (error) {
             // Log service error
             logger.logServiceError(method, params, error);
-            
+
             return {
                 id,
                 error: {
@@ -138,13 +138,13 @@ export class SocketServer {
     }
 
     /**
-     * Handle socket data
+     * Handle one complete JSON request frame.
      */
-    private async handleSocketData(socket: net.Socket, data: any): Promise<void> {
+    private async handleSocketMessage(socket: net.Socket, rawMessage: string): Promise<void> {
         try {
-            const message = JSON.parse(data.toString());
+            const message = JSON.parse(rawMessage);
             logger.info(`Received message: ${JSON.stringify(message)}`);
-            
+
             // Validate request format
             if (!message.id || !message.method) {
                 const response: BaseResponse = {
@@ -154,20 +154,20 @@ export class SocketServer {
                         message: 'Invalid request format: missing id or method'
                     }
                 };
-                socket.write(JSON.stringify(response));
+                socket.write(`${JSON.stringify(response)}\n`);
                 return;
             }
-            
+
             // Handle request
             const response = await this.handleRequest(message);
-            
+
             // Send response
-            socket.write(JSON.stringify(response));
+            socket.write(`${JSON.stringify(response)}\n`);
             logger.info(`Sent response for ${message.method}: ${response.result ? 'success' : 'error'}`);
-            
+
         } catch (error) {
             logger.error(`Error handling socket data: ${error}`);
-            
+
             const errorResponse: BaseResponse = {
                 id: 'unknown',
                 error: {
@@ -176,8 +176,8 @@ export class SocketServer {
                     details: String(error)
                 }
             };
-            
-            socket.write(JSON.stringify(errorResponse));
+
+            socket.write(`${JSON.stringify(errorResponse)}\n`);
         }
     }
 
@@ -205,28 +205,55 @@ export class SocketServer {
 
         return new Promise((resolve, reject) => {
             this.server = net.createServer();
-            
+
             this.server.on('connection', (socket) => {
                 logger.info(`Client connected to socket: ${this.socketPath}`);
-                
+                let requestBuffer = '';
+
                 socket.on('data', (data) => {
-                    this.handleSocketData(socket, data);
+                    requestBuffer += data.toString();
+
+                    let newlineIndex = requestBuffer.indexOf('\n');
+                    while (newlineIndex !== -1) {
+                        const rawLine = requestBuffer.slice(0, newlineIndex).trim();
+                        requestBuffer = requestBuffer.slice(newlineIndex + 1);
+
+                        if (rawLine) {
+                            void this.handleSocketMessage(socket, rawLine);
+                        }
+
+                        newlineIndex = requestBuffer.indexOf('\n');
+                    }
+
+                    // Backward compatibility for clients that sent a single JSON object
+                    // without the newline frame delimiter.
+                    if (requestBuffer.trim()) {
+                        try {
+                            JSON.parse(requestBuffer);
+                        } catch {
+                            return;
+                        }
+
+                        const rawMessage = requestBuffer;
+                        requestBuffer = '';
+                        void this.handleSocketMessage(socket, rawMessage);
+                    }
                 });
-                
+
                 socket.on('close', () => {
                     logger.info('Client disconnected');
                 });
-                
+
                 socket.on('error', (error) => {
                     logger.error(`Socket error: ${error}`);
                 });
             });
-            
+
             this.server.on('error', (error) => {
                 logger.error(`Server error: ${error}`);
                 reject(error);
             });
-            
+
             this.server.listen(this.socketPath!, () => {
                 logger.info(`Socket server listening on: ${this.socketPath}`);
                 resolve();
@@ -243,7 +270,7 @@ export class SocketServer {
             this.server = null;
             logger.info('Socket server closed');
         }
-        
+
         if (this.socketPath && process.platform !== 'win32' && fs.existsSync(this.socketPath)) {
             try {
                 fs.unlinkSync(this.socketPath);
@@ -252,7 +279,7 @@ export class SocketServer {
                 logger.error(`Error removing socket file: ${error}`);
             }
         }
-        
+
         this.socketPath = null;
     }
 
@@ -269,4 +296,4 @@ export class SocketServer {
     getServicesCount(): number {
         return this.services.size;
     }
-} 
+}
