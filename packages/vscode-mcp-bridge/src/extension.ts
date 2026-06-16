@@ -1,4 +1,6 @@
 import {
+    CloseEditorsInputSchema,
+    CloseEditorsOutputSchema,
     ExecuteCommandInputSchema,
     ExecuteCommandOutputSchema,
     GetDiagnosticsInputSchema,
@@ -9,6 +11,8 @@ import {
     GetSymbolLSPInfoOutputSchema,
     HealthCheckInputSchema,
     HealthCheckOutputSchema,
+    ListOpenEditorsInputSchema,
+    ListOpenEditorsOutputSchema,
     ListWorkspacesOutputSchema,
     OpenFilesInputSchema,
     OpenFilesOutputSchema,
@@ -24,12 +28,14 @@ import { copyOpenedFilesPathCommand } from './commands/copy-opened-files-path';
 import { sleepCommand } from './commands/sleep';
 import { logger } from './logger';
 import {
+    closeEditors,
     executeCommand,
     getCurrentWorkspacePath,
     getDiagnostics,
     getReferences,
     getSymbolLSPInfo,
     health,
+    listOpenEditors,
     listWorkspaces,
     openFiles,
     renameSymbol,
@@ -108,6 +114,18 @@ export async function activate(context: vscode.ExtensionContext) {
         socketServer.register('listWorkspaces', {
             handler: listWorkspaces,
             resultSchema: ListWorkspacesOutputSchema,
+        });
+
+        socketServer.register('listOpenEditors', {
+            handler: listOpenEditors,
+            payloadSchema: ListOpenEditorsInputSchema,
+            resultSchema: ListOpenEditorsOutputSchema,
+        });
+
+        socketServer.register('closeEditors', {
+            handler: closeEditors,
+            payloadSchema: CloseEditorsInputSchema,
+            resultSchema: CloseEditorsOutputSchema,
         });
 
         // Start socket server
