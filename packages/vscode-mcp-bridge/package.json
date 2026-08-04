@@ -81,7 +81,7 @@
                             },
                             "icon": {
                                 "type": "string",
-                                "enum": ["claude", "codex", "gemini"],
+                                "enum": ["claude", "codex", "gemini", "grok"],
                                 "description": "Which bundled SVG to show on the terminal toolbar."
                             },
                             "command": {
@@ -131,6 +131,12 @@
                 "title": "Terminal Launcher: Gemini",
                 "category": "VSCode MCP Bridge",
                 "icon": "resources/launcher-icons/gemini.svg"
+            },
+            {
+                "command": "vscode-mcp-bridge.terminalLauncher.icon.grok",
+                "title": "Terminal Launcher: Grok",
+                "category": "VSCode MCP Bridge",
+                "icon": "resources/launcher-icons/grok.svg"
             }
         ],
         "menus": {
@@ -138,16 +144,21 @@
                 {
                     "command": "vscode-mcp-bridge.terminalLauncher.icon.claude",
                     "when": "view == terminal && vscodeMcpBridge.launcher.icon.claude.visible",
-                    "group": "navigation@-3"
+                    "group": "navigation@-4"
                 },
                 {
                     "command": "vscode-mcp-bridge.terminalLauncher.icon.codex",
                     "when": "view == terminal && vscodeMcpBridge.launcher.icon.codex.visible",
-                    "group": "navigation@-2"
+                    "group": "navigation@-3"
                 },
                 {
                     "command": "vscode-mcp-bridge.terminalLauncher.icon.gemini",
                     "when": "view == terminal && vscodeMcpBridge.launcher.icon.gemini.visible",
+                    "group": "navigation@-2"
+                },
+                {
+                    "command": "vscode-mcp-bridge.terminalLauncher.icon.grok",
+                    "when": "view == terminal && vscodeMcpBridge.launcher.icon.grok.visible",
                     "group": "navigation@-1"
                 }
             ]
