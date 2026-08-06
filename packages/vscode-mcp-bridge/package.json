@@ -72,7 +72,10 @@
                     "markdownDescription": "Quick-launch entries shown as icon buttons on the terminal toolbar. Pick an `icon` from the bundled pool; each icon can only be bound to one entry (first wins on duplicates). Ignored in untrusted workspaces.",
                     "items": {
                         "type": "object",
-                        "required": ["label", "icon"],
+                        "required": [
+                            "label",
+                            "icon"
+                        ],
                         "additionalProperties": false,
                         "properties": {
                             "label": {
@@ -81,7 +84,12 @@
                             },
                             "icon": {
                                 "type": "string",
-                                "enum": ["claude", "codex", "gemini", "grok"],
+                                "enum": [
+                                    "claude",
+                                    "codex",
+                                    "gemini",
+                                    "grok"
+                                ],
                                 "description": "Which bundled SVG to show on the terminal toolbar."
                             },
                             "command": {
@@ -200,7 +208,7 @@
         "@types/glob": "^9.0.0",
         "@types/mocha": "^10.0.10",
         "@types/vscode": "1.102.0",
-        "@vscode/test-electron": "^2.5.2",
+        "@vscode/test-electron": "^3.1.0",
         "@vscode/vsce": "^3.7.1",
         "esbuild": "~0.27.3",
         "esbuild-visualizer": "^0.7.0",
